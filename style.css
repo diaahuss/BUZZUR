@@ -28,14 +28,13 @@ body {
 
 input, button {
   display: block;
-  width: 100%;
-  max-width: 100%;
-  box-sizing: border-box;
+  width: 100%; /* Makes them full width of the container */
   padding: 10px;
-  margin-top: 10px;
   font-size: 16px;
+  margin-top: 10px;
   border-radius: 6px;
   border: 1px solid #ccc;
+  box-sizing: border-box; /* ensures padding is included in width */
 }
 
 button {
