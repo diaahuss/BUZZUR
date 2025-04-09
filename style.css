@@ -7,7 +7,7 @@ body {
 }
 
 .banner {
-  background-color: #337ab7; /* Darker Blue */
+  background-color: #1e3a8a; /* Dark Blue */
   color: white;
   text-align: center;
   padding: 20px;
@@ -15,10 +15,10 @@ body {
 
 h1 {
   margin: 0;
-  font-size: 2rem;
+  font-size: 2.5rem;
 }
 
-.form-section, .groups-section, .buzz-section, .logout {
+.form-section, .groups-section {
   margin: 20px auto;
   padding: 10px;
   max-width: 600px;
@@ -35,8 +35,8 @@ h1 {
 }
 
 .button {
-  width: 400px; /* Set button width to 400px */
-  background-color: #5cb85c; /* Darker Green */
+  width: 400px;
+  background-color: #4caf50; /* Darker Green */
   color: white;
   padding: 10px 20px;
   border: none;
@@ -47,12 +47,12 @@ h1 {
 }
 
 .button:hover {
-  background-color: #4cae4c;
+  background-color: #388e3c;
 }
 
 .logout-button {
-  width: 400px; /* Set logout button width to 400px */
-  background-color: #d9534f; /* Red for logout */
+  width: 400px;
+  background-color: #d32f2f; /* Red for logout */
   color: white;
   padding: 10px 20px;
   border: none;
@@ -62,7 +62,7 @@ h1 {
 }
 
 .logout-button:hover {
-  background-color: #c9302c;
+  background-color: #c2185b;
 }
 
 /* Groups List */
@@ -73,7 +73,31 @@ h1 {
 
 #groupList li {
   padding: 10px;
-  background-color: #f1f1f1;
+  background-color: #e0e0e0;
   margin: 5px 0;
   border-radius: 5px;
+}
+
+/* Hide All Pages Initially */
+.page {
+  display: none;
+}
+
+.dialog {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  max-width: 400px;
+  width: 100%;
+}
+
+.dialog button {
+  width: 100%;
 }
