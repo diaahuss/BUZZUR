@@ -35,7 +35,7 @@ h1 {
 }
 
 .button {
-  width: 100%;
+  width: 400px; /* Set button width to 400px */
   background-color: #5cb85c; /* Darker Green */
   color: white;
   padding: 10px 20px;
@@ -51,7 +51,7 @@ h1 {
 }
 
 .logout-button {
-  width: 100%;
+  width: 400px; /* Set logout button width to 400px */
   background-color: #d9534f; /* Red for logout */
   color: white;
   padding: 10px 20px;
