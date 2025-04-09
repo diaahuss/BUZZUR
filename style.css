@@ -28,7 +28,7 @@ body {
 
 input, button {
   display: block;
-  width: 100%; /* Makes them full width of the container */
+  width: 90%; /* Makes them full width of the container */
   padding: 10px;
   font-size: 16px;
   margin-top: 10px;
