@@ -1,78 +1,115 @@
-// Data for groups
+let currentUser = null;
 let groups = [];
 
-// Function to create a new group
-function createGroup() {
-  const groupName = document.getElementById('groupName').value;
-  if (!groupName) {
-    alert('Please enter a group name');
+// Show the login page
+function showLoginPage() {
+  document.getElementById("loginPage").style.display = "block";
+  document.getElementById("signupPage").style.display = "none";
+  document.getElementById("myGroupsPage").style.display = "none";
+  document.getElementById("forgotPasswordDialog").style.display = "none";
+}
+
+// Show the sign-up page
+function showSignupPage() {
+  document.getElementById("loginPage").style.display = "none";
+  document.getElementById("signupPage").style.display = "block";
+  document.getElementById("myGroupsPage").style.display = "none";
+  document.getElementById("forgotPasswordDialog").style.display = "none";
+}
+
+// Show My Groups page
+function showMyGroupsPage() {
+  document.getElementById("loginPage").style.display = "none";
+  document.getElementById("signupPage").style.display = "none";
+  document.getElementById("myGroupsPage").style.display = "block";
+  renderGroups();
+}
+
+// Function for Login
+function login() {
+  const phone = document.getElementById("loginPhone").value;
+  const password = document.getElementById("loginPassword").value;
+  if (!phone || !password) {
+    alert("Please enter both phone and password");
     return;
   }
-  
-  // Create new group with name and empty members
-  const newGroup = {
-    name: groupName,
-    members: []
-  };
-  
+  currentUser = { phone, password };
+  localStorage.setItem("currentUser", JSON.stringify(currentUser));
+  showMyGroupsPage();
+}
+
+// Function for Sign-Up
+function signup() {
+  const name = document.getElementById("signupName").value;
+  const phone = document.getElementById("signupPhone").value;
+  const password = document.getElementById("signupPassword").value;
+  const confirmPassword = document.getElementById("confirmPassword").value;
+  if (!name || !phone || !password || !confirmPassword) {
+    alert("Please fill in all fields");
+    return;
+  }
+  if (password !== confirmPassword) {
+    alert("Passwords do not match");
+    return;
+  }
+  currentUser = { name, phone, password };
+  localStorage.setItem("currentUser", JSON.stringify(currentUser));
+  showMyGroupsPage();
+}
+
+// Forgot Password Dialog
+function showForgotPassword() {
+  document.getElementById("forgotPasswordDialog").style.display = "block";
+}
+
+function closeForgotPassword() {
+  document.getElementById("forgotPasswordDialog").style.display = "none";
+}
+
+function resetPassword() {
+  const phone = document.getElementById("forgotPhone").value;
+  if (!phone) {
+    alert("Please enter your phone number");
+    return;
+  }
+  alert("Password reset link sent to " + phone);
+  closeForgotPassword();
+}
+
+// Create a group
+function createGroup() {
+  const groupName = document.getElementById("groupName").value;
+  if (!groupName) {
+    alert("Please enter a group name");
+    return;
+  }
+  const newGroup = { name: groupName, members: [] };
   groups.push(newGroup);
   renderGroups();
 }
 
-// Function to add a member to the selected group
-function addMemberToGroup() {
-  const groupName = document.getElementById('groupName').value;
-  const memberName = document.getElementById('memberName').value;
-  const memberPhone = document.getElementById('memberPhone').value;
-  
-  if (!memberName || !memberPhone) {
-    alert('Please enter both member name and phone number');
-    return;
-  }
-
-  const group = groups.find(g => g.name === groupName);
-  if (!group) {
-    alert('Group not found');
-    return;
-  }
-
-  // Add the new member to the group
-  group.members.push({ name: memberName, phone: memberPhone });
-  renderGroups();
-}
-
-// Function to render groups on the page
+// Render groups on My Groups page
 function renderGroups() {
-  const groupListElement = document.getElementById('groupList');
-  groupListElement.innerHTML = ''; // Clear the list before re-rendering
-  
+  const groupListElement = document.getElementById("groupList");
+  groupListElement.innerHTML = "";
   groups.forEach(group => {
-    const groupItem = document.createElement('li');
-    groupItem.innerHTML = `${group.name} - Members: ${group.members.map(m => m.name).join(', ')}`;
+    const groupItem = document.createElement("li");
+    groupItem.textContent = `${group.name} - Members: ${group.members.length}`;
     groupListElement.appendChild(groupItem);
   });
 }
 
-// Function to buzz all members in the selected group
-function buzzGroup() {
-  const groupName = document.getElementById('groupName').value;
-  
-  const group = groups.find(g => g.name === groupName);
-  if (!group) {
-    alert('Group not found');
-    return;
-  }
-
-  // Loop through each member and alert them (replace with sound functionality later)
-  group.members.forEach(member => {
-    alert(`Buzz sent to ${member.name} at phone number ${member.phone}`);
-    // Placeholder for actual buzzing functionality
-  });
+// Logout Function
+function logout() {
+  localStorage.removeItem("currentUser");
+  groups = [];
+  alert("Logged out successfully");
+  showLoginPage();
 }
 
-// Function to log out the user (reset app state for now)
-function logout() {
-  groups = [];
-  renderGroups();
-  alert('Logged out successfully');
+if (localStorage.getItem("currentUser")) {
+  currentUser = JSON.parse(localStorage.getItem("currentUser"));
+  showMyGroupsPage();
+} else {
+  showLoginPage();
 }
