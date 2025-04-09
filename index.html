@@ -3,40 +3,63 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Buzzer App</title>
+  <title>Buzzur App</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <div class="banner">
-    <h1>Buzzer App</h1>
-  </div>
+<!-- Banner -->
+<div class="banner">
+  <h1>BUZZUR</h1>
+</div>
 
-  <!-- Create Group Section -->
+<!-- Login Page -->
+<div id="loginPage" class="page">
   <div class="form-section">
-    <h2>Create Group</h2>
-    <input type="text" id="groupName" placeholder="Enter group name" class="input-box"/>
-    <input type="text" id="memberName" placeholder="Enter member name" class="input-box"/>
-    <input type="text" id="memberPhone" placeholder="Enter member phone number" class="input-box"/>
-    <button onclick="addMemberToGroup()" class="button">Add Member</button>
-    <button onclick="createGroup()" class="button">Create Group</button>
+    <h2>Login</h2>
+    <input type="tel" id="loginPhone" placeholder="Enter phone number" class="input-box"/>
+    <input type="password" id="loginPassword" placeholder="Enter password" class="input-box"/>
+    <button onclick="login()" class="button">Login</button>
+    <p><a href="javascript:void(0)" onclick="showForgotPassword()">Forgot Password?</a></p>
+    <p>Don't have an account? <a href="javascript:void(0)" onclick="showSignupPage()">Sign up</a></p>
   </div>
+</div>
 
-  <!-- Groups List Section -->
+<!-- Forgot Password Dialog -->
+<div id="forgotPasswordDialog" class="dialog">
+  <h3>Forgot Password</h3>
+  <input type="tel" id="forgotPhone" placeholder="Enter phone number" class="input-box"/>
+  <button onclick="resetPassword()" class="button">Reset Password</button>
+  <button onclick="closeForgotPassword()" class="button">Close</button>
+</div>
+
+<!-- Sign Up Page -->
+<div id="signupPage" class="page" style="display: none;">
+  <div class="form-section">
+    <h2>Sign Up</h2>
+    <input type="text" id="signupName" placeholder="Enter your name" class="input-box"/>
+    <input type="tel" id="signupPhone" placeholder="Enter phone number" class="input-box"/>
+    <input type="password" id="signupPassword" placeholder="Enter password" class="input-box"/>
+    <input type="password" id="confirmPassword" placeholder="Confirm password" class="input-box"/>
+    <label>
+      <input type="checkbox" id="showPassword"> Show Password
+    </label>
+    <button onclick="signup()" class="button">Sign Up</button>
+    <p>Already have an account? <a href="javascript:void(0)" onclick="showLoginPage()">Login</a></p>
+  </div>
+</div>
+
+<!-- My Groups Page -->
+<div id="myGroupsPage" class="page" style="display: none;">
   <div class="groups-section">
-    <h3>Groups</h3>
+    <h2>MY GROUPS</h2>
     <ul id="groupList"></ul>
-  </div>
-
-  <!-- Buzz Section -->
-  <div class="buzz-section">
-    <button onclick="buzzGroup()" class="button">Buzz Group</button>
-  </div>
-
-  <div class="logout">
+    <input type="text" id="groupName" placeholder="Enter group name" class="input-box"/>
+    <button onclick="createGroup()" class="button">Create Group</button>
     <button onclick="logout()" class="logout-button">Logout</button>
   </div>
+</div>
 
-  <script src="app.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
