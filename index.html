@@ -2,11 +2,41 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Buzzer App</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="app"></div>
-  <script src="script.js"></script>
+
+  <div class="banner">
+    <h1>Buzzer App</h1>
+  </div>
+
+  <!-- Create Group Section -->
+  <div class="form-section">
+    <h2>Create Group</h2>
+    <input type="text" id="groupName" placeholder="Enter group name" class="input-box"/>
+    <input type="text" id="memberName" placeholder="Enter member name" class="input-box"/>
+    <input type="text" id="memberPhone" placeholder="Enter member phone number" class="input-box"/>
+    <button onclick="addMemberToGroup()" class="button">Add Member</button>
+    <button onclick="createGroup()" class="button">Create Group</button>
+  </div>
+
+  <!-- Groups List Section -->
+  <div class="groups-section">
+    <h3>Groups</h3>
+    <ul id="groupList"></ul>
+  </div>
+
+  <!-- Buzz Section -->
+  <div class="buzz-section">
+    <button onclick="buzzGroup()" class="button">Buzz Group</button>
+  </div>
+
+  <div class="logout">
+    <button onclick="logout()" class="logout-button">Logout</button>
+  </div>
+
+  <script src="app.js"></script>
 </body>
 </html>
