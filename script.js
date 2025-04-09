@@ -55,11 +55,19 @@ function signup() {
   showLogin();
 }
 
+function logout() {
+  currentUser = null;
+  showLogin();
+}
+
 function showGroups() {
   const userGroups = groups.filter(g => g.owner === currentUser.phone);
   app.innerHTML = `
     <div class="container">
-      <h2>Your Groups</h2>
+      <div class="banner">
+        <h2>Your Groups</h2>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+      </div>
       ${userGroups.map(g => `
         <div>
           <b>${g.name}</b> 
@@ -77,7 +85,7 @@ function createGroup() {
   if (!groupName) return;
   const newGroup = { name: groupName, members: [], owner: currentUser.phone };
   groups.push(newGroup);
-  localStorage.setItem('buzzerGroups', JSON.stringify(groups));
+  saveGroups();
   showGroups();
 }
 
