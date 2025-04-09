@@ -6,7 +6,7 @@ let users = JSON.parse(localStorage.getItem('buzzerUsers') || '[]');
 function showLogin() {
   app.innerHTML = `
     <div class="container">
-      <h2>Login</h2>
+      <div class="banner">Login</div>
       <input type="text" id="phone" placeholder="Phone Number">
       <input type="password" id="password" placeholder="Password">
       <button onclick="login()">Login</button>
@@ -18,7 +18,7 @@ function showLogin() {
 function showSignup() {
   app.innerHTML = `
     <div class="container">
-      <h2>Signup</h2>
+      <div class="banner">Signup</div>
       <input type="text" id="name" placeholder="Name">
       <input type="text" id="phone" placeholder="Phone Number">
       <input type="password" id="password" placeholder="Password">
@@ -64,18 +64,16 @@ function showGroups() {
   const userGroups = groups.filter(g => g.owner === currentUser.phone);
   app.innerHTML = `
     <div class="container">
-      <div class="banner">
-        <h2>Your Groups</h2>
-        <button class="logout-btn" onclick="logout()">Logout</button>
-      </div>
+      <div class="banner">My Groups</div>
       ${userGroups.map(g => `
-        <div>
-          <b>${g.name}</b> 
-          <button onclick="buzz('${g.name}')">Buzz All</button> 
+        <div class="group-section">
+          <b>${g.name}</b><br>
+          <button onclick="buzz('${g.name}')">Buzz All</button>
           <button onclick="editGroup('${g.name}')">Edit</button>
         </div>
       `).join('')}
       <button onclick="createGroup()">Create New Group</button>
+      <button onclick="logout()">Logout</button>
     </div>
   `;
 }
@@ -101,10 +99,11 @@ function editGroup(name) {
   `).join('');
   app.innerHTML = `
     <div class="container">
-      <h2>Edit Group: ${group.name}</h2>
-      <div>${membersList}</div>
+      <div class="banner">Edit Group: ${group.name}</div>
+      ${membersList}
       <button onclick="addMember()">Add Member</button>
       <button onclick="showGroups()">Back</button>
+      <button onclick="logout()">Logout</button>
     </div>
   `;
   window.editingGroup = group;
