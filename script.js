@@ -31,7 +31,6 @@ function showSignup() {
       <p>Already have an account? <a href="#" onclick="showLogin()">Login</a></p>
     </div>
   `;
-  
   document.getElementById('showPassword').addEventListener('change', togglePasswordVisibility);
 }
 
@@ -55,10 +54,11 @@ function showForgotPassword() {
 }
 
 function resetPassword() {
-  const phone = document.getElementById('phone').value;
+  const phone = document.getElementById('phone').value.trim();
   const user = users.find(u => u.phone === phone);
   if (user) {
     const newPassword = prompt('Enter a new password');
+    if (!newPassword) return;
     user.password = newPassword;
     localStorage.setItem('buzzerUsers', JSON.stringify(users));
     alert('Password reset successful');
@@ -69,20 +69,20 @@ function resetPassword() {
 }
 
 function login() {
-  const phone = document.getElementById('phone').value;
+  const phone = document.getElementById('phone').value.trim();
   const password = document.getElementById('password').value;
   const user = users.find(u => u.phone === phone && u.password === password);
   if (user) {
     currentUser = user;
     showGroups();
   } else {
-    alert('Invalid login');
+    alert('Invalid login. Please check your phone and password.');
   }
 }
 
 function signup() {
-  const name = document.getElementById('name').value;
-  const phone = document.getElementById('phone').value;
+  const name = document.getElementById('name').value.trim();
+  const phone = document.getElementById('phone').value.trim();
   const password = document.getElementById('password').value;
   const confirmPassword = document.getElementById('confirmPassword').value;
 
@@ -130,7 +130,7 @@ function showGroups() {
 function createGroup() {
   const groupName = prompt('Enter group name:');
   if (!groupName) return;
-  const newGroup = { name: groupName, members: [], owner: currentUser.phone };
+  const newGroup = { name: groupName.trim(), members: [], owner: currentUser.phone };
   groups.push(newGroup);
   saveGroups();
   showGroups();
@@ -139,7 +139,7 @@ function createGroup() {
 function editGroup(name) {
   const group = groups.find(g => g.name === name && g.owner === currentUser.phone);
   if (!group) return;
-  
+
   let membersList = group.members.map((m, i) => `
     <div>
       <input value="${m.name}" onchange="updateMember(${i}, 'name', this.value)">
@@ -166,7 +166,7 @@ function editGroup(name) {
 }
 
 function updateGroupName(oldName) {
-  const newName = document.getElementById('newGroupName').value;
+  const newName = document.getElementById('newGroupName').value.trim();
   if (newName && newName !== oldName) {
     window.editingGroup.name = newName;
     saveGroups();
@@ -178,49 +178,95 @@ function addMember(groupName) {
   const name = prompt('Member name:');
   const phone = prompt('Member phone:');
   if (name && phone) {
-    window.editingGroup.members.push({ name, phone });
+    window.editingGroup.members.push({ name: name.trim(), phone: phone.trim() });
     saveGroups();
     editGroup(groupName);
   }
 }
 
 function removeMember(index) {
-  window.editingGroup.members.splice(index, 1);
-  saveGroups();
-  editGroup(window.editingGroup.name);
+  if (confirm('Are you sure you want to remove this member?')) {
+    window.editingGroup.members.splice(index, 1);
+    saveGroups();
+    editGroup(window.editingGroup.name);
+  }
 }
 
 function removeGroup(name) {
-  const groupIndex = groups.findIndex(g => g.name === name && g.owner === currentUser.phone);
-  if (groupIndex > -1) {
-    groups.splice(groupIndex, 1);
-    saveGroups();
-    showGroups();
+  if (confirm(`Remove group "${name}"? This cannot be undone.`)) {
+    const groupIndex = groups.findIndex(g => g.name === name && g.owner === currentUser.phone);
+    if (groupIndex > -1) {
+      groups.splice(groupIndex, 1);
+      saveGroups();
+      showGroups();
+    }
   }
 }
 
 function buzzAll(groupName) {
   const group = groups.find(g => g.name === groupName);
   if (!group) return;
-  alert(`Buzz sent to all members: ${group.members.map(m => m.name).join(', ')}`);
+
+  const phoneNumbers = group.members.map(m => m.phone);
+
+  fetch('http://localhost:3000/send-buzz', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      phoneNumbers,
+      message: 'BUZZ from BUZZUR!'
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      alert('Buzz sent to all members!');
+    } else {
+      alert('Failed to send buzz: ' + data.error);
+    }
+  })
+  .catch(err => {
+    alert('Network error: ' + err.message);
+  });
 }
 
 function buzzSelected(groupName) {
   const group = groups.find(g => g.name === groupName);
   if (!group) return;
-  
-  const selectedMembers = Array.from(document.querySelectorAll('.select-member:checked'))
-    .map(checkbox => group.members[checkbox.dataset.index].name);
-  
-  if (selectedMembers.length > 0) {
-    alert(`Buzz sent to selected members: ${selectedMembers.join(', ')}`);
-  } else {
+
+  const selectedPhones = Array.from(document.querySelectorAll('.select-member:checked'))
+    .map(cb => group.members[cb.dataset.index]?.phone)
+    .filter(Boolean); // avoid undefined
+
+  if (selectedPhones.length === 0) {
     alert('No members selected');
+    return;
   }
+
+  fetch('http://localhost:3000/send-buzz', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      phoneNumbers: selectedPhones,
+      message: 'BUZZ just for YOU from BUZZUR!'
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      alert('Buzz sent to selected members!');
+    } else {
+      alert('Failed to send buzz: ' + data.error);
+    }
+  })
+  .catch(err => {
+    alert('Network error: ' + err.message);
+  });
 }
 
 function saveGroups() {
   localStorage.setItem('buzzerGroups', JSON.stringify(groups));
 }
 
+// Start the app
 showLogin();
