@@ -47,3 +47,27 @@ a {
 a:hover {
   text-decoration: underline;
 }
+
+/* Banner and Logout Button */
+.banner {
+  background-color: #fff6e0; /* pale beach tone */
+  padding: 10px 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.logout-btn {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.logout-btn:hover {
+  background-color: #b02a37;
+}
