@@ -9,6 +9,7 @@ function showLogin() {
       <div class="banner">Login</div>
       <input type="text" id="phone" placeholder="Phone Number">
       <input type="password" id="password" placeholder="Password">
+      <label><input type="checkbox" onclick="togglePassword('password')"> Show Password</label>
       <button onclick="login()">Login</button>
       <p>Don't have an account? <a href="#" onclick="showSignup()">Sign up</a></p>
     </div>
@@ -22,6 +23,8 @@ function showSignup() {
       <input type="text" id="name" placeholder="Name">
       <input type="text" id="phone" placeholder="Phone Number">
       <input type="password" id="password" placeholder="Password">
+      <input type="password" id="confirmPassword" placeholder="Confirm Password">
+      <label><input type="checkbox" onclick="togglePassword('password', 'confirmPassword')"> Show Password</label>
       <button onclick="signup()">Sign Up</button>
       <p>Already have an account? <a href="#" onclick="showLogin()">Login</a></p>
     </div>
@@ -44,10 +47,18 @@ function signup() {
   const name = document.getElementById('name').value;
   const phone = document.getElementById('phone').value;
   const password = document.getElementById('password').value;
+  const confirmPassword = document.getElementById('confirmPassword').value;
+
+  if (password !== confirmPassword) {
+    alert('Passwords do not match!');
+    return;
+  }
+
   if (users.find(u => u.phone === phone)) {
     alert('User already exists');
     return;
   }
+
   const newUser = { name, phone, password };
   users.push(newUser);
   localStorage.setItem('buzzerUsers', JSON.stringify(users));
@@ -139,4 +150,12 @@ function buzz(groupName) {
   alert(`Buzz sent to ${group.members.map(m => m.name).join(', ')}`);
 }
 
+function togglePassword(...ids) {
+  ids.forEach(id => {
+    const field = document.getElementById(id);
+    field.type = field.type === 'password' ? 'text' : 'password';
+  });
+}
+
 showLogin();
+
