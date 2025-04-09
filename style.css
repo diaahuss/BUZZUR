@@ -1,65 +1,76 @@
+/* General Layout */
 body {
   font-family: Arial, sans-serif;
-  background-color: #f0f4f8;
+  background-color: #f4f4f9;
   margin: 0;
   padding: 0;
 }
 
-.container {
-  max-width: 400px;
-  margin: 60px auto;
-  padding: 20px;
-  background-color: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  box-sizing: border-box;
-}
-
 .banner {
-  background-color: #2a4f7c; /* darker blue */
+  background-color: #337ab7; /* Darker Blue */
   color: white;
-  padding: 15px;
   text-align: center;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  font-size: 20px;
-  font-weight: bold;
+  padding: 20px;
 }
 
-input, button {
-  display: block;
-  width: 90%; /* Makes them full width of the container */
+h1 {
+  margin: 0;
+  font-size: 2rem;
+}
+
+.form-section, .groups-section, .buzz-section, .logout {
+  margin: 20px auto;
   padding: 10px;
-  font-size: 16px;
-  margin-top: 10px;
-  border-radius: 6px;
+  max-width: 600px;
+  text-align: center;
+}
+
+.input-box {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  font-size: 1rem;
   border: 1px solid #ccc;
-  box-sizing: border-box; /* ensures padding is included in width */
+  border-radius: 5px;
 }
 
-button {
-  background-color: #228c22; /* darker green */
+.button {
+  background-color: #5cb85c; /* Darker Green */
   color: white;
+  padding: 10px 20px;
   border: none;
+  border-radius: 5px;
   cursor: pointer;
+  font-size: 1rem;
+  margin: 10px;
 }
 
-button:hover {
-  background-color: #1b701b;
+.button:hover {
+  background-color: #4cae4c;
 }
 
-a {
-  color: #007bff;
-  text-decoration: none;
-  font-size: 14px;
+.logout-button {
+  background-color: #d9534f; /* Red for logout */
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
 }
 
-a:hover {
-  text-decoration: underline;
+.logout-button:hover {
+  background-color: #c9302c;
 }
 
-.group-section {
-  margin-top: 15px;
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 10px;
+/* Groups List */
+#groupList {
+  list-style-type: none;
+  padding: 0;
+}
+
+#groupList li {
+  padding: 10px;
+  background-color: #f1f1f1;
+  margin: 5px 0;
+  border-radius: 5px;
 }
