@@ -1,10 +1,12 @@
+/* Body background: pale blue */
 body {
   font-family: Arial, sans-serif;
-  background-color: #e3f2fd; /* Pale blue */
+  background-color: #e3f2fd;
   margin: 0;
   padding: 0;
 }
 
+/* Central container for content */
 .container {
   max-width: 400px;
   margin: 60px auto;
@@ -14,8 +16,9 @@ body {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
+/* Dark blue top banner */
 .banner {
-  background-color: #1e3a5f; /* Dark blue */
+  background-color: #1e3a5f;
   color: white;
   padding: 15px;
   text-align: center;
@@ -25,7 +28,7 @@ body {
   font-weight: bold;
 }
 
-/* inputs and buttons will stay within .container width */
+/* Inputs and buttons inside the form */
 input, button {
   display: block;
   width: 100%;
@@ -37,22 +40,33 @@ input, button {
   border: 1px solid #ccc;
 }
 
-/* Blue shades for buttons */
+/* General button styles using blue shades */
 button {
-  background-color: #5e92f3; /* Light blue */
+  background-color: #5e92f3;  /* Light blue */
   color: white;
   border: none;
   cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
 }
 
 button:hover {
-  background-color: #3f80d1; /* Medium blue on hover */
+  background-color: #3f80d1;  /* Medium blue */
 }
 
 button:active {
-  background-color: #2d69a7; /* Darker blue when button is clicked */
+  background-color: #2d69a7;  /* Darker blue */
 }
 
+/* Extra style for buzz-related buttons */
+button.buzz {
+  background-color: #42a5f5;
+}
+
+button.buzz:hover {
+  background-color: #1e88e5;
+}
+
+/* Links */
 a {
   color: #007bff;
   text-decoration: none;
@@ -63,8 +77,13 @@ a:hover {
   text-decoration: underline;
 }
 
+/* Group sections with spacing and light borders */
 .group-section {
   margin-top: 15px;
   border-bottom: 1px solid #ddd;
   padding-bottom: 10px;
+}
+
+.group-section > * {
+  margin-top: 5px;
 }
