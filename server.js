@@ -1,63 +1,41 @@
-// Import required packages
 const express = require('express');
+const http = require('http');
 const cors = require('cors');
-const twilio = require('twilio');
+const { Server } = require('socket.io');
 
-// Initialize the app
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "*", // Allow requests from anywhere — change this to your domain in production
+  }
+});
 
-// Enable Cross-Origin Resource Sharing (CORS)
 app.use(cors());
-
-// Enable JSON parsing for incoming requests
 app.use(express.json());
 
-// Replace with your actual Twilio credentials
-const accountSid = 'ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'; // Your Twilio SID
-const authToken = 'your_auth_token'; // Your Twilio Auth Token
-const twilioNumber = '+1YOUR_TWILIO_NUMBER'; // Your Twilio phone number
+// WebSocket connection
+io.on('connection', (socket) => {
+  console.log(`User connected: ${socket.id}`);
 
-// Initialize Twilio client
-const client = twilio(accountSid, authToken);
+  // When someone sends a buzz
+  socket.on('buzz', () => {
+    console.log('Buzz received. Broadcasting...');
+    io.emit('buzz'); // Send buzz to all connected users
+  });
 
-// Handle the POST request to send a buzz
-app.post('/send-buzz', async (req, res) => {
-  const { phoneNumbers, message } = req.body;
-
-  // Ensure phoneNumbers is an array and message is set
-  if (!Array.isArray(phoneNumbers) || phoneNumbers.length === 0) {
-    return res.status(400).json({ success: false, error: 'No phone numbers provided' });
-  }
-
-  if (!message) {
-    return res.status(400).json({ success: false, error: 'No message provided' });
-  }
-
-  try {
-    // Send a message to each phone number
-    for (const number of phoneNumbers) {
-      await client.messages.create({
-        body: message, // The message text
-        from: twilioNumber, // Your Twilio number
-        to: number // The recipient's phone number
-      });
-    }
-
-    // Send a success response back
-    res.json({ success: true, message: 'Buzz sent successfully!' });
-  } catch (err) {
-    // Handle any errors that occur during the message sending
-    res.status(500).json({ success: false, error: err.message });
-  }
+  socket.on('disconnect', () => {
+    console.log(`User disconnected: ${socket.id}`);
+  });
 });
 
-// Default route to check if the server is running
+// Route to test the server
 app.get('/', (req, res) => {
-  res.send('Server is up and running!');
+  res.send('BuzzUR server is running!');
 });
 
-// Start the server on a given port
+// Start server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
