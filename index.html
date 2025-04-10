@@ -5,15 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="description" content="BUZZUR App - Group alert and communication tool" />
-  <title>BUZZUR App</title>
+  <title>BUZZUR</title>
   <link rel="stylesheet" href="style.css" />
-  <!-- Optional: Favicon -->
   <link rel="icon" href="favicon.ico" type="image/x-icon" />
 </head>
 <body>
-  <div id="app"></div>
-  
-  <!-- Load your main JavaScript -->
+  <main id="app" role="main">
+    <!-- JavaScript will render content here -->
+  </main>
+
+  <!-- Optional buzz sound -->
+  <audio id="buzzSound" src="buzz.mp3" preload="auto"></audio>
+
+  <!-- Load Socket.io first, then your main script -->
+  <script src="/socket.io/socket.io.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
