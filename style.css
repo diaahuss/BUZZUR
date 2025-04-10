@@ -1,12 +1,12 @@
-/* Body background: pale blue */
+/* === Global Styles === */
 body {
   font-family: Arial, sans-serif;
-  background-color: #e3f2fd;
+  background-color: #e3f2fd; /* Pale blue background */
   margin: 0;
   padding: 0;
 }
 
-/* Central container for content */
+/* === Main Container === */
 .container {
   max-width: 400px;
   margin: 60px auto;
@@ -16,9 +16,9 @@ body {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Dark blue top banner */
+/* === Top Banner === */
 .banner {
-  background-color: #1e3a5f;
+  background-color: #1e3a5f; /* Dark blue */
   color: white;
   padding: 15px;
   text-align: center;
@@ -28,8 +28,9 @@ body {
   font-weight: bold;
 }
 
-/* Inputs and buttons inside the form */
-input, button {
+/* === Inputs & Buttons === */
+input,
+button {
   display: block;
   width: 100%;
   box-sizing: border-box;
@@ -40,9 +41,15 @@ input, button {
   border: 1px solid #ccc;
 }
 
-/* General button styles using blue shades */
+input:focus {
+  outline: none;
+  border-color: #64b5f6;
+  box-shadow: 0 0 5px rgba(100, 181, 246, 0.5);
+}
+
+/* === Button Styling === */
 button {
-  background-color: #5e92f3;  /* Light blue */
+  background-color: #5e92f3; /* Light blue */
   color: white;
   border: none;
   cursor: pointer;
@@ -50,14 +57,14 @@ button {
 }
 
 button:hover {
-  background-color: #3f80d1;  /* Medium blue */
+  background-color: #3f80d1; /* Medium blue */
 }
 
 button:active {
-  background-color: #2d69a7;  /* Darker blue */
+  background-color: #2d69a7; /* Darker blue */
 }
 
-/* Extra style for buzz-related buttons */
+/* === Buzz Buttons === */
 button.buzz {
   background-color: #42a5f5;
 }
@@ -66,7 +73,17 @@ button.buzz:hover {
   background-color: #1e88e5;
 }
 
-/* Links */
+/* === Logout Button (optional style) === */
+button.logout {
+  margin-top: 30px;
+  background-color: #9e9e9e;
+}
+
+button.logout:hover {
+  background-color: #7b7b7b;
+}
+
+/* === Links === */
 a {
   color: #007bff;
   text-decoration: none;
@@ -77,7 +94,7 @@ a:hover {
   text-decoration: underline;
 }
 
-/* Group sections with spacing and light borders */
+/* === Group Section === */
 .group-section {
   margin-top: 15px;
   border-bottom: 1px solid #ddd;
@@ -86,4 +103,16 @@ a:hover {
 
 .group-section > * {
   margin-top: 5px;
+}
+
+.group-section button {
+  margin-top: 5px;
+}
+
+/* === Responsive Layout === */
+@media (max-width: 500px) {
+  .container {
+    margin: 30px 10px;
+    padding: 15px;
+  }
 }
