@@ -231,10 +231,7 @@ function buzzSelected(groupName) {
 }
 
 function sendBuzz(phoneNumbers, message) {
-  if (socket) {
-    socket.emit('buzz');  // Emit buzz event via WebSocket
-  }
-  fetch('http://localhost:3000/send-buzz', {
+  fetch('https://buzzur-server.onrender.com/send-buzz', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ phoneNumbers, message })
