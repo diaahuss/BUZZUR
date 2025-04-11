@@ -2,23 +2,17 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="description" content="BUZZUR App - Group alert and communication tool" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>BUZZUR</title>
   <link rel="stylesheet" href="style.css" />
-  <link rel="icon" href="favicon.ico" type="image/x-icon" />
 </head>
 <body>
-  <main id="app" role="main">
-    <noscript>Please enable JavaScript to use the BUZZUR app.</noscript>
-  </main>
+  <div id="app"></div>
 
-  <!-- Optional buzz sound -->
-  <audio id="buzzSound" src="buzz.mp3" preload="auto"></audio>
-
-  <!-- Load Socket.io client and main script from correct server URL -->
-  <script src="https://buzzur-server.onrender.com/socket.io/socket.io.js"></script>
+  <!-- Load Socket.IO from CDN (fix for GitHub Pages) -->
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js" integrity="sha384-AAYcKmuAkeSk+TVR8CUVbf4t2UbmHyA8q1ruTh2yEu0o4t0/9Ni4nTwMDj01/jc3" crossorigin="anonymous"></script>
+  
+  <!-- Your application logic -->
   <script src="script.js"></script>
 </body>
 </html>
