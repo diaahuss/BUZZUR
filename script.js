@@ -1,16 +1,17 @@
-const SERVER_URL = "https://buzzur-server.onrender.com";  // URL of the backend server
-const app = document.getElementById('app');
-let currentUser = null;
-let groups = JSON.parse(localStorage.getItem('buzzerGroups') || '[]');
-let users = JSON.parse(localStorage.getItem('buzzerUsers') || '[]');
+// buzzur/script.js
 
-// Attempt to connect to WebSocket server
-const socket = io(SERVER_URL);  // Use the correct server URL for the WebSocket connection
+const SERVER_URL = "https://buzzur-server.onrender.com";
+const app = document.getElementById("app");
+let currentUser = null;
+let groups = JSON.parse(localStorage.getItem("buzzerGroups") || "[]");
+let users = JSON.parse(localStorage.getItem("buzzerUsers") || "[]");
+
+const socket = io(SERVER_URL);
 
 // Entry point
 showLogin();
 
-// ========== AUTH SCREENS ==========
+// =================== AUTH SCREENS ===================
 
 function showLogin() {
   app.innerHTML = `
@@ -38,7 +39,7 @@ function showSignup() {
       <p>Already have an account? <a href="#" onclick="showLogin()">Login</a></p>
     </div>
   `;
-  document.getElementById('showPassword').addEventListener('change', togglePasswordVisibility);
+  document.getElementById("showPassword").addEventListener("change", togglePasswordVisibility);
 }
 
 function showForgotPassword() {
@@ -52,57 +53,49 @@ function showForgotPassword() {
   `;
 }
 
-// ========== AUTH LOGIC ==========
+// =================== AUTH LOGIC ===================
 
 function login() {
-  const phone = document.getElementById('phone').value.trim();
-  const password = document.getElementById('password').value;
+  const phone = document.getElementById("phone").value.trim();
+  const password = document.getElementById("password").value;
   const user = users.find(u => u.phone === phone && u.password === password);
-
-  if (user) {
-    currentUser = user;
-    showGroups();
-  } else {
-    alert('Invalid phone or password.');
-  }
+  if (!user) return alert("Invalid credentials.");
+  currentUser = user;
+  showGroups();
 }
 
 function signup() {
-  const name = document.getElementById('name').value.trim();
-  const phone = document.getElementById('phone').value.trim();
-  const password = document.getElementById('password').value;
-  const confirmPassword = document.getElementById('confirmPassword').value;
-
-  if (password !== confirmPassword) return alert('Passwords do not match.');
-  if (users.find(u => u.phone === phone)) return alert('User already exists.');
-
+  const name = document.getElementById("name").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+  const password = document.getElementById("password").value;
+  const confirm = document.getElementById("confirmPassword").value;
+  if (password !== confirm) return alert("Passwords do not match.");
+  if (users.find(u => u.phone === phone)) return alert("User already exists.");
   users.push({ name, phone, password });
-  localStorage.setItem('buzzerUsers', JSON.stringify(users));
-  alert('Signup successful!');
+  localStorage.setItem("buzzerUsers", JSON.stringify(users));
+  alert("Signup successful.");
   showLogin();
 }
 
 function resetPassword() {
-  const phone = document.getElementById('phone').value.trim();
+  const phone = document.getElementById("phone").value.trim();
   const user = users.find(u => u.phone === phone);
-
-  if (!user) return alert('User not found.');
-  const newPassword = prompt('Enter new password:');
-  if (!newPassword) return;
-
-  user.password = newPassword;
-  localStorage.setItem('buzzerUsers', JSON.stringify(users));
-  alert('Password reset successful.');
+  if (!user) return alert("User not found.");
+  const newPass = prompt("Enter new password:");
+  if (!newPass) return;
+  user.password = newPass;
+  localStorage.setItem("buzzerUsers", JSON.stringify(users));
+  alert("Password updated.");
   showLogin();
 }
 
 function togglePasswordVisibility() {
-  const show = document.getElementById('showPassword').checked;
-  document.getElementById('password').type = show ? 'text' : 'password';
-  document.getElementById('confirmPassword').type = show ? 'text' : 'password';
+  const show = document.getElementById("showPassword").checked;
+  document.getElementById("password").type = show ? "text" : "password";
+  document.getElementById("confirmPassword").type = show ? "text" : "password";
 }
 
-// ========== GROUPS ==========
+// =================== GROUP SCREENS ===================
 
 function showGroups() {
   const userGroups = groups.filter(g => g.owner === currentUser.phone);
@@ -118,16 +111,15 @@ function showGroups() {
         </div>
       `).join('')}
       <button onclick="createGroup()">Create New Group</button>
-      <button onclick="logout()">Logout</button>
+      <button class="logout" onclick="logout()">Logout</button>
     </div>
   `;
 }
 
 function createGroup() {
-  const groupName = prompt('Enter group name:');
-  if (!groupName) return;
-
-  groups.push({ name: groupName.trim(), members: [], owner: currentUser.phone });
+  const name = prompt("Group name:");
+  if (!name) return;
+  groups.push({ name: name.trim(), members: [], owner: currentUser.phone });
   saveGroups();
   showGroups();
 }
@@ -143,7 +135,7 @@ function editGroup(name) {
       <input type="checkbox" class="select-member" data-index="${i}"> Select
       <button onclick="removeMember(${i})">Remove</button>
     </div>
-  `).join(''); 
+  `).join("");
 
   app.innerHTML = `
     <div class="container">
@@ -155,14 +147,14 @@ function editGroup(name) {
       <button onclick="buzzSelected('${group.name}')">Buzz Selected</button>
       <button onclick="removeGroup('${group.name}')">Delete Group</button>
       <button onclick="showGroups()">Back</button>
-      <button onclick="logout()">Logout</button>
+      <button class="logout" onclick="logout()">Logout</button>
     </div>
   `;
   window.editingGroup = group;
 }
 
 function updateGroupName(oldName) {
-  const newName = document.getElementById('newGroupName').value.trim();
+  const newName = document.getElementById("newGroupName").value.trim();
   if (newName && newName !== oldName) {
     window.editingGroup.name = newName;
     saveGroups();
@@ -171,10 +163,9 @@ function updateGroupName(oldName) {
 }
 
 function addMember(groupName) {
-  const name = prompt('Member name:');
-  const phone = prompt('Member phone:');
+  const name = prompt("Member name:");
+  const phone = prompt("Member phone:");
   if (!name || !phone) return;
-
   window.editingGroup.members.push({ name: name.trim(), phone: phone.trim() });
   saveGroups();
   editGroup(groupName);
@@ -186,7 +177,7 @@ function updateMember(index, field, value) {
 }
 
 function removeMember(index) {
-  if (confirm('Remove this member?')) {
+  if (confirm("Remove this member?")) {
     window.editingGroup.members.splice(index, 1);
     saveGroups();
     editGroup(window.editingGroup.name);
@@ -201,57 +192,49 @@ function removeGroup(name) {
   }
 }
 
-// ========== BUZZ FUNCTIONS ==========
+// =================== BUZZ ===================
 
 function buzzAll(groupName) {
   const group = groups.find(g => g.name === groupName);
   if (!group) return;
-
-  const phoneNumbers = group.members.map(m => m.phone);
-  sendBuzz(phoneNumbers, 'BUZZ from BUZZUR!');
+  const phones = group.members.map(m => m.phone);
+  sendBuzz(phones, "BUZZ from BUZZUR!");
 }
 
 function buzzSelected(groupName) {
   const group = groups.find(g => g.name === groupName);
   if (!group) return;
-
-  const selected = Array.from(document.querySelectorAll('.select-member:checked'))
+  const selected = Array.from(document.querySelectorAll(".select-member:checked"))
     .map(cb => group.members[cb.dataset.index]?.phone)
     .filter(Boolean);
-
-  if (selected.length === 0) {
-    return alert('No members selected');
-  }
-
-  sendBuzz(selected, 'BUZZ just for YOU from BUZZUR!');
+  if (selected.length === 0) return alert("No members selected");
+  sendBuzz(selected, "BUZZ just for YOU from BUZZUR!");
 }
 
 function sendBuzz(phoneNumbers, message) {
-  socket.emit('buzz'); // Emit the 'buzz' event to all connected clients via WebSocket
-
-  // Optionally: You can still send a HTTP request if you need backend processing like SMS.
-  fetch('https://buzzur-server.onrender.com/send-buzz', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+  socket.emit("buzz");
+  fetch(`${SERVER_URL}/send-buzz`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ phoneNumbers, message })
   })
-  .then(res => res.json())
-  .then(data => {
-    if (data.success) {
-      alert('Buzz sent!');
-    } else {
-      alert('Buzz failed: ' + data.error);
-    }
-  })
-  .catch(err => {
-    alert('Error sending buzz: ' + err.message);
-  });
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        alert("Buzz sent!");
+      } else {
+        alert("Buzz failed: " + data.error);
+      }
+    })
+    .catch(err => {
+      alert("Error sending buzz: " + err.message);
+    });
 }
 
-// ========== HELPERS ==========
+// =================== UTILS ===================
 
 function saveGroups() {
-  localStorage.setItem('buzzerGroups', JSON.stringify(groups));
+  localStorage.setItem("buzzerGroups", JSON.stringify(groups));
 }
 
 function logout() {
