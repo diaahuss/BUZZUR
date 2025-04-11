@@ -45,12 +45,12 @@ app.post('/login', (req, res) => {
 
 // Signup route
 app.post('/signup', (req, res) => {
-  const { username, password, phone } = req.body;
-  const existingUser = users.find(u => u.username === username);
+  const { name, phone, password } = req.body;
+  const existingUser = users.find(u => u.name === name);
   if (existingUser) {
     return res.status(400).json({ success: false, message: "User already exists" });
   }
-  const newUser = { id: users.length + 1, username, password, phone };
+  const newUser = { id: users.length + 1, name, phone, password };
   users.push(newUser);
   res.json({ success: true, user: newUser });
 });
