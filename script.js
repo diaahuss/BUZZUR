@@ -42,9 +42,9 @@ function showSignupForm() {
   appContainer.innerHTML = `
     <h1>Sign Up</h1>
     <form id="signupForm">
-      <input type="text" id="signupUsername" placeholder="Username" required />
-      <input type="password" id="signupPassword" placeholder="Password" required />
+      <input type="text" id="signupName" placeholder="Full Name" required />
       <input type="number" id="signupPhone" placeholder="Phone Number" required />
+      <input type="password" id="signupPassword" placeholder="Password" required />
       <button type="submit">Sign Up</button>
     </form>
   `;
@@ -76,14 +76,14 @@ async function login(event) {
 // Handle signup
 async function signup(event) {
   event.preventDefault();
-  const username = document.getElementById('signupUsername').value;
-  const password = document.getElementById('signupPassword').value;
+  const name = document.getElementById('signupName').value;
   const phone = document.getElementById('signupPhone').value;
+  const password = document.getElementById('signupPassword').value;
 
   const response = await fetch('https://buzzur-server.onrender.com/signup', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username, password, phone })
+    body: JSON.stringify({ name, phone, password })
   });
 
   const data = await response.json();
