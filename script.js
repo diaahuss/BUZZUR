@@ -1,17 +1,16 @@
 let socket = io('https://buzzur-server.onrender.com');
 
-// Wait for DOM to be ready
 document.addEventListener('DOMContentLoaded', () => {
-  renderLogin(); // default to login screen
+  const user = localStorage.getItem('user');
+  user ? renderHome() : renderLogin();
 });
 
-// Renders login screen
 function renderLogin() {
   const app = document.getElementById('app');
   app.innerHTML = `
     <h2>Login</h2>
     <form id="loginForm">
-      <input type="text" id="loginPhone" placeholder="Phone Number" required />
+      <input type="tel" id="loginPhone" placeholder="Phone Number" required />
       <input type="password" id="loginPassword" placeholder="Password" required />
       <label><input type="checkbox" onclick="togglePassword('loginPassword')"> Show Password</label>
       <button type="submit">Login</button>
@@ -21,14 +20,13 @@ function renderLogin() {
   document.getElementById('loginForm').addEventListener('submit', login);
 }
 
-// Renders signup screen
 function renderSignup() {
   const app = document.getElementById('app');
   app.innerHTML = `
     <h2>Sign Up</h2>
     <form id="signupForm">
       <input type="text" id="signupName" placeholder="First Name" required />
-      <input type="number" id="signupPhone" placeholder="Phone Number" required />
+      <input type="tel" id="signupPhone" placeholder="Phone Number" required />
       <input type="password" id="signupPassword" placeholder="Password" required />
       <input type="password" id="signupConfirm" placeholder="Confirm Password" required />
       <label><input type="checkbox" onclick="togglePassword('signupPassword'); togglePassword('signupConfirm')"> Show Password</label>
@@ -39,13 +37,12 @@ function renderSignup() {
   document.getElementById('signupForm').addEventListener('submit', signup);
 }
 
-// Renders forgot password screen
 function renderForgot() {
   const app = document.getElementById('app');
   app.innerHTML = `
     <h2>Forgot Password</h2>
     <form id="forgotForm">
-      <input type="number" id="forgotPhone" placeholder="Phone Number" required />
+      <input type="tel" id="forgotPhone" placeholder="Phone Number" required />
       <button type="submit">Reset Password</button>
     </form>
     <p><a href="#" onclick="renderLogin()">Back to Login</a></p>
@@ -53,10 +50,21 @@ function renderForgot() {
   document.getElementById('forgotForm').addEventListener('submit', resetPassword);
 }
 
-// Toggle show password
+function renderHome() {
+  const user = JSON.parse(localStorage.getItem('user'));
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <h2>Welcome, ${user.name}</h2>
+    <button onclick="createGroup()">Create Group</button>
+    <button onclick="logout()">Logout</button>
+  `;
+}
+
 function togglePassword(fieldId) {
   const field = document.getElementById(fieldId);
-  if (field) field.type = field.type === 'password' ? 'text' : 'password';
+  if (field) {
+    field.type = field.type === 'password' ? 'text' : 'password';
+  }
 }
 
 // Handle login
@@ -100,30 +108,19 @@ async function signup(event) {
 
   const data = await response.json();
   if (data.success) {
-    alert('Signup successful. Please login.');
+    alert('Signup successful! Please login.');
     renderLogin();
   } else {
     alert('Error: ' + data.message);
   }
 }
 
-// Dummy forgot password handler
+// Forgot password
 function resetPassword(event) {
   event.preventDefault();
   const phone = document.getElementById('forgotPhone').value;
-  alert(`If account exists, a reset link will be sent to ${phone}.`);
+  alert(`If an account exists, a reset link will be sent to ${phone}.`);
   renderLogin();
-}
-
-// Render the main page after login
-function renderHome() {
-  const user = JSON.parse(localStorage.getItem('user'));
-  const app = document.getElementById('app');
-  app.innerHTML = `
-    <h2>Welcome, ${user.name}</h2>
-    <button onclick="createGroup()">Create Group</button>
-    <button onclick="logout()">Logout</button>
-  `;
 }
 
 // Logout
@@ -142,14 +139,14 @@ function createGroup() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name: groupName, userId: user.id })
     })
-    .then(res => res.json())
-    .then(data => {
-      alert('Group created!');
-    });
+      .then(res => res.json())
+      .then(() => {
+        alert('Group created!');
+      });
   }
 }
 
-// Socket.io buzz feature
+// Buzz socket
 socket.on('buzz', () => {
   alert('🔔 Buzz received!');
 });
