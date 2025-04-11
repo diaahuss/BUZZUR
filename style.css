@@ -16,7 +16,7 @@ body {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* === Banner === */
+/* === Banner/Header === */
 .banner {
   background-color: #1e3a5f; /* Dark blue */
   color: #ffffff;
@@ -28,7 +28,7 @@ body {
   font-weight: bold;
 }
 
-/* === Forms: Inputs & Buttons === */
+/* === Inputs and Buttons === */
 input,
 button {
   display: block;
@@ -47,7 +47,7 @@ input:focus {
   box-shadow: 0 0 5px rgba(100, 181, 246, 0.5);
 }
 
-/* === Button Styles === */
+/* === Default Button === */
 button {
   background-color: #5e92f3; /* Light blue */
   color: white;
@@ -57,14 +57,14 @@ button {
 }
 
 button:hover {
-  background-color: #3f80d1; /* Medium blue */
+  background-color: #3f80d1;
 }
 
 button:active {
-  background-color: #2d69a7; /* Darker blue */
+  background-color: #2d69a7;
 }
 
-/* === Buzz Button Variant === */
+/* === Buzz Button === */
 button.buzz {
   background-color: #42a5f5;
 }
@@ -83,7 +83,7 @@ button.logout:hover {
   background-color: #7b7b7b;
 }
 
-/* === Links === */
+/* === Text Links === */
 a {
   color: #007bff;
   text-decoration: none;
@@ -109,7 +109,7 @@ a:hover {
   margin-top: 5px;
 }
 
-/* === Responsive === */
+/* === Responsive Adjustments === */
 @media (max-width: 500px) {
   .container {
     margin: 30px 10px;
