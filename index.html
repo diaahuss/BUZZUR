@@ -9,10 +9,12 @@
 <body>
   <div id="app"></div>
 
-  <!-- Load Socket.IO from Render backend (REQUIRED for app to work) -->
-  <script src="https://buzzur-server.onrender.com/socket.io/socket.io.js"></script>
-
-  <!-- Main application script -->
+  <!-- Load Socket.IO from CDN (for GitHub Pages or external use) -->
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"
+          integrity="sha384-AAYcKmuAkeSk+TVR8CUVbf4t2UbmHyA8q1ruTh2yEu0o4t0/9Ni4nTwMDj01/jc3"
+          crossorigin="anonymous"></script>
+  
+  <!-- Your frontend logic -->
   <script src="script.js"></script>
 </body>
 </html>
