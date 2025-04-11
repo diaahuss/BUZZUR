@@ -1,195 +1,172 @@
-const socket = io('https://buzzur-server.onrender.com'); // WebSocket connection
+const socket = io("https://buzzur-server.onrender.com"); // Your deployed backend
 
-const app = document.getElementById('app');
+let currentUser = JSON.parse(localStorage.getItem("user")) || null;
+let groups = JSON.parse(localStorage.getItem("groups")) || [];
 
-let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
-let users = JSON.parse(localStorage.getItem('users')) || [];
-let groups = JSON.parse(localStorage.getItem('groups')) || [];
-
-function saveData() {
-  localStorage.setItem('users', JSON.stringify(users));
-  localStorage.setItem('groups', JSON.stringify(groups));
-  localStorage.setItem('currentUser', JSON.stringify(currentUser));
+function saveState() {
+  localStorage.setItem("user", JSON.stringify(currentUser));
+  localStorage.setItem("groups", JSON.stringify(groups));
 }
 
 function renderApp() {
-  app.innerHTML = '';
-
-  const banner = document.createElement('div');
-  banner.className = 'banner';
-  banner.textContent = 'BUZZUR';
-  app.appendChild(banner);
+  const app = document.getElementById("app");
+  app.innerHTML = "";
 
   if (!currentUser) {
-    renderAuthForms();
+    renderLogin();
   } else {
     renderGroups();
   }
 }
 
-function renderAuthForms() {
-  const loginForm = document.createElement('form');
-  loginForm.innerHTML = `
-    <h2>Login</h2>
-    <input type="text" placeholder="Phone" required />
-    <input type="password" placeholder="Password" required />
-    <button type="submit">Login</button>
+function renderLogin() {
+  const app = document.getElementById("app");
+  app.innerHTML = `
+    <div class="banner">BUZZUR</div>
+    <div class="form-container">
+      <h2>Login</h2>
+      <input type="text" id="phone" placeholder="Phone Number" />
+      <input type="password" id="password" placeholder="Password" />
+      <button onclick="login()">Login</button>
+      <p>No account? <a href="#" onclick="renderSignup()">Sign up</a></p>
+    </div>
   `;
+}
 
-  loginForm.onsubmit = (e) => {
-    e.preventDefault();
-    const phone = loginForm[0].value;
-    const password = loginForm[1].value;
-
-    const user = users.find(u => u.phone === phone && u.password === password);
-    if (user) {
-      currentUser = user;
-      saveData();
-      renderApp();
-    } else {
-      alert('Invalid phone or password.');
-    }
-  };
-
-  const signupForm = document.createElement('form');
-  signupForm.innerHTML = `
-    <h2>Sign Up</h2>
-    <input type="text" placeholder="Name" required />
-    <input type="text" placeholder="Phone" required />
-    <input type="password" placeholder="Password" required />
-    <button type="submit">Sign Up</button>
+function renderSignup() {
+  const app = document.getElementById("app");
+  app.innerHTML = `
+    <div class="banner">BUZZUR</div>
+    <div class="form-container">
+      <h2>Sign Up</h2>
+      <input type="text" id="name" placeholder="Full Name" />
+      <input type="text" id="phone" placeholder="Phone Number" />
+      <input type="password" id="password" placeholder="Password" />
+      <button onclick="signup()">Sign Up</button>
+      <p>Already have an account? <a href="#" onclick="renderLogin()">Login</a></p>
+    </div>
   `;
+}
 
-  signupForm.onsubmit = (e) => {
-    e.preventDefault();
-    const name = signupForm[0].value;
-    const phone = signupForm[1].value;
-    const password = signupForm[2].value;
+function login() {
+  const phone = document.getElementById("phone").value.trim();
+  const password = document.getElementById("password").value.trim();
 
-    if (users.find(u => u.phone === phone)) {
-      alert('Phone already registered.');
-      return;
-    }
+  if (!phone || !password) return alert("Please enter phone and password");
 
-    const newUser = { name, phone, password };
-    users.push(newUser);
-    currentUser = newUser;
-    saveData();
-    renderApp();
-  };
+  const userData = JSON.parse(localStorage.getItem(`user-${phone}`));
+  if (!userData || userData.password !== password) {
+    return alert("Invalid credentials");
+  }
 
-  app.appendChild(loginForm);
-  app.appendChild(signupForm);
+  currentUser = { name: userData.name, phone };
+  saveState();
+  renderApp();
+}
+
+function signup() {
+  const name = document.getElementById("name").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+  const password = document.getElementById("password").value.trim();
+
+  if (!name || !phone || !password) {
+    return alert("All fields are required.");
+  }
+
+  if (localStorage.getItem(`user-${phone}`)) {
+    return alert("User already exists.");
+  }
+
+  localStorage.setItem(`user-${phone}`, JSON.stringify({ name, password }));
+  currentUser = { name, phone };
+  saveState();
+  renderApp();
 }
 
 function renderGroups() {
-  const groupForm = document.createElement('form');
-  groupForm.innerHTML = `
-    <h2>Create Group</h2>
-    <input type="text" placeholder="Group Name" required />
-    <button type="submit">Create</button>
+  const app = document.getElementById("app");
+  app.innerHTML = `
+    <div class="banner">BUZZUR</div>
+    <div class="content">
+      <h2>Welcome, ${currentUser.name}</h2>
+      <div class="group-list">
+        ${groups.map((group, i) => `
+          <div class="group">
+            <h3 contenteditable="true" onblur="renameGroup(${i}, this.textContent)">${group.name}</h3>
+            <ul>
+              ${group.members.map((m, j) => `
+                <li>${m.name} (${m.phone}) 
+                  <button onclick="removeMember(${i}, ${j})">❌</button>
+                </li>
+              `).join("")}
+            </ul>
+            <input placeholder="Member Name" id="member-name-${i}" />
+            <input placeholder="Member Phone" id="member-phone-${i}" />
+            <button onclick="addMember(${i})">Add Member</button>
+            <button onclick="buzzGroup(${i})">BUZZ</button>
+            <button onclick="deleteGroup(${i})">Delete Group</button>
+          </div>
+        `).join("")}
+      </div>
+      <input placeholder="New Group Name" id="new-group-name" />
+      <button onclick="addGroup()">Create Group</button>
+      <button class="logout" onclick="logout()">Logout</button>
+    </div>
   `;
+}
 
-  groupForm.onsubmit = (e) => {
-    e.preventDefault();
-    const name = groupForm[0].value;
-    const group = {
-      id: Date.now(),
-      name,
-      creator: currentUser.phone,
-      members: []
-    };
-    groups.push(group);
-    saveData();
+function addGroup() {
+  const name = document.getElementById("new-group-name").value.trim();
+  if (!name) return alert("Group name required.");
+  groups.push({ name, members: [] });
+  saveState();
+  renderApp();
+}
+
+function renameGroup(index, newName) {
+  groups[index].name = newName.trim();
+  saveState();
+}
+
+function deleteGroup(index) {
+  if (confirm("Are you sure you want to delete this group?")) {
+    groups.splice(index, 1);
+    saveState();
     renderApp();
-  };
+  }
+}
 
-  app.appendChild(groupForm);
+function addMember(groupIndex) {
+  const name = document.getElementById(`member-name-${groupIndex}`).value.trim();
+  const phone = document.getElementById(`member-phone-${groupIndex}`).value.trim();
 
-  const myGroups = groups.filter(g => g.creator === currentUser.phone);
-  myGroups.forEach(group => {
-    const div = document.createElement('div');
-    div.className = 'group';
-    div.innerHTML = `
-      <h3>${group.name}</h3>
-      <button onclick="buzzGroup(${group.id})">Buzz All</button>
-      <button onclick="editGroupName(${group.id})">Edit Name</button>
-      <button onclick="removeGroup(${group.id})">Delete Group</button>
-      <form onsubmit="addMember(event, ${group.id})">
-        <input type="text" placeholder="Member Name" required />
-        <input type="text" placeholder="Member Phone" required />
-        <button type="submit">Add Member</button>
-      </form>
-      <div>${group.members.map((m, i) => `
-        <div class="member">
-          ${m.name} (${m.phone})
-          <button onclick="removeMember(${group.id}, ${i})">Remove</button>
-        </div>
-      `).join('')}</div>
-    `;
-    app.appendChild(div);
-  });
+  if (!name || !phone) return alert("Enter member name and phone.");
+  groups[groupIndex].members.push({ name, phone });
+  saveState();
+  renderApp();
+}
 
-  const logoutBtn = document.createElement('div');
-  logoutBtn.className = 'logout-button';
-  logoutBtn.innerHTML = `<button onclick="logout()">Logout</button>`;
-  app.appendChild(logoutBtn);
+function removeMember(groupIndex, memberIndex) {
+  groups[groupIndex].members.splice(memberIndex, 1);
+  saveState();
+  renderApp();
+}
+
+function buzzGroup(groupIndex) {
+  const group = groups[groupIndex];
+  if (group.members.length === 0) return alert("No members to buzz.");
+  socket.emit("buzz");
+  alert(`Buzzed all members in ${group.name}`);
 }
 
 function logout() {
   currentUser = null;
-  saveData();
+  saveState();
   renderApp();
 }
 
-function editGroupName(id) {
-  const group = groups.find(g => g.id === id);
-  const newName = prompt('Enter new group name:', group.name);
-  if (newName) {
-    group.name = newName;
-    saveData();
-    renderApp();
-  }
-}
-
-function removeGroup(id) {
-  groups = groups.filter(g => g.id !== id);
-  saveData();
-  renderApp();
-}
-
-function addMember(e, groupId) {
-  e.preventDefault();
-  const name = e.target[0].value;
-  const phone = e.target[1].value;
-  const group = groups.find(g => g.id === groupId);
-  group.members.push({ name, phone });
-  saveData();
-  renderApp();
-}
-
-function removeMember(groupId, memberIndex) {
-  const group = groups.find(g => g.id === groupId);
-  group.members.splice(memberIndex, 1);
-  saveData();
-  renderApp();
-}
-
-function buzzGroup(groupId) {
-  const group = groups.find(g => g.id === groupId);
-  if (!group || group.members.length === 0) {
-    alert('Group has no members!');
-    return;
-  }
-
-  socket.emit('buzz'); // Emit via WebSocket
-  console.log(`Buzz sent to group: ${group.name}`);
-  alert(`Buzz sent to all members in "${group.name}"`);
-}
-
-// WebSocket listener
-socket.on('buzz', () => {
-  alert('🔔 BUZZ ALERT!');
+socket.on("buzz", () => {
+  alert("🔔 BUZZ! You have received an alert!");
 });
 
-renderApp();
+window.onload = renderApp;
