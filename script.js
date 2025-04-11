@@ -25,14 +25,25 @@ function renderApp() {
     appContainer.innerHTML = `
       <h1>Login</h1>
       <form id="loginForm">
-        <input type="text" id="loginUsername" placeholder="Username" required />
+        <input type="text" id="loginUsername" placeholder="Phone Number" required />
         <input type="password" id="loginPassword" placeholder="Password" required />
+        <input type="checkbox" id="loginShowPassword"> Show Password
         <button type="submit">Login</button>
       </form>
       <p>Don't have an account? <a href="#" onclick="showSignupForm()">Sign up</a></p>
+      <p><a href="#" onclick="forgotPassword()">Forgot Password?</a></p>
     `;
 
     document.getElementById('loginForm').addEventListener('submit', login);
+
+    // Show password functionality for login
+    const loginShowPassword = document.getElementById('loginShowPassword');
+    if (loginShowPassword) {
+      loginShowPassword.addEventListener('change', () => {
+        const type = loginShowPassword.checked ? 'text' : 'password';
+        document.getElementById('loginPassword').type = type;
+      });
+    }
   }
 }
 
@@ -45,11 +56,23 @@ function showSignupForm() {
       <input type="text" id="signupName" placeholder="Full Name" required />
       <input type="number" id="signupPhone" placeholder="Phone Number" required />
       <input type="password" id="signupPassword" placeholder="Password" required />
+      <input type="password" id="signupConfirmPassword" placeholder="Confirm Password" required />
+      <input type="checkbox" id="signupShowPassword"> Show Password
       <button type="submit">Sign Up</button>
     </form>
   `;
 
   document.getElementById('signupForm').addEventListener('submit', signup);
+
+  // Show password functionality for signup
+  const signupShowPassword = document.getElementById('signupShowPassword');
+  if (signupShowPassword) {
+    signupShowPassword.addEventListener('change', () => {
+      const type = signupShowPassword.checked ? 'text' : 'password';
+      document.getElementById('signupPassword').type = type;
+      document.getElementById('signupConfirmPassword').type = type;
+    });
+  }
 }
 
 // Handle login
@@ -79,6 +102,12 @@ async function signup(event) {
   const name = document.getElementById('signupName').value;
   const phone = document.getElementById('signupPhone').value;
   const password = document.getElementById('signupPassword').value;
+  const confirmPassword = document.getElementById('signupConfirmPassword').value;
+
+  if (password !== confirmPassword) {
+    alert("Passwords do not match!");
+    return;
+  }
 
   const response = await fetch('https://buzzur-server.onrender.com/signup', {
     method: 'POST',
@@ -126,4 +155,12 @@ function sendBuzz() {
 // Socket listener for buzz
 socket.on('buzz', () => {
   alert('Buzz received!');
-});
+})
+
+// Forgot Password functionality
+function forgotPassword() {
+  const phone = prompt('Please enter your phone number to reset your password:');
+  if (phone) {
+    alert(`Password reset instructions have been sent to ${phone}.`);
+  }
+}
