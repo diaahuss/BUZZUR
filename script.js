@@ -1,3 +1,4 @@
+const SERVER_URL = "https://buzzur-server.onrender.com";
 const app = document.getElementById('app');
 let currentUser = null;
 let groups = JSON.parse(localStorage.getItem('buzzerGroups') || '[]');
