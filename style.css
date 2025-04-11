@@ -1,12 +1,12 @@
 /* === Global Styles === */
 body {
   font-family: Arial, sans-serif;
-  background-color: #e3f2fd; /* Pale blue background */
+  background-color: #e3f2fd; /* Pale blue */
   margin: 0;
   padding: 0;
 }
 
-/* === Main Container === */
+/* === Container === */
 .container {
   max-width: 400px;
   margin: 60px auto;
@@ -16,10 +16,10 @@ body {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* === Top Banner === */
+/* === Banner === */
 .banner {
   background-color: #1e3a5f; /* Dark blue */
-  color: white;
+  color: #ffffff;
   padding: 15px;
   text-align: center;
   border-radius: 8px;
@@ -28,16 +28,16 @@ body {
   font-weight: bold;
 }
 
-/* === Inputs & Buttons === */
+/* === Forms: Inputs & Buttons === */
 input,
 button {
   display: block;
   width: 100%;
-  box-sizing: border-box;
   padding: 10px;
   margin-top: 10px;
   font-size: 16px;
   border-radius: 6px;
+  box-sizing: border-box;
   border: 1px solid #ccc;
 }
 
@@ -47,7 +47,7 @@ input:focus {
   box-shadow: 0 0 5px rgba(100, 181, 246, 0.5);
 }
 
-/* === Button Styling === */
+/* === Button Styles === */
 button {
   background-color: #5e92f3; /* Light blue */
   color: white;
@@ -64,7 +64,7 @@ button:active {
   background-color: #2d69a7; /* Darker blue */
 }
 
-/* === Buzz Buttons === */
+/* === Buzz Button Variant === */
 button.buzz {
   background-color: #42a5f5;
 }
@@ -73,7 +73,7 @@ button.buzz:hover {
   background-color: #1e88e5;
 }
 
-/* === Logout Button (optional style) === */
+/* === Logout Button === */
 button.logout {
   margin-top: 30px;
   background-color: #9e9e9e;
@@ -94,7 +94,7 @@ a:hover {
   text-decoration: underline;
 }
 
-/* === Group Section === */
+/* === Group Sections === */
 .group-section {
   margin-top: 15px;
   border-bottom: 1px solid #ddd;
@@ -109,7 +109,7 @@ a:hover {
   margin-top: 5px;
 }
 
-/* === Responsive Layout === */
+/* === Responsive === */
 @media (max-width: 500px) {
   .container {
     margin: 30px 10px;
