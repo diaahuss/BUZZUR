@@ -3,7 +3,13 @@ let currentUser = null;
 let groups = JSON.parse(localStorage.getItem('buzzerGroups') || '[]');
 let users = JSON.parse(localStorage.getItem('buzzerUsers') || '[]');
 
-const socket = io('http://localhost:3000');
+// Attempt to connect to WebSocket server
+let socket;
+try {
+  socket = io(); // This will fail gracefully on GitHub Pages
+} catch (e) {
+  console.warn("WebSocket not available. Running in static mode.");
+}
 
 // Entry point
 showLogin();
@@ -116,7 +122,7 @@ function showGroups() {
         </div>
       `).join('')}
       <button onclick="createGroup()">Create New Group</button>
-      <button class="logout" onclick="logout()">Logout</button>
+      <button onclick="logout()">Logout</button>
     </div>
   `;
 }
@@ -153,7 +159,7 @@ function editGroup(name) {
       <button onclick="buzzSelected('${group.name}')">Buzz Selected</button>
       <button onclick="removeGroup('${group.name}')">Delete Group</button>
       <button onclick="showGroups()">Back</button>
-      <button class="logout" onclick="logout()">Logout</button>
+      <button onclick="logout()">Logout</button>
     </div>
   `;
   window.editingGroup = group;
@@ -225,19 +231,26 @@ function buzzSelected(groupName) {
 }
 
 function sendBuzz(phoneNumbers, message) {
-  socket.emit('buzz', { phoneNumbers, message }, (response) => {
-    if (response.success) {
+  if (socket) {
+    socket.emit('buzz');  // Emit buzz event via WebSocket
+  }
+  fetch('http://localhost:3000/send-buzz', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ phoneNumbers, message })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
       alert('Buzz sent!');
     } else {
-      alert('Buzz failed: ' + response.error);
+      alert('Buzz failed: ' + data.error);
     }
+  })
+  .catch(err => {
+    alert('Error sending buzz: ' + err.message);
   });
 }
-
-// Optional: listen for incoming buzzes (if you want to support receiving buzzes)
-socket.on('buzz-received', (data) => {
-  alert(`You got buzzed: ${data.message}`);
-});
 
 // ========== HELPERS ==========
 
