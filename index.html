@@ -11,14 +11,14 @@
 </head>
 <body>
   <main id="app" role="main">
-    <!-- JavaScript will render content here -->
+    <noscript>Please enable JavaScript to use the BUZZUR app.</noscript>
   </main>
 
   <!-- Optional buzz sound -->
   <audio id="buzzSound" src="buzz.mp3" preload="auto"></audio>
 
-  <!-- Load Socket.io first, then your main script -->
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="script.js"></script>
+  <!-- Load Socket.io then main script -->
+  <script src="/socket.io/socket.io.js" defer></script>
+  <script src="script.js" defer></script>
 </body>
 </html>
