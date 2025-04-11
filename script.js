@@ -1,170 +1,195 @@
-// Connect to Socket.IO server
-const socket = io('https://buzzur-server.onrender.com');
+const socket = io('https://buzzur-server.onrender.com'); // WebSocket connection
 
-// DOM references
 const app = document.getElementById('app');
 
-// State
-let currentUser = null;
+let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+let users = JSON.parse(localStorage.getItem('users')) || [];
+let groups = JSON.parse(localStorage.getItem('groups')) || [];
 
-// Load initial UI
-renderLoginPage();
-
-// Page Renderers
-function renderLoginPage() {
-  app.innerHTML = `
-    <h1>BUZZUR</h1>
-    <input placeholder="Username" id="username" />
-    <input placeholder="Password" type="password" id="password" />
-    <button onclick="login()">Login</button>
-    <p>No account? <a href="#" onclick="renderSignupPage()">Sign up</a></p>
-  `;
+function saveData() {
+  localStorage.setItem('users', JSON.stringify(users));
+  localStorage.setItem('groups', JSON.stringify(groups));
+  localStorage.setItem('currentUser', JSON.stringify(currentUser));
 }
 
-function renderSignupPage() {
-  app.innerHTML = `
-    <h1>Sign Up</h1>
-    <input placeholder="Username" id="username" />
-    <input placeholder="Password" type="password" id="password" />
-    <button onclick="signup()">Create Account</button>
-    <p>Have an account? <a href="#" onclick="renderLoginPage()">Login</a></p>
-  `;
-}
+function renderApp() {
+  app.innerHTML = '';
 
-function renderGroupsPage() {
-  const userData = getUserData(currentUser);
-  const groupList = userData.groups.map((group, i) => `
-    <div class="group">
-      <strong>${group.name}</strong>
-      <button onclick="buzzGroup(${i})">Buzz</button>
-      <button onclick="editGroup(${i})">Edit</button>
-      <button onclick="removeGroup(${i})">Remove</button>
-      <ul>${group.members.map((m, mi) => `
-        <li>${m.name} (${m.phone}) 
-          <button onclick="removeMember(${i}, ${mi})">Remove</button>
-        </li>`).join('')}
-      </ul>
-    </div>
-  `).join('');
+  const banner = document.createElement('div');
+  banner.className = 'banner';
+  banner.textContent = 'BUZZUR';
+  app.appendChild(banner);
 
-  app.innerHTML = `
-    <h1>Welcome, ${currentUser}</h1>
-    <button onclick="logout()">Logout</button>
-    <h2>My Groups</h2>
-    ${groupList}
-    <h3>Create New Group</h3>
-    <input id="groupName" placeholder="Group name" />
-    <button onclick="createGroup()">Add Group</button>
-  `;
-}
-
-function editGroup(index) {
-  const newName = prompt('Enter new group name:');
-  if (!newName) return;
-  const userData = getUserData(currentUser);
-  userData.groups[index].name = newName;
-  saveUserData(currentUser, userData);
-  renderGroupsPage();
-}
-
-// Auth
-function login() {
-  const username = document.getElementById('username').value;
-  const password = document.getElementById('password').value;
-  const userData = getUserData(username);
-  if (!userData || userData.password !== password) {
-    alert('Invalid credentials');
-    return;
+  if (!currentUser) {
+    renderAuthForms();
+  } else {
+    renderGroups();
   }
-  currentUser = username;
-  renderGroupsPage();
 }
 
-function signup() {
-  const username = document.getElementById('username').value;
-  const password = document.getElementById('password').value;
-  if (getUserData(username)) {
-    alert('User already exists');
-    return;
-  }
-  const newUser = { password, groups: [] };
-  saveUserData(username, newUser);
-  currentUser = username;
-  renderGroupsPage();
+function renderAuthForms() {
+  const loginForm = document.createElement('form');
+  loginForm.innerHTML = `
+    <h2>Login</h2>
+    <input type="text" placeholder="Phone" required />
+    <input type="password" placeholder="Password" required />
+    <button type="submit">Login</button>
+  `;
+
+  loginForm.onsubmit = (e) => {
+    e.preventDefault();
+    const phone = loginForm[0].value;
+    const password = loginForm[1].value;
+
+    const user = users.find(u => u.phone === phone && u.password === password);
+    if (user) {
+      currentUser = user;
+      saveData();
+      renderApp();
+    } else {
+      alert('Invalid phone or password.');
+    }
+  };
+
+  const signupForm = document.createElement('form');
+  signupForm.innerHTML = `
+    <h2>Sign Up</h2>
+    <input type="text" placeholder="Name" required />
+    <input type="text" placeholder="Phone" required />
+    <input type="password" placeholder="Password" required />
+    <button type="submit">Sign Up</button>
+  `;
+
+  signupForm.onsubmit = (e) => {
+    e.preventDefault();
+    const name = signupForm[0].value;
+    const phone = signupForm[1].value;
+    const password = signupForm[2].value;
+
+    if (users.find(u => u.phone === phone)) {
+      alert('Phone already registered.');
+      return;
+    }
+
+    const newUser = { name, phone, password };
+    users.push(newUser);
+    currentUser = newUser;
+    saveData();
+    renderApp();
+  };
+
+  app.appendChild(loginForm);
+  app.appendChild(signupForm);
+}
+
+function renderGroups() {
+  const groupForm = document.createElement('form');
+  groupForm.innerHTML = `
+    <h2>Create Group</h2>
+    <input type="text" placeholder="Group Name" required />
+    <button type="submit">Create</button>
+  `;
+
+  groupForm.onsubmit = (e) => {
+    e.preventDefault();
+    const name = groupForm[0].value;
+    const group = {
+      id: Date.now(),
+      name,
+      creator: currentUser.phone,
+      members: []
+    };
+    groups.push(group);
+    saveData();
+    renderApp();
+  };
+
+  app.appendChild(groupForm);
+
+  const myGroups = groups.filter(g => g.creator === currentUser.phone);
+  myGroups.forEach(group => {
+    const div = document.createElement('div');
+    div.className = 'group';
+    div.innerHTML = `
+      <h3>${group.name}</h3>
+      <button onclick="buzzGroup(${group.id})">Buzz All</button>
+      <button onclick="editGroupName(${group.id})">Edit Name</button>
+      <button onclick="removeGroup(${group.id})">Delete Group</button>
+      <form onsubmit="addMember(event, ${group.id})">
+        <input type="text" placeholder="Member Name" required />
+        <input type="text" placeholder="Member Phone" required />
+        <button type="submit">Add Member</button>
+      </form>
+      <div>${group.members.map((m, i) => `
+        <div class="member">
+          ${m.name} (${m.phone})
+          <button onclick="removeMember(${group.id}, ${i})">Remove</button>
+        </div>
+      `).join('')}</div>
+    `;
+    app.appendChild(div);
+  });
+
+  const logoutBtn = document.createElement('div');
+  logoutBtn.className = 'logout-button';
+  logoutBtn.innerHTML = `<button onclick="logout()">Logout</button>`;
+  app.appendChild(logoutBtn);
 }
 
 function logout() {
   currentUser = null;
-  renderLoginPage();
+  saveData();
+  renderApp();
 }
 
-// Group Management
-function createGroup() {
-  const name = document.getElementById('groupName').value;
-  if (!name) return alert("Group name required");
-  const userData = getUserData(currentUser);
-  userData.groups.push({ name, members: [] });
-  saveUserData(currentUser, userData);
-  renderGroupsPage();
+function editGroupName(id) {
+  const group = groups.find(g => g.id === id);
+  const newName = prompt('Enter new group name:', group.name);
+  if (newName) {
+    group.name = newName;
+    saveData();
+    renderApp();
+  }
 }
 
-function removeGroup(index) {
-  const userData = getUserData(currentUser);
-  userData.groups.splice(index, 1);
-  saveUserData(currentUser, userData);
-  renderGroupsPage();
+function removeGroup(id) {
+  groups = groups.filter(g => g.id !== id);
+  saveData();
+  renderApp();
 }
 
-function removeMember(groupIndex, memberIndex) {
-  const userData = getUserData(currentUser);
-  userData.groups[groupIndex].members.splice(memberIndex, 1);
-  saveUserData(currentUser, userData);
-  renderGroupsPage();
+function addMember(e, groupId) {
+  e.preventDefault();
+  const name = e.target[0].value;
+  const phone = e.target[1].value;
+  const group = groups.find(g => g.id === groupId);
+  group.members.push({ name, phone });
+  saveData();
+  renderApp();
 }
 
-function addMember(groupIndex) {
-  const name = prompt('Member name:');
-  const phone = prompt('Phone number:');
-  if (!name || !phone) return;
-  const userData = getUserData(currentUser);
-  userData.groups[groupIndex].members.push({ name, phone });
-  saveUserData(currentUser, userData);
-  renderGroupsPage();
+function removeMember(groupId, memberIndex) {
+  const group = groups.find(g => g.id === groupId);
+  group.members.splice(memberIndex, 1);
+  saveData();
+  renderApp();
 }
 
-function buzzGroup(groupIndex) {
-  const userData = getUserData(currentUser);
-  const group = userData.groups[groupIndex];
+function buzzGroup(groupId) {
+  const group = groups.find(g => g.id === groupId);
+  if (!group || group.members.length === 0) {
+    alert('Group has no members!');
+    return;
+  }
 
-  // Emit buzz over socket
-  socket.emit('buzz');
-
-  // Simulate fetch to server if needed
-  fetch('https://buzzur-server.onrender.com/send-buzz', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ group })
-  })
-    .then(res => res.json())
-    .then(data => {
-      alert('Buzz sent!');
-    })
-    .catch(err => {
-      console.error('Error sending buzz:', err);
-      alert('Failed to send buzz');
-    });
+  socket.emit('buzz'); // Emit via WebSocket
+  console.log(`Buzz sent to group: ${group.name}`);
+  alert(`Buzz sent to all members in "${group.name}"`);
 }
 
-// LocalStorage helpers
-function getUserData(username) {
-  return JSON.parse(localStorage.getItem(username));
-}
-
-function saveUserData(username, data) {
-  localStorage.setItem(username, JSON.stringify(data));
-}
-
-// Listen for buzz events
+// WebSocket listener
 socket.on('buzz', () => {
-  alert('🔔 You got buzzed!');
+  alert('🔔 BUZZ ALERT!');
 });
+
+renderApp();
