@@ -1,20 +1,26 @@
-{
-  "name": "buzzur-server",
-  "version": "1.0.0",
-  "description": "Backend for BUZZUR app using Express and Socket.IO",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js"
-  },
-  "dependencies": {
-    "cors": "^2.8.5",
-    "express": "^4.18.2",
-    "socket.io": "^4.7.2"
-  },
-  "engines": {
-    "node": ">=18.0.0"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+function sendBuzz(phoneNumbers, message) {
+  socket.emit('buzz'); // Emit the 'buzz' event to all connected clients via WebSocket
+
+  // Send the request to your backend server to process the buzz
+  fetch('https://buzzur-server.onrender.com/send-buzz', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ phoneNumbers, message })
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Failed to send buzz: ' + response.statusText);
+    }
+    return response.json();
+  })
+  .then(data => {
+    if (data.success) {
+      alert('Buzz sent!');
+    } else {
+      alert('Buzz failed: ' + data.error);
+    }
+  })
+  .catch(err => {
+    alert('Error sending buzz: ' + err.message);
+  });
 }
