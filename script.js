@@ -1,16 +1,11 @@
-const SERVER_URL = "https://buzzur-server.onrender.com";
+const SERVER_URL = "https://buzzur-server.onrender.com";  // URL of the backend server
 const app = document.getElementById('app');
 let currentUser = null;
 let groups = JSON.parse(localStorage.getItem('buzzerGroups') || '[]');
 let users = JSON.parse(localStorage.getItem('buzzerUsers') || '[]');
 
 // Attempt to connect to WebSocket server
-let socket;
-try {
-  socket = io(); // This will fail gracefully on GitHub Pages
-} catch (e) {
-  console.warn("WebSocket not available. Running in static mode.");
-}
+const socket = io(SERVER_URL);  // Use the correct server URL for the WebSocket connection
 
 // Entry point
 showLogin();
@@ -148,7 +143,7 @@ function editGroup(name) {
       <input type="checkbox" class="select-member" data-index="${i}"> Select
       <button onclick="removeMember(${i})">Remove</button>
     </div>
-  `).join('');
+  `).join(''); 
 
   app.innerHTML = `
     <div class="container">
@@ -232,6 +227,9 @@ function buzzSelected(groupName) {
 }
 
 function sendBuzz(phoneNumbers, message) {
+  socket.emit('buzz'); // Emit the 'buzz' event to all connected clients via WebSocket
+
+  // Optionally: You can still send a HTTP request if you need backend processing like SMS.
   fetch('https://buzzur-server.onrender.com/send-buzz', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
