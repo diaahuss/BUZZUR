@@ -47,10 +47,6 @@ button:hover {
   background-color: #2f60b6;
 }
 
-input[type="text"], input[type="password"] {
-  width: 100%;
-}
-
-input[type="number"] {
+input[type="text"], input[type="password"], input[type="number"] {
   width: 100%;
 }
