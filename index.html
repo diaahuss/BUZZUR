@@ -7,43 +7,12 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <noscript>Please enable JavaScript to use this app.</noscript>
-
-  <!-- Login Form -->
-  <div id="login-form" class="form-section">
-    <h2>Login</h2>
-    <form id="loginForm">
-      <input type="tel" id="login-phone" placeholder="Phone Number" required />
-      <input type="password" id="login-password" placeholder="Password" required />
-      <button type="submit">Login</button>
-    </form>
-    <p>Don't have an account? <a href="#" onclick="showSignup()">Sign up</a></p>
-  </div>
-
-  <!-- Sign-Up Form -->
-  <div id="signup-form" class="form-section" style="display: none;">
-    <h2>Sign Up</h2>
-    <form id="signupForm">
-      <input type="text" id="first-name" placeholder="First Name" required />
-      <input type="tel" id="phone" placeholder="Phone Number" required />
-      <input type="password" id="password" placeholder="Password" required />
-      <input type="password" id="confirm-password" placeholder="Confirm Password" required />
-      <label>
-        <input type="checkbox" id="show-password" /> Show Password
-      </label>
-      <button type="submit">Sign Up</button>
-    </form>
-    <p>Already have an account? <a href="#" onclick="showLogin()">Log in</a></p>
-  </div>
-
   <div id="app"></div>
 
-  <!-- Load Socket.IO -->
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"
-          integrity="sha384-AAYcKmuAkeSk+TVR8CUVbf4t2UbmHyA8q1ruTh2yEu0o4t0/9Ni4nTwMDj01/jc3"
-          crossorigin="anonymous"></script>
+    integrity="sha384-AAYcKmuAkeSk+TVR8CUVbf4t2UbmHyA8q1ruTh2yEu0o4t0/9Ni4nTwMDj01/jc3"
+    crossorigin="anonymous"></script>
 
-  <!-- App Logic -->
   <script src="script.js"></script>
 </body>
 </html>
