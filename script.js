@@ -3,6 +3,8 @@ let currentUser = null;
 let groups = JSON.parse(localStorage.getItem('buzzerGroups') || '[]');
 let users = JSON.parse(localStorage.getItem('buzzerUsers') || '[]');
 
+const socket = io('http://localhost:3000');
+
 // Entry point
 showLogin();
 
@@ -114,7 +116,7 @@ function showGroups() {
         </div>
       `).join('')}
       <button onclick="createGroup()">Create New Group</button>
-      <button onclick="logout()">Logout</button>
+      <button class="logout" onclick="logout()">Logout</button>
     </div>
   `;
 }
@@ -151,7 +153,7 @@ function editGroup(name) {
       <button onclick="buzzSelected('${group.name}')">Buzz Selected</button>
       <button onclick="removeGroup('${group.name}')">Delete Group</button>
       <button onclick="showGroups()">Back</button>
-      <button onclick="logout()">Logout</button>
+      <button class="logout" onclick="logout()">Logout</button>
     </div>
   `;
   window.editingGroup = group;
@@ -223,23 +225,19 @@ function buzzSelected(groupName) {
 }
 
 function sendBuzz(phoneNumbers, message) {
-  fetch('http://localhost:3000/send-buzz', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ phoneNumbers, message })
-  })
-  .then(res => res.json())
-  .then(data => {
-    if (data.success) {
+  socket.emit('buzz', { phoneNumbers, message }, (response) => {
+    if (response.success) {
       alert('Buzz sent!');
     } else {
-      alert('Buzz failed: ' + data.error);
+      alert('Buzz failed: ' + response.error);
     }
-  })
-  .catch(err => {
-    alert('Error sending buzz: ' + err.message);
   });
 }
+
+// Optional: listen for incoming buzzes (if you want to support receiving buzzes)
+socket.on('buzz-received', (data) => {
+  alert(`You got buzzed: ${data.message}`);
+});
 
 // ========== HELPERS ==========
 
