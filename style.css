@@ -1,70 +1,126 @@
-body {
-  font-family: Arial, sans-serif;
-  background-color: #e3f2fd; /* Pale blue */
+/* General Reset and Layout */
+* {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-.container {
-  max-width: 400px;
-  margin: 60px auto;
-  padding: 20px;
-  background-color: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f8ff;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 50px;
+  min-height: 100vh;
 }
 
+/* App Container */
+#app {
+  background: #ffffff;
+  width: 100%;
+  max-width: 400px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+/* Banner */
 .banner {
-  background-color: #1e3a5f; /* Dark blue */
-  color: white;
-  padding: 15px;
+  background-color: #b0d4f1;
+  color: #003366;
   text-align: center;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  font-size: 20px;
+  padding: 20px;
+  font-size: 1.5rem;
   font-weight: bold;
 }
 
-/* inputs and buttons will stay within .container width */
-input, button {
-  display: block;
-  width: 100%;
-  box-sizing: border-box;
-  padding: 10px;
-  margin-top: 10px;
-  font-size: 16px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
+/* Form & Button Styling */
+form, .form-section {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-/* Blue shades for buttons */
+input[type="text"],
+input[type="password"],
+input[type="tel"] {
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
 button {
-  background-color: #5e92f3; /* Light blue */
-  color: white;
+  background-color: #a3d9a5;
   border: none;
+  padding: 12px;
+  font-size: 1rem;
+  border-radius: 6px;
   cursor: pointer;
+  transition: background 0.2s;
 }
 
 button:hover {
-  background-color: #3f80d1; /* Medium blue on hover */
+  background-color: #8fd291;
 }
 
-button:active {
-  background-color: #2d69a7; /* Darker blue when button is clicked */
+/* Links Row */
+.links-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  padding: 0 20px 20px;
 }
 
-a {
-  color: #007bff;
+.links-row a {
+  color: #0077cc;
   text-decoration: none;
-  font-size: 14px;
 }
 
-a:hover {
+.links-row a:hover {
   text-decoration: underline;
 }
 
-.group-section {
-  margin-top: 15px;
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 10px;
+/* Group Section */
+.group-card {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 10px;
+}
+
+.group-card h3 {
+  margin-bottom: 8px;
+}
+
+.group-card .member {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+}
+
+.controls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.controls button {
+  flex: 1;
+  min-width: 48%;
+}
+
+/* Logout Button at Bottom */
+.logout-button {
+  display: block;
+  width: 100%;
+  margin-top: 20px;
+  background-color: #f5a3a3;
+}
+
+.logout-button:hover {
+  background-color: #f08080;
 }
