@@ -1,9 +1,10 @@
+// Initialize Socket.IO connection
 const socket = io();
 const app = document.getElementById('app');
 let currentUser = null;
 let userGroups = [];
 
-// Utility to create elements
+// Utility function to create DOM elements
 function createEl(tag, attrs = {}, ...children) {
   const el = document.createElement(tag);
   Object.entries(attrs).forEach(([k, v]) => el[k] = v);
@@ -11,15 +12,18 @@ function createEl(tag, attrs = {}, ...children) {
   return el;
 }
 
-// Login Screen
-function renderLogin() {
-  app.innerHTML = '';
+// Views
 
+// Login view
+function renderLogin() {
+  console.log("renderLogin called");
+  app.innerHTML = '';  // Clear previous content
+  
   const phoneInput = createEl('input', { placeholder: 'Phone Number' });
   const passwordInput = createEl('input', { placeholder: 'Password', type: 'password' });
   const showPwd = createEl('input', { type: 'checkbox' });
   const loginBtn = createEl('button', { textContent: 'Login' });
-  const toSignup = createEl('a', { href: '#', textContent: 'Sign Up', style: 'margin-left: 10px;' });
+  const toSignup = createEl('a', { href: '#', textContent: 'Sign Up' });
   const toForgot = createEl('a', { href: '#', textContent: 'Forgot Password?' });
 
   showPwd.addEventListener('change', () => {
@@ -42,21 +46,21 @@ function renderLogin() {
   });
 
   toSignup.addEventListener('click', renderSignup);
-  toForgot.addEventListener('click', renderForgot);
 
   app.append(
     phoneInput,
     passwordInput,
     createEl('label', {}, showPwd, ' Show Password'),
     loginBtn,
-    createEl('div', {}, toForgot, toSignup)
+    createEl('div', {}, toForgot, ' | ', toSignup)
   );
 }
 
-// Signup Screen
+// Sign-Up view
 function renderSignup() {
+  console.log("renderSignup called");
   app.innerHTML = '';
-
+  
   const nameInput = createEl('input', { placeholder: 'Name' });
   const phoneInput = createEl('input', { placeholder: 'Phone Number' });
   const passwordInput = createEl('input', { placeholder: 'Password', type: 'password' });
@@ -106,17 +110,9 @@ function renderSignup() {
   );
 }
 
-// Forgot Password Placeholder
-function renderForgot() {
-  app.innerHTML = '';
-  const msg = createEl('p', { textContent: 'Forgot Password feature coming soon.' });
-  const back = createEl('a', { href: '#', textContent: 'Back to Login' });
-  back.addEventListener('click', renderLogin);
-  app.append(msg, back);
-}
-
-// Dashboard View
+// Dashboard view (Main screen after login)
 async function loadDashboard() {
+  console.log("loadDashboard called");
   app.innerHTML = '';
 
   const title = createEl('h2', { textContent: 'My Groups' });
@@ -141,7 +137,7 @@ async function loadDashboard() {
   });
 
   buzzAllBtn.addEventListener('click', () => {
-    socket.emit('buzz');
+    socket.emit('buzz'); // Emit a buzz event to the server
   });
 
   logoutBtn.addEventListener('click', () => {
@@ -151,20 +147,9 @@ async function loadDashboard() {
   });
 
   app.append(title, groupList, newGroupInput, addGroupBtn, buzzAllBtn, logoutBtn);
-  await fetchGroups(groupList);
 }
 
-// Fetch and render groups
-async function fetchGroups(container) {
-  const res = await fetch(`/groups?userId=${currentUser.id}`);
-  const data = await res.json();
-  if (data.success) {
-    userGroups = data.groups;
-    renderGroups(container);
-  }
-}
-
-// Render all user's groups
+// Render group sections on the dashboard
 function renderGroups(container) {
   container.innerHTML = '';
   userGroups.forEach(group => {
@@ -173,21 +158,23 @@ function renderGroups(container) {
       createEl('button', {
         textContent: 'Buzz Group',
         className: 'buzz',
-        onclick: () => socket.emit('buzz')
+        onclick: () => socket.emit('buzz') // Trigger a buzz when clicked
       })
     );
     container.append(groupDiv);
   });
 }
 
-// Play buzz sound
+// Buzz sound when a buzz is triggered
 socket.on('buzz', () => {
   const sound = document.getElementById('buzzSound');
   if (sound) {
-    sound.currentTime = 0;
-    sound.play();
+    sound.currentTime = 0; // Reset the audio to the beginning
+    sound.play(); // Play the sound
   }
 });
 
-// Initialize app
-renderLogin();
+// Initialize the app by rendering the login page when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+  renderLogin(); // Start with the login screen
+});
