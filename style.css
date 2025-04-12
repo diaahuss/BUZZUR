@@ -1,10 +1,4 @@
-/* Reset and body setup */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
+/* Basic styles for the app */
 body {
   font-family: Arial, sans-serif;
   background-color: #f3f3f3;
@@ -16,10 +10,7 @@ body {
   margin: 0;
 }
 
-/* Container for forms and app */
-#app,
-#login-form,
-#signup-form {
+#app {
   width: 100%;
   max-width: 400px;
   padding: 20px;
@@ -28,71 +19,47 @@ body {
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* Headings */
-h1,
-h2 {
+h1, h2 {
   text-align: center;
   color: #3b74f2;
-  margin-bottom: 20px;
 }
 
-/* Forms and inputs */
 form {
   display: flex;
   flex-direction: column;
   gap: 15px;
 }
 
-input,
-button {
+input, button {
   padding: 10px;
   font-size: 16px;
-  border-radius: 5px;
   border: 1px solid #ccc;
-  width: 100%;
+  border-radius: 5px;
 }
 
 button {
   background-color: #3b74f2;
   color: white;
-  font-weight: bold;
   cursor: pointer;
-  border: none;
 }
 
 button:hover {
   background-color: #2f60b6;
 }
 
-/* Links inside forms */
-form p,
-form a {
-  text-align: center;
-  font-size: 14px;
-  color: #555;
-  text-decoration: none;
+input[type="text"], input[type="password"], input[type="number"], input[type="tel"] {
+  width: 100%;
 }
 
-form a:hover {
-  text-decoration: underline;
-}
-
-/* Checkbox */
 label {
   font-size: 14px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
 }
 
-/* Hide by default to toggle */
-#signup-form,
-#login-form,
-#app {
-  display: none;
+a {
+  text-decoration: none;
+  color: #3b74f2;
 }
 
-/* Utility class to show sections */
-.show {
-  display: block;
+a:hover {
+  text-decoration: underline;
 }
