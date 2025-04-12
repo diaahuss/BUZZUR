@@ -2,24 +2,24 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="description" content="BUZZUR App - Group alert and communication tool" />
   <title>BUZZUR</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
 </head>
 <body>
-  <div class="container">
-    <div class="banner">BUZZUR</div>
+  <main id="app" role="main">
+    <!-- Dynamic content rendered by script.js -->
+  </main>
 
-    <main id="app">
-      <!-- JS will render login/signup/dashboard here -->
-    </main>
-  </div>
-
-  <!-- Buzz sound -->
+  <!-- Buzz sound to be triggered on alert -->
   <audio id="buzzSound" src="buzz.mp3" preload="auto"></audio>
 
-  <!-- Socket.IO -->
+  <!-- Load Socket.IO first -->
   <script src="/socket.io/socket.io.js"></script>
+  <!-- Main app logic -->
   <script src="script.js"></script>
 </body>
 </html>
