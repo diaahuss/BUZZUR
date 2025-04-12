@@ -7,71 +7,15 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <noscript>Please enable JavaScript to use this app.</noscript>
-  
-  <!-- Sign-Up Form -->
-  <div id="signup-form">
-    <h2>Sign Up</h2>
-    <form id="sign-up-form">
-      <label for="first-name">First Name</label>
-      <input type="text" id="first-name" name="first-name" required />
-
-      <label for="phone">Phone Number</label>
-      <input type="tel" id="phone" name="phone" required />
-
-      <label for="password">Password</label>
-      <input type="password" id="password" name="password" required />
-
-      <label for="confirm-password">Confirm Password</label>
-      <input type="password" id="confirm-password" name="confirm-password" required />
-
-      <label>
-        <input type="checkbox" id="show-password"> Show Password
-      </label>
-
-      <button type="submit">Sign Up</button>
-    </form>
-  </div>
-
-  <!-- Login Form -->
-  <div id="login-form">
-    <h2>Login</h2>
-    <form id="login-form">
-      <label for="login-phone">Phone Number</label>
-      <input type="tel" id="login-phone" name="login-phone" required />
-
-      <label for="login-password">Password</label>
-      <input type="password" id="login-password" name="login-password" required />
-
-      <button type="submit">Login</button>
-    </form>
-  </div>
-
   <div id="app"></div>
 
-  <!-- Load Socket.IO (client) -->
-  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"
-          integrity="sha384-AAYcKmuAkeSk+TVR8CUVbf4t2UbmHyA8q1ruTh2yEu0o4t0/9Ni4nTwMDj01/jc3"
-          crossorigin="anonymous"></script>
+  <!-- Load Socket.IO from CDN -->
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js" crossorigin="anonymous"></script>
 
   <!-- App script, wait for DOM to be ready -->
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      if (typeof renderApp === 'function') {
-        renderApp();
-      } else {
-        console.error("renderApp is not defined. Check if script.js is loading correctly.");
-      }
-
-      // Show password functionality for sign-up
-      document.getElementById('show-password').addEventListener('change', function() {
-        const passwordField = document.getElementById('password');
-        const confirmPasswordField = document.getElementById('confirm-password');
-        const type = this.checked ? 'text' : 'password';
-
-        passwordField.type = type;
-        confirmPasswordField.type = type;
-      });
+      renderLogin(); // Default to login screen
     });
   </script>
 
