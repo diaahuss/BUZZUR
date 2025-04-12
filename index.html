@@ -1,44 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buzzur - Send Buzzes to Groups</title>
-    <link rel="stylesheet" href="/css/style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BUZZUR</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Buzzur</h1>
-            <p>Send buzz notifications to your groups</p>
-        </header>
+  <main id="app">
+    <!-- Content will be dynamically rendered here via script.js -->
+  </main>
 
-        <div class="app-content">
-            <section id="group-section">
-                <h2>Create a Group</h2>
-                <form id="group-form">
-                    <input type="text" id="group-name" placeholder="Group name" required>
-                    <button type="submit">Create Group</button>
-                </form>
-            </section>
-
-            <section id="members-section" style="display: none;">
-                <h2>Add Members</h2>
-                <form id="member-form">
-                    <input type="tel" id="member-phone" placeholder="Phone number" required>
-                    <button type="submit">Add Member</button>
-                </form>
-                <ul id="members-list"></ul>
-                <button id="buzz-group">Buzz Group</button>
-            </section>
-
-            <section id="groups-list">
-                <h2>Your Groups</h2>
-                <ul id="groups-ul"></ul>
-            </section>
-        </div>
-    </div>
-
-    <script src="/js/script.js"></script>
+  <audio id="buzz-sound" src="buzz.mp3" preload="auto"></audio>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
