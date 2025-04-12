@@ -11,8 +11,18 @@
     <!-- Content will be dynamically rendered here via script.js -->
   </main>
 
+  <!-- Sound to play on buzz -->
   <audio id="buzz-sound" src="buzz.mp3" preload="auto"></audio>
-  <script src="/socket.io/socket.io.js"></script>
+
+  <!-- ✅ Use the full URL to load socket.io from your Render backend -->
+  <script src="https://buzzur-server.onrender.com/socket.io/socket.io.js"></script>
+
+  <!-- ✅ Connect to the Render backend via script.js -->
+  <script>
+    const socket = io("https://buzzur-server.onrender.com"); // Connect to deployed backend
+    window.socket = socket; // So script.js can use it globally
+  </script>
+
   <script src="script.js"></script>
 </body>
 </html>
