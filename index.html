@@ -2,25 +2,24 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>BUZZUR</title>
   <link rel="stylesheet" href="style.css" />
-  <link rel="icon" href="favicon.ico" type="image/x-icon" />
 </head>
 <body>
-  <main id="app">
-    <!-- JavaScript will dynamically render content here -->
-  </main>
+  <div class="container">
+    <div class="banner">BUZZUR</div>
 
-  <!-- Buzz sound for alerts -->
+    <main id="app">
+      <!-- JS will render login/signup/dashboard here -->
+    </main>
+  </div>
+
+  <!-- Buzz sound -->
   <audio id="buzzSound" src="buzz.mp3" preload="auto"></audio>
 
-  <!-- Socket.io client script -->
-  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"
-    integrity="sha384-AAYcKmuAkeSk+TVR8CUVbf4t2UbmHyA8q1ruTh2yEu0o4t0/9Ni4nTwMDj01/jc3"
-    crossorigin="anonymous"></script>
-
-  <!-- Main script -->
+  <!-- Socket.IO -->
+  <script src="/socket.io/socket.io.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
