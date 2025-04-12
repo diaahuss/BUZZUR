@@ -176,5 +176,6 @@ socket.on('buzz', () => {
 
 // Initialize the app by rendering the login page when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
+  console.log("DOMContentLoaded event fired");
   renderLogin(); // Start with the login screen
 });
