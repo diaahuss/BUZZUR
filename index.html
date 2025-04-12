@@ -1,25 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="description" content="BUZZUR App - Group alert and communication tool" />
-  <title>BUZZUR</title>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buzzur - Send Buzzes to Groups</title>
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-  <main id="app" role="main">
-    <!-- Dynamic content rendered by script.js -->
-  </main>
+    <div class="container">
+        <header>
+            <h1>Buzzur</h1>
+            <p>Send buzz notifications to your groups</p>
+        </header>
 
-  <!-- Buzz sound to be triggered on alert -->
-  <audio id="buzzSound" src="buzz.mp3" preload="auto"></audio>
+        <div class="app-content">
+            <section id="group-section">
+                <h2>Create a Group</h2>
+                <form id="group-form">
+                    <input type="text" id="group-name" placeholder="Group name" required>
+                    <button type="submit">Create Group</button>
+                </form>
+            </section>
 
-  <!-- Load Socket.IO first -->
-  <script src="/socket.io/socket.io.js"></script>
-  <!-- Main app logic -->
-  <script src="script.js"></script>
+            <section id="members-section" style="display: none;">
+                <h2>Add Members</h2>
+                <form id="member-form">
+                    <input type="tel" id="member-phone" placeholder="Phone number" required>
+                    <button type="submit">Add Member</button>
+                </form>
+                <ul id="members-list"></ul>
+                <button id="buzz-group">Buzz Group</button>
+            </section>
+
+            <section id="groups-list">
+                <h2>Your Groups</h2>
+                <ul id="groups-ul"></ul>
+            </section>
+        </div>
+    </div>
+
+    <script src="/js/script.js"></script>
 </body>
 </html>
