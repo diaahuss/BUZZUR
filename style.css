@@ -1,26 +1,19 @@
 /* === Global Styles === */
 body {
   font-family: Arial, sans-serif;
-  background-color: #e3f2fd; /* Pale blue */
+  background-color: #e3f2fd; /* Pale blue background */
   margin: 0;
   padding: 0;
 }
 
-/* === Main App Container === */
-main#app {
+/* === Main Container === */
+#app {
   max-width: 400px;
   margin: 60px auto;
   padding: 20px;
   background-color: #ffffff;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-/* === Headings === */
-h2 {
-  text-align: center;
-  color: #1e3a5f;
-  margin-bottom: 20px;
 }
 
 /* === Inputs & Buttons === */
@@ -42,9 +35,9 @@ input:focus {
   box-shadow: 0 0 5px rgba(100, 181, 246, 0.5);
 }
 
-/* === Buttons === */
+/* === Button Styling === */
 button {
-  background-color: #5e92f3;
+  background-color: #5e92f3; /* Light blue */
   color: white;
   border: none;
   cursor: pointer;
@@ -52,11 +45,11 @@ button {
 }
 
 button:hover {
-  background-color: #3f80d1;
+  background-color: #3f80d1; /* Medium blue */
 }
 
 button:active {
-  background-color: #2d69a7;
+  background-color: #2d69a7; /* Darker blue */
 }
 
 /* === Buzz Buttons === */
@@ -78,54 +71,59 @@ button.logout:hover {
   background-color: #7b7b7b;
 }
 
-/* === Group Section === */
-.group-section {
-  margin-top: 15px;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background-color: #f5faff;
-}
-
-.group-section strong {
-  display: block;
-  margin-bottom: 5px;
-  color: #1e3a5f;
-}
-
-.group-section button {
-  margin-top: 5px;
-}
-
-/* === Labels & Links === */
-label {
-  display: block;
-  font-size: 14px;
-  margin-top: 10px;
-  color: #333;
-}
-
+/* === Links === */
 a {
   color: #007bff;
   text-decoration: none;
   font-size: 14px;
-  display: inline-block;
-  margin-top: 10px;
 }
 
 a:hover {
   text-decoration: underline;
 }
 
-/* === Flex Row for Links === */
-div > a + a {
-  margin-left: 15px;
+/* === Group Section === */
+.group-section {
+  margin-top: 15px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
 }
 
-/* === Responsive === */
+.group-section > * {
+  margin-top: 5px;
+}
+
+.group-section button {
+  margin-top: 5px;
+}
+
+/* === Banner === */
+.banner {
+  background-color: #1e3a5f; /* Dark blue */
+  color: white;
+  padding: 15px;
+  text-align: center;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+/* === Responsive Layout === */
 @media (max-width: 500px) {
-  main#app {
+  #app {
     margin: 30px 10px;
     padding: 15px;
   }
+}
+
+/* === Checkbox Label === */
+label {
+  font-size: 14px;
+  margin-left: 5px;
+  cursor: pointer;
+}
+
+input[type="checkbox"] {
+  width: auto;
 }
