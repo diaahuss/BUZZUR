@@ -1,13 +1,13 @@
 /* === Global Styles === */
 body {
   font-family: Arial, sans-serif;
-  background-color: #e3f2fd; /* Pale blue background */
+  background-color: #e3f2fd; /* Pale blue */
   margin: 0;
   padding: 0;
 }
 
-/* === Main Container === */
-.container {
+/* === Main App Container === */
+main#app {
   max-width: 400px;
   margin: 60px auto;
   padding: 20px;
@@ -16,16 +16,11 @@ body {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* === Top Banner === */
-.banner {
-  background-color: #1e3a5f; /* Dark blue */
-  color: white;
-  padding: 15px;
+/* === Headings === */
+h2 {
   text-align: center;
-  border-radius: 8px;
+  color: #1e3a5f;
   margin-bottom: 20px;
-  font-size: 20px;
-  font-weight: bold;
 }
 
 /* === Inputs & Buttons === */
@@ -41,21 +36,15 @@ button {
   border: 1px solid #ccc;
 }
 
-input[type="checkbox"] {
-  width: auto;
-  margin-right: 6px;
-  vertical-align: middle;
-}
-
 input:focus {
   outline: none;
   border-color: #64b5f6;
   box-shadow: 0 0 5px rgba(100, 181, 246, 0.5);
 }
 
-/* === Button Styling === */
+/* === Buttons === */
 button {
-  background-color: #5e92f3; /* Light blue */
+  background-color: #5e92f3;
   color: white;
   border: none;
   cursor: pointer;
@@ -63,11 +52,11 @@ button {
 }
 
 button:hover {
-  background-color: #3f80d1; /* Medium blue */
+  background-color: #3f80d1;
 }
 
 button:active {
-  background-color: #2d69a7; /* Darker blue */
+  background-color: #2d69a7;
 }
 
 /* === Buzz Buttons === */
@@ -89,54 +78,53 @@ button.logout:hover {
   background-color: #7b7b7b;
 }
 
-/* === Links === */
+/* === Group Section === */
+.group-section {
+  margin-top: 15px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f5faff;
+}
+
+.group-section strong {
+  display: block;
+  margin-bottom: 5px;
+  color: #1e3a5f;
+}
+
+.group-section button {
+  margin-top: 5px;
+}
+
+/* === Labels & Links === */
+label {
+  display: block;
+  font-size: 14px;
+  margin-top: 10px;
+  color: #333;
+}
+
 a {
   color: #007bff;
   text-decoration: none;
   font-size: 14px;
+  display: inline-block;
+  margin-top: 10px;
 }
 
 a:hover {
   text-decoration: underline;
 }
 
-/* === Link Row: Forgot Password + Sign Up on Same Line === */
-.link-row {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 15px;
+/* === Flex Row for Links === */
+div > a + a {
+  margin-left: 15px;
 }
 
-.right-link {
-  color: #388e3c; /* Greenish tone to differentiate */
-  font-weight: bold;
-}
-
-/* === Group Section === */
-.group-section {
-  margin-top: 20px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #ddd;
-}
-
-.group-section > * {
-  margin-top: 6px;
-}
-
-.group-section input[type="text"],
-.group-section input[type="tel"] {
-  width: calc(100% - 20px);
-  margin-top: 6px;
-}
-
-/* === Member Selection Checkbox === */
-.select-member {
-  margin-top: 6px;
-}
-
-/* === Responsive Layout === */
+/* === Responsive === */
 @media (max-width: 500px) {
-  .container {
+  main#app {
     margin: 30px 10px;
     padding: 15px;
   }
