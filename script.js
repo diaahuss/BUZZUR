@@ -3,7 +3,7 @@ const app = document.getElementById('app');
 let currentUser = null;
 let userGroups = [];
 
-// Utility
+// Utility to create elements
 function createEl(tag, attrs = {}, ...children) {
   const el = document.createElement(tag);
   Object.entries(attrs).forEach(([k, v]) => el[k] = v);
@@ -11,14 +11,15 @@ function createEl(tag, attrs = {}, ...children) {
   return el;
 }
 
-// Views
+// Login Screen
 function renderLogin() {
   app.innerHTML = '';
+
   const phoneInput = createEl('input', { placeholder: 'Phone Number' });
   const passwordInput = createEl('input', { placeholder: 'Password', type: 'password' });
   const showPwd = createEl('input', { type: 'checkbox' });
   const loginBtn = createEl('button', { textContent: 'Login' });
-  const toSignup = createEl('a', { href: '#', textContent: 'Sign Up' });
+  const toSignup = createEl('a', { href: '#', textContent: 'Sign Up', style: 'margin-left: 10px;' });
   const toForgot = createEl('a', { href: '#', textContent: 'Forgot Password?' });
 
   showPwd.addEventListener('change', () => {
@@ -41,18 +42,21 @@ function renderLogin() {
   });
 
   toSignup.addEventListener('click', renderSignup);
+  toForgot.addEventListener('click', renderForgot);
 
   app.append(
     phoneInput,
     passwordInput,
     createEl('label', {}, showPwd, ' Show Password'),
     loginBtn,
-    createEl('div', {}, toForgot, ' | ', toSignup)
+    createEl('div', {}, toForgot, toSignup)
   );
 }
 
+// Signup Screen
 function renderSignup() {
   app.innerHTML = '';
+
   const nameInput = createEl('input', { placeholder: 'Name' });
   const phoneInput = createEl('input', { placeholder: 'Phone Number' });
   const passwordInput = createEl('input', { placeholder: 'Password', type: 'password' });
@@ -102,6 +106,16 @@ function renderSignup() {
   );
 }
 
+// Forgot Password Placeholder
+function renderForgot() {
+  app.innerHTML = '';
+  const msg = createEl('p', { textContent: 'Forgot Password feature coming soon.' });
+  const back = createEl('a', { href: '#', textContent: 'Back to Login' });
+  back.addEventListener('click', renderLogin);
+  app.append(msg, back);
+}
+
+// Dashboard View
 async function loadDashboard() {
   app.innerHTML = '';
 
@@ -137,8 +151,20 @@ async function loadDashboard() {
   });
 
   app.append(title, groupList, newGroupInput, addGroupBtn, buzzAllBtn, logoutBtn);
+  await fetchGroups(groupList);
 }
 
+// Fetch and render groups
+async function fetchGroups(container) {
+  const res = await fetch(`/groups?userId=${currentUser.id}`);
+  const data = await res.json();
+  if (data.success) {
+    userGroups = data.groups;
+    renderGroups(container);
+  }
+}
+
+// Render all user's groups
 function renderGroups(container) {
   container.innerHTML = '';
   userGroups.forEach(group => {
@@ -154,7 +180,7 @@ function renderGroups(container) {
   });
 }
 
-// Buzz sound
+// Play buzz sound
 socket.on('buzz', () => {
   const sound = document.getElementById('buzzSound');
   if (sound) {
@@ -163,5 +189,5 @@ socket.on('buzz', () => {
   }
 });
 
-// Init
+// Initialize app
 renderLogin();
