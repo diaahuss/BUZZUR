@@ -1,78 +1,46 @@
 const express = require('express');
-const bodyParser = require('body-parser');
-const path = require('path');
+const http = require('http');
+const cors = require('cors');
+const { Server } = require('socket.io');
 
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: '*', // Adjust this in production
+    methods: ['GET', 'POST']
+  }
+});
+
+app.use(cors());
+app.use(express.json());
+
+app.get('/', (req, res) => {
+  res.send('BUZZUR backend is running!');
+});
+
+app.post('/send-buzz', (req, res) => {
+  const { members } = req.body;
+  console.log('Buzzing members:', members);
+
+  io.emit('receive-buzz', members); // Broadcast to all connected clients
+  res.status(200).json({ success: true, message: 'Buzz sent' });
+});
+
+io.on('connection', (socket) => {
+  console.log(`Client connected: ${socket.id}`);
+
+  socket.on('buzz', (data) => {
+    console.log('Buzz event received from client:', data);
+    socket.broadcast.emit('receive-buzz', data.members);
+  });
+
+  socket.on('disconnect', () => {
+    console.log(`Client disconnected: ${socket.id}`);
+  });
+});
+
 const PORT = process.env.PORT || 3000;
-
-// Mock database (replace with real database in production)
-let groups = [];
-let members = {};
-
-// Middleware
-app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, 'public')));
-
-// API Routes
-app.get('/api/groups', (req, res) => {
-    res.json(groups);
-});
-
-app.post('/api/groups', (req, res) => {
-    const { name } = req.body;
-    const newGroup = {
-        id: Date.now().toString(),
-        name
-    };
-    groups.push(newGroup);
-    members[newGroup.id] = [];
-    res.status(201).json(newGroup);
-});
-
-app.get('/api/groups/:groupId/members', (req, res) => {
-    const { groupId } = req.params;
-    if (!members[groupId]) {
-        return res.status(404).json({ error: 'Group not found' });
-    }
-    res.json(members[groupId]);
-});
-
-app.post('/api/groups/:groupId/members', (req, res) => {
-    const { groupId } = req.params;
-    const { phone } = req.body;
-    
-    if (!members[groupId]) {
-        return res.status(404).json({ error: 'Group not found' });
-    }
-    
-    const newMember = {
-        id: Date.now().toString(),
-        phone
-    };
-    
-    members[groupId].push(newMember);
-    res.status(201).json(newMember);
-});
-
-app.post('/api/groups/:groupId/buzz', (req, res) => {
-    const { groupId } = req.params;
-    
-    if (!members[groupId]) {
-        return res.status(404).json({ error: 'Group not found' });
-    }
-    
-    // In a real app, here you would integrate with a notification service
-    console.log(`BUZZING group ${groupId} with ${members[groupId].length} members`);
-    
-    res.json({ success: true, message: 'Buzz sent to group members' });
-});
-
-// Serve HTML
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-// Start server
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+server.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
 });
