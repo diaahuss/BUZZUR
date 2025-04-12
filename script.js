@@ -1,10 +1,7 @@
-// Ensure socket is connected (already created in HTML)
 const socket = window.socket;
 
-// Sample structure for storing groups in localStorage
 let groups = JSON.parse(localStorage.getItem('buzzur-groups')) || [];
 let currentGroup = null;
-
 const app = document.getElementById('app');
 
 function renderDashboard() {
@@ -14,15 +11,7 @@ function renderDashboard() {
       <input type="text" id="group-name" placeholder="Group name" />
       <button id="create-group">Create Group</button>
     </div>
-    <div id="group-list">
-      ${groups.map((group, index) => `
-        <div>
-          <strong>${group.name}</strong>
-          <button onclick="selectGroup(${index})">Select</button>
-        </div>
-      `).join('')}
-    </div>
-    <div id="selected-group"></div>
+    <div id="group-list"></div>
   `;
 
   document.getElementById('create-group').addEventListener('click', () => {
@@ -33,12 +22,18 @@ function renderDashboard() {
     localStorage.setItem('buzzur-groups', JSON.stringify(groups));
     renderDashboard();
   });
-}
 
-window.selectGroup = function (index) {
-  currentGroup = groups[index];
-  renderGroupUI();
-};
+  const groupListDiv = document.getElementById('group-list');
+  groups.forEach((group, index) => {
+    const div = document.createElement('div');
+    div.innerHTML = `<strong>${group.name}</strong> <button>Select</button>`;
+    div.querySelector('button').addEventListener('click', () => {
+      currentGroup = groups[index];
+      renderGroupUI();
+    });
+    groupListDiv.appendChild(div);
+  });
+}
 
 function renderGroupUI() {
   app.innerHTML = `
@@ -48,15 +43,13 @@ function renderGroupUI() {
       <input type="text" id="member-phone" placeholder="Phone" />
       <button id="add-member">Add Member</button>
     </div>
-    <ul>
-      ${currentGroup.members.map(member => `
-        <li>${member.name} (${member.phone})</li>
-      `).join('')}
-    </ul>
+    <ul id="member-list"></ul>
     <button id="buzz-group">Buzz Group</button>
     <button id="back">Back</button>
     <div id="status"></div>
   `;
+
+  updateMemberList();
 
   document.getElementById('add-member').addEventListener('click', () => {
     const name = document.getElementById('member-name').value.trim();
@@ -64,7 +57,7 @@ function renderGroupUI() {
     if (!name || !phone) return alert('Enter both name and phone');
     currentGroup.members.push({ name, phone });
     localStorage.setItem('buzzur-groups', JSON.stringify(groups));
-    renderGroupUI();
+    updateMemberList();
   });
 
   document.getElementById('buzz-group').addEventListener('click', () => {
@@ -85,12 +78,22 @@ function renderGroupUI() {
   });
 }
 
-// 🔊 Play buzz sound when alert is received from server
+function updateMemberList() {
+  const list = document.getElementById('member-list');
+  list.innerHTML = '';
+  currentGroup.members.forEach(member => {
+    const li = document.createElement('li');
+    li.textContent = `${member.name} (${member.phone})`;
+    list.appendChild(li);
+  });
+}
+
+// Receive buzz from server
 socket.on('buzz', (data) => {
   const audio = document.getElementById('buzz-sound');
   audio.play();
   alert(`Buzz received from: ${data.groupName}`);
 });
 
-// Start the app
+// Initialize
 renderDashboard();
