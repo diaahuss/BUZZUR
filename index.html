@@ -7,18 +7,24 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <noscript>Please enable JavaScript to use this app.</noscript>
   <div id="app"></div>
 
-  <!-- Load Socket.IO from CDN -->
-  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js" crossorigin="anonymous"></script>
+  <!-- Load Socket.IO (client) -->
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"
+          integrity="sha384-AAYcKmuAkeSk+TVR8CUVbf4t2UbmHyA8q1ruTh2yEu0o4t0/9Ni4nTwMDj01/jc3"
+          crossorigin="anonymous"></script>
 
   <!-- App script, wait for DOM to be ready -->
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      renderLogin(); // Default to login screen
+      if (typeof renderApp === 'function') {
+        renderApp();
+      } else {
+        console.error("renderApp is not defined. Check if script.js is loading correctly.");
+      }
     });
   </script>
-
   <script src="script.js"></script>
 </body>
 </html>
