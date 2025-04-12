@@ -1,240 +1,230 @@
-// App State
-const AppState = {
-  currentUser: null,
-  userGroups: [],
-  socket: null,
+const socket = io('https://buzzur-server.onrender.com'); // Update if needed
+const app = document.getElementById('app');
+const buzzSound = document.getElementById('buzz-sound');
 
-  // Initialize the application
-  init() {
-    this.setupSocket();
-    this.checkAuth();
-    this.setupEventDelegates();
-  },
+let currentUser = null;
 
-  // Set up Socket.io connection
-  setupSocket() {
-    this.socket = io('http://localhost:3000', {
-      withCredentials: true,
-      reconnectionAttempts: 5
-    });
+// Initial load
+renderLogin();
 
-    this.socket.on('connect', () => {
-      console.log('Connected to server');
-    });
+// === RENDER FUNCTIONS ===
 
-    this.socket.on('disconnect', () => {
-      console.log('Disconnected from server');
-    });
+function renderLogin() {
+  app.innerHTML = `
+    <div class="banner">BUZZUR</div>
+    <form id="loginForm" class="form-section">
+      <input type="tel" placeholder="Phone Number" required />
+      <input type="password" placeholder="Password" required />
+      <button type="submit">Login</button>
+    </form>
+    <div class="links-row">
+      <a href="#" id="forgotLink">Forgot Password?</a>
+      <a href="#" id="signupLink">Sign Up</a>
+    </div>
+  `;
 
-    this.socket.on('buzz', this.handleBuzz);
-    this.socket.on('buzzGroup', this.handleGroupBuzz);
-  },
+  document.getElementById('signupLink').onclick = renderSignup;
+  document.getElementById('forgotLink').onclick = () => alert('Feature coming soon!');
+  document.getElementById('loginForm').onsubmit = handleLogin;
+}
 
-  // Check authentication status
-  async checkAuth() {
-    try {
-      const response = await fetch('/auth/status', {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-        }
-      });
-      
-      const data = await response.json();
-      
-      if (data.authenticated) {
-        this.currentUser = data.user;
-        this.userGroups = data.groups || [];
-        Views.renderDashboard();
-      } else {
-        Views.renderLogin();
-      }
-    } catch (error) {
-      console.error('Auth check failed:', error);
-      Views.renderLogin();
-    }
-  },
+function renderSignup() {
+  app.innerHTML = `
+    <div class="banner">Sign Up</div>
+    <form id="signupForm" class="form-section">
+      <input type="text" placeholder="Name" required />
+      <input type="tel" placeholder="Phone Number" required />
+      <input type="password" placeholder="Password" required />
+      <input type="password" placeholder="Confirm Password" required />
+      <label><input type="checkbox" id="showPassword"> Show Password</label>
+      <button type="submit">Sign Up</button>
+    </form>
+  `;
 
-  // Handle incoming buzz events
-  handleBuzz() {
-    Views.playBuzzSound();
-  },
+  const passwordFields = app.querySelectorAll('input[type="password"]');
+  document.getElementById('showPassword').onchange = (e) => {
+    passwordFields.forEach(field => field.type = e.target.checked ? 'text' : 'password');
+  };
 
-  handleGroupBuzz(data) {
-    if (AppState.userGroups.some(g => g.id === data.groupId)) {
-      Views.playBuzzSound();
-    }
-  },
+  document.getElementById('signupForm').onsubmit = handleSignup;
+}
 
-  // Event delegation setup
-  setupEventDelegates() {
-    document.addEventListener('click', (e) => {
-      if (e.target.id === 'loginBtn') Views.handleLogin();
-      if (e.target.id === 'signupBtn') Views.handleSignup();
-      if (e.target.id === 'logoutBtn') Views.handleLogout();
-      if (e.target.id === 'addGroupBtn') Views.handleCreateGroup();
-      if (e.target.id === 'buzzAllBtn') AppState.socket.emit('buzzAll');
-      
-      if (e.target.classList.contains('buzz-group-btn')) {
-        const groupId = e.target.dataset.groupId;
-        AppState.socket.emit('buzzGroup', { groupId });
-      }
-    });
-  }
-};
+function renderDashboard() {
+  const groups = getUserGroups();
+  app.innerHTML = `
+    <div class="banner">My Groups</div>
+    <div class="form-section">
+      <input type="text" id="newGroupName" placeholder="Group Name" />
+      <button onclick="createGroup()">Create Group</button>
+      <div id="groupList">${groups.map(renderGroupCard).join('')}</div>
+      <button class="logout-button" onclick="logout()">Logout</button>
+    </div>
+  `;
+}
 
-// View Management
-const Views = {
-  // Render the login view
-  renderLogin() {
-    const app = document.getElementById('app');
-    app.innerHTML = `
-      <div class="auth-view">
-        <h2>BUZZUR Login</h2>
-        <input type="tel" id="loginPhone" placeholder="Phone Number" required>
-        <input type="password" id="loginPassword" placeholder="Password" required>
-        <label>
-          <input type="checkbox" id="showPwd"> Show Password
-        </label>
-        <button id="loginBtn">Login</button>
-        <div class="auth-links">
-          <a href="#" id="toSignup">Create Account</a>
-        </div>
+// === GROUP RENDERING ===
+
+function renderGroupCard(group) {
+  const memberList = group.members.map((m, i) => `
+    <div class="member">
+      <span>${m.name} (${m.phone})</span>
+      <div>
+        <input type="checkbox" data-member="${i}" data-group="${group.name}">
+        <button onclick="removeMember('${group.name}', ${i})">Remove</button>
       </div>
-    `;
-    
-    document.getElementById('showPwd').addEventListener('change', (e) => {
-      const pwdInput = document.getElementById('loginPassword');
-      pwdInput.type = e.target.checked ? 'text' : 'password';
-    });
-  },
+    </div>
+  `).join('');
 
-  // Render the dashboard view
-  renderDashboard() {
-    const app = document.getElementById('app');
-    app.innerHTML = `
-      <header>
-        <h1>Welcome, ${AppState.currentUser.name}</h1>
-        <button id="logoutBtn">Logout</button>
-      </header>
-      <main>
-        <section class="groups-section">
-          <h2>Your Groups</h2>
-          <div id="groupsList"></div>
-          <div class="group-create">
-            <input type="text" id="newGroupName" placeholder="New group name">
-            <button id="addGroupBtn">Create Group</button>
-          </div>
-        </section>
-        <button id="buzzAllBtn" class="buzz-btn">Buzz All</button>
-      </main>
-    `;
-    
-    this.renderGroups();
-  },
-
-  // Render the groups list
-  renderGroups() {
-    const container = document.getElementById('groupsList');
-    if (!container) return;
-    
-    if (AppState.userGroups.length === 0) {
-      container.innerHTML = '<p>No groups yet. Create your first group!</p>';
-      return;
-    }
-    
-    container.innerHTML = AppState.userGroups.map(group => `
-      <div class="group-card">
-        <h3>${group.name}</h3>
-        <button class="buzz-group-btn" data-group-id="${group.id}">
-          Buzz Group
-        </button>
+  return `
+    <div class="group-card" id="group-${group.name}">
+      <h3>${group.name}</h3>
+      <button onclick="editGroupName('${group.name}')">Edit Name</button>
+      <button onclick="addMember('${group.name}')">Add Member</button>
+      ${memberList}
+      <div class="controls">
+        <button onclick="buzzSelected('${group.name}')">Buzz Selected</button>
+        <button onclick="buzzAll('${group.name}')">Buzz All</button>
+        <button onclick="removeGroup('${group.name}')">Remove Group</button>
       </div>
-    `).join('');
-  },
+    </div>
+  `;
+}
 
-  // Play buzz sound
-  playBuzzSound() {
-    const sound = document.getElementById('buzzSound');
-    if (sound) {
-      sound.currentTime = 0;
-      sound.play().catch(e => {
-        console.error('Failed to play sound:', e);
-        alert('BUZZ!');
-      });
-    } else {
-      alert('BUZZ!');
-    }
-  },
+// === EVENT HANDLERS ===
 
-  // Event handlers
-  async handleLogin() {
-    const phone = document.getElementById('loginPhone').value;
-    const password = document.getElementById('loginPassword').value;
-    
-    try {
-      const response = await fetch('/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone, password })
-      });
-      
-      const data = await response.json();
-      
-      if (!response.ok) throw new Error(data.message || 'Login failed');
-      
-      localStorage.setItem('authToken', data.token);
-      AppState.currentUser = data.user;
-      AppState.userGroups = data.groups || [];
-      this.renderDashboard();
-      
-    } catch (error) {
-      console.error('Login error:', error);
-      alert(error.message || 'Login failed');
-    }
-  },
+function handleLogin(e) {
+  e.preventDefault();
+  const [phoneInput, passInput] = e.target.elements;
+  const phone = phoneInput.value.trim();
+  const password = passInput.value.trim();
 
-  async handleLogout() {
-    try {
-      await fetch('/auth/logout');
-      localStorage.removeItem('authToken');
-      AppState.currentUser = null;
-      AppState.userGroups = [];
-      this.renderLogin();
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
-  },
-
-  async handleCreateGroup() {
-    const name = document.getElementById('newGroupName').value.trim();
-    if (!name) return;
-    
-    try {
-      const response = await fetch('/api/groups', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-        },
-        body: JSON.stringify({ name })
-      });
-      
-      const data = await response.json();
-      
-      if (!response.ok) throw new Error(data.message || 'Failed to create group');
-      
-      AppState.userGroups.push(data.group);
-      this.renderGroups();
-      document.getElementById('newGroupName').value = '';
-      
-    } catch (error) {
-      console.error('Create group error:', error);
-      alert(error.message || 'Failed to create group');
-    }
+  const user = JSON.parse(localStorage.getItem(`user:${phone}`));
+  if (user && user.password === password) {
+    currentUser = user;
+    renderDashboard();
+  } else {
+    alert('Invalid phone or password');
   }
-};
+}
 
-// Initialize the app when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
-  AppState.init();
+function handleSignup(e) {
+  e.preventDefault();
+  const [name, phone, password, confirm] = e.target.elements;
+
+  if (password.value !== confirm.value) {
+    alert('Passwords do not match');
+    return;
+  }
+
+  const user = {
+    name: name.value.trim(),
+    phone: phone.value.trim(),
+    password: password.value.trim(),
+    groups: []
+  };
+
+  localStorage.setItem(`user:${user.phone}`, JSON.stringify(user));
+  alert('Sign-up successful! Please login.');
+  renderLogin();
+}
+
+function logout() {
+  currentUser = null;
+  renderLogin();
+}
+
+// === GROUP FUNCTIONS ===
+
+function getUserGroups() {
+  const user = JSON.parse(localStorage.getItem(`user:${currentUser.phone}`));
+  return user.groups || [];
+}
+
+function saveUserGroups(groups) {
+  currentUser.groups = groups;
+  localStorage.setItem(`user:${currentUser.phone}`, JSON.stringify(currentUser));
+  renderDashboard();
+}
+
+function createGroup() {
+  const name = document.getElementById('newGroupName').value.trim();
+  if (!name) return alert('Enter a group name');
+
+  const groups = getUserGroups();
+  if (groups.find(g => g.name === name)) {
+    return alert('Group name already exists');
+  }
+
+  groups.push({ name, members: [] });
+  saveUserGroups(groups);
+}
+
+function removeGroup(name) {
+  const groups = getUserGroups().filter(g => g.name !== name);
+  saveUserGroups(groups);
+}
+
+function addMember(groupName) {
+  const name = prompt('Member name?');
+  const phone = prompt('Member phone?');
+  if (!name || !phone) return;
+
+  const groups = getUserGroups();
+  const group = groups.find(g => g.name === groupName);
+  group.members.push({ name, phone });
+  saveUserGroups(groups);
+}
+
+function removeMember(groupName, index) {
+  const groups = getUserGroups();
+  const group = groups.find(g => g.name === groupName);
+  group.members.splice(index, 1);
+  saveUserGroups(groups);
+}
+
+function editGroupName(oldName) {
+  const newName = prompt('New group name?');
+  if (!newName) return;
+
+  const groups = getUserGroups();
+  const group = groups.find(g => g.name === oldName);
+  group.name = newName;
+  saveUserGroups(groups);
+}
+
+function buzzAll(groupName) {
+  const group = getUserGroups().find(g => g.name === groupName);
+  if (group.members.length === 0) return alert('No members to buzz');
+
+  playBuzz();
+  sendBuzz(group.members);
+}
+
+function buzzSelected(groupName) {
+  const checkboxes = document.querySelectorAll(`input[data-group="${groupName}"]:checked`);
+  const group = getUserGroups().find(g => g.name === groupName);
+  const selected = [...checkboxes].map(cb => group.members[cb.dataset.member]);
+
+  if (selected.length === 0) return alert('No members selected');
+  playBuzz();
+  sendBuzz(selected);
+}
+
+function playBuzz() {
+  buzzSound.currentTime = 0;
+  buzzSound.play();
+}
+
+function sendBuzz(members) {
+  fetch('https://buzzur-server.onrender.com/send-buzz', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ members }),
+  });
+
+  socket.emit('buzz', { members });
+}
+
+socket.on('receive-buzz', () => {
+  playBuzz();
 });
