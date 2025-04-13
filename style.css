@@ -1,108 +1,70 @@
-/* Reset & Base Layout */
-* {
-  box-sizing: border-box;
+body {
+  font-family: Arial, sans-serif;
+  background-color: #e3f2fd; /* Pale blue */
   margin: 0;
   padding: 0;
 }
 
-body {
-  font-family: Arial, sans-serif;
-  background-color: #f0f8ff;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding-top: 50px;
-  min-height: 100vh;
-}
-
-/* Main App Container */
-#app {
-  background: #ffffff;
-  width: 90%;
+.container {
   max-width: 400px;
+  margin: 60px auto;
+  padding: 20px;
+  background-color: #ffffff;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  padding: 20px;
 }
 
-/* Headings */
-h1 {
-  font-size: 1.8rem;
-  color: #003366;
+.banner {
+  background-color: #1e3a5f; /* Dark blue */
+  color: white;
+  padding: 15px;
   text-align: center;
+  border-radius: 8px;
   margin-bottom: 20px;
+  font-size: 20px;
+  font-weight: bold;
 }
 
-/* Form Inputs */
-input[type="text"],
-input[type="password"],
-input[type="tel"] {
+/* inputs and buttons will stay within .container width */
+input, button {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
   padding: 10px;
-  font-size: 1rem;
-  border: 1px solid #ccc;
+  margin-top: 10px;
+  font-size: 16px;
   border-radius: 6px;
-  width: 100%;
+  border: 1px solid #ccc;
 }
 
-/* Buttons */
+/* Blue shades for buttons */
 button {
-  background-color: #a3d9a5;
+  background-color: #5e92f3; /* Light blue */
+  color: white;
   border: none;
-  padding: 12px;
-  font-size: 1rem;
-  border-radius: 6px;
   cursor: pointer;
-  transition: background 0.2s;
-  margin-top: 8px;
-  width: 100%;
 }
 
 button:hover {
-  background-color: #8fd291;
+  background-color: #3f80d1; /* Medium blue on hover */
 }
 
-/* Group Cards */
-.group-card {
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 12px;
-  margin-bottom: 10px;
+button:active {
+  background-color: #2d69a7; /* Darker blue when button is clicked */
 }
 
-.group-card h3 {
-  margin-bottom: 8px;
+a {
+  color: #007bff;
+  text-decoration: none;
+  font-size: 14px;
 }
 
-/* Member List */
-ul#member-list {
-  list-style: none;
-  margin-top: 10px;
-  padding-left: 0;
+a:hover {
+  text-decoration: underline;
 }
 
-ul#member-list li {
-  padding: 6px 0;
-  border-bottom: 1px solid #eee;
-}
-
-/* Controls */
-.controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 12px;
-}
-
-.controls button {
-  flex: 1;
-  min-width: 48%;
-}
-
-/* Status Message */
-#status {
-  margin-top: 10px;
-  font-size: 0.95rem;
-  color: green;
-  text-align: center;
+.group-section {
+  margin-top: 15px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
 }
