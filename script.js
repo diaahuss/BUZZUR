@@ -1,3 +1,5 @@
+console.log('script.js loaded');
+console.log('Socket exists:', !!window.socket);
 const socket = window.socket;
 
 let groups = JSON.parse(localStorage.getItem('buzzur-groups')) || [];
