@@ -1,10 +1,10 @@
-
 body {
   font-family: Arial, sans-serif;
-  background-color: #e3f2fd;
+  background-color: #e3f2fd; /* Pale blue */
   margin: 0;
   padding: 0;
 }
+
 .container {
   max-width: 400px;
   margin: 60px auto;
@@ -13,8 +13,9 @@ body {
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
+
 .banner {
-  background-color: #1e3a5f;
+  background-color: #1e3a5f; /* Dark blue */
   color: white;
   padding: 15px;
   text-align: center;
@@ -23,7 +24,9 @@ body {
   font-size: 20px;
   font-weight: bold;
 }
-input, button {
+
+input,
+button {
   display: block;
   width: 100%;
   box-sizing: border-box;
@@ -33,26 +36,32 @@ input, button {
   border-radius: 6px;
   border: 1px solid #ccc;
 }
+
 button {
-  background-color: #5e92f3;
+  background-color: #5e92f3; /* Light blue */
   color: white;
   border: none;
   cursor: pointer;
 }
+
 button:hover {
-  background-color: #3f80d1;
+  background-color: #3f80d1; /* Medium blue on hover */
 }
+
 button:active {
-  background-color: #2d69a7;
+  background-color: #2d69a7; /* Darker blue when button is clicked */
 }
+
 a {
   color: #007bff;
   text-decoration: none;
   font-size: 14px;
 }
+
 a:hover {
   text-decoration: underline;
 }
+
 .group-section {
   margin-top: 15px;
   border-bottom: 1px solid #ddd;
