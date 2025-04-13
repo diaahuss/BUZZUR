@@ -4,14 +4,13 @@ let groups = JSON.parse(localStorage.getItem('buzzur-groups')) || [];
 let currentGroup = null;
 const app = document.getElementById('app');
 
+// Render Main Dashboard
 function renderDashboard() {
   app.innerHTML = `
     <h1>BUZZUR</h1>
-    <div>
-      <input type="text" id="group-name" placeholder="Group name" />
-      <button id="create-group">Create Group</button>
-    </div>
-    <div id="group-list"></div>
+    <input type="text" id="group-name" placeholder="Group name" />
+    <button id="create-group">Create Group</button>
+    <div id="group-list" class="controls"></div>
   `;
 
   document.getElementById('create-group').addEventListener('click', () => {
@@ -19,14 +18,18 @@ function renderDashboard() {
     if (!name) return alert('Enter group name');
     const newGroup = { name, members: [] };
     groups.push(newGroup);
-    localStorage.setItem('buzzur-groups', JSON.stringify(groups));
+    saveGroups();
     renderDashboard();
   });
 
   const groupListDiv = document.getElementById('group-list');
   groups.forEach((group, index) => {
     const div = document.createElement('div');
-    div.innerHTML = `<strong>${group.name}</strong> <button>Select</button>`;
+    div.className = 'group-card';
+    div.innerHTML = `
+      <h3>${group.name}</h3>
+      <button>Select</button>
+    `;
     div.querySelector('button').addEventListener('click', () => {
       currentGroup = groups[index];
       renderGroupUI();
@@ -35,17 +38,18 @@ function renderDashboard() {
   });
 }
 
+// Render Group View
 function renderGroupUI() {
   app.innerHTML = `
     <h1>${currentGroup.name}</h1>
-    <div>
-      <input type="text" id="member-name" placeholder="Name" />
-      <input type="text" id="member-phone" placeholder="Phone" />
-      <button id="add-member">Add Member</button>
-    </div>
+    <input type="text" id="member-name" placeholder="Member name" />
+    <input type="tel" id="member-phone" placeholder="Phone number" />
+    <button id="add-member">Add Member</button>
     <ul id="member-list"></ul>
-    <button id="buzz-group">Buzz Group</button>
-    <button id="back">Back</button>
+    <div class="controls">
+      <button id="buzz-group">Buzz Group</button>
+      <button id="back">Back</button>
+    </div>
     <div id="status"></div>
   `;
 
@@ -56,7 +60,7 @@ function renderGroupUI() {
     const phone = document.getElementById('member-phone').value.trim();
     if (!name || !phone) return alert('Enter both name and phone');
     currentGroup.members.push({ name, phone });
-    localStorage.setItem('buzzur-groups', JSON.stringify(groups));
+    saveGroups();
     updateMemberList();
   });
 
@@ -70,14 +74,13 @@ function renderGroupUI() {
       members: currentGroup.members,
     });
 
-    document.getElementById('status').textContent = 'Buzz sent!';
+    document.getElementById('status').textContent = '✅ Buzz sent!';
   });
 
-  document.getElementById('back').addEventListener('click', () => {
-    renderDashboard();
-  });
+  document.getElementById('back').addEventListener('click', renderDashboard);
 }
 
+// Update Member List
 function updateMemberList() {
   const list = document.getElementById('member-list');
   list.innerHTML = '';
@@ -88,12 +91,17 @@ function updateMemberList() {
   });
 }
 
-// Receive buzz from server
+// Save to localStorage
+function saveGroups() {
+  localStorage.setItem('buzzur-groups', JSON.stringify(groups));
+}
+
+// Handle incoming buzz
 socket.on('buzz', (data) => {
   const audio = document.getElementById('buzz-sound');
   audio.play();
   alert(`Buzz received from: ${data.groupName}`);
 });
 
-// Initialize
+// Initial Load
 renderDashboard();
