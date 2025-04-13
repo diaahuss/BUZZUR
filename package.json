@@ -1,13 +1,14 @@
 {
-  "name": "buzzer-app",
+  "name": "buzzur",
   "version": "1.0.0",
-  "description": "A real-time buzz notification app",
+  "description": "BUZZUR real-time alert app",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
-    "express": "^4.18.1",
-    "socket.io": "^4.5.1"
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "socket.io": "^4.7.2"
   }
 }
