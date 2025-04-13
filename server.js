@@ -1,30 +1,27 @@
-
 const express = require('express');
 const http = require('http');
-const path = require('path');
-const { Server } = require('socket.io');
+const socketIo = require('socket.io');
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
+const io = socketIo(server);
 
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.json());
+// Serve static files from the 'buzzur' folder
+app.use(express.static('buzzur'));
 
-io.on('connection', socket => {
-  console.log('Client connected');
-  socket.on('buzz', data => {
-    socket.broadcast.emit('buzz', data);
+// Basic endpoint to handle POST requests for sending a "buzz" alert
+app.post('/send-buzz', (req, res) => {
+  io.emit('buzz', { message: 'Buzz sent to all members!' }); // Broadcast the buzz
+  res.send({ success: true });
+});
+
+io.on('connection', (socket) => {
+  console.log('A user connected');
+  socket.on('disconnect', () => {
+    console.log('User disconnected');
   });
 });
 
-app.post('/send-buzz', (req, res) => {
-  const { message } = req.body;
-  io.emit('buzz', { message });
-  res.status(200).send({ status: 'Buzz sent' });
-});
-
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+server.listen(3000, () => {
+  console.log('Server is running on http://localhost:3000');
 });
