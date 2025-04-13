@@ -220,4 +220,19 @@ function buzzSelected(groupName) {
   if (selectedMembers.length > 0) {
     socket.emit('buzz', { groupName, members: selectedMembers });
 
-    alert(`Buzz sent to selected
+    alert(`Buzz sent to selected members: ${selectedMembers.join(', ')}`);
+  } else {
+    alert('No members selected');
+  }
+}
+
+function saveGroups() {
+  localStorage.setItem('buzzerGroups', JSON.stringify(groups));
+}
+
+socket.on('buzz', function(data) {
+  alert(`Buzz received from group: ${data.groupName}`);
+  document.getElementById('buzz-sound').play(); // Play sound on buzz
+});
+
+showLogin(); // Start with login screen
