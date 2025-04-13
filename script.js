@@ -1,7 +1,27 @@
-// Will be filled in next stepconst app = document.getElementById('app');
+const app = document.getElementById('app');
 let currentUser = null;
 let groups = JSON.parse(localStorage.getItem('buzzerGroups') || '[]');
 let users = JSON.parse(localStorage.getItem('buzzerUsers') || '[]');
+
+// Initialize Socket.IO
+const socket = io();
+
+// Function to play a beep sound using AudioContext
+function playBeep() {
+  const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  const oscillator = audioContext.createOscillator();
+  oscillator.type = 'sine'; // You can change this to 'square', 'triangle', etc.
+  oscillator.frequency.setValueAtTime(1000, audioContext.currentTime); // Frequency of the beep
+  oscillator.connect(audioContext.destination);
+  oscillator.start();
+  oscillator.stop(audioContext.currentTime + 0.2); // Length of the beep (0.2 seconds)
+}
+
+// Listen for 'buzz' event from the server
+socket.on('buzz', (data) => {
+  console.log(data.message); // Optional: logs the buzz message
+  playBeep(); // Play the beep sound when buzz is received
+});
 
 function showLogin() {
   app.innerHTML = `
@@ -31,7 +51,7 @@ function showSignup() {
       <p>Already have an account? <a href="#" onclick="showLogin()">Login</a></p>
     </div>
   `;
-
+  
   document.getElementById('showPassword').addEventListener('change', togglePasswordVisibility);
 }
 
@@ -139,7 +159,7 @@ function createGroup() {
 function editGroup(name) {
   const group = groups.find(g => g.name === name && g.owner === currentUser.phone);
   if (!group) return;
-
+  
   let membersList = group.members.map((m, i) => `
     <div>
       <input value="${m.name}" onchange="updateMember(${i}, 'name', this.value)">
@@ -184,11 +204,6 @@ function addMember(groupName) {
   }
 }
 
-function updateMember(index, field, value) {
-  window.editingGroup.members[index][field] = value;
-  saveGroups();
-}
-
 function removeMember(index) {
   window.editingGroup.members.splice(index, 1);
   saveGroups();
@@ -208,17 +223,19 @@ function buzzAll(groupName) {
   const group = groups.find(g => g.name === groupName);
   if (!group) return;
   alert(`Buzz sent to all members: ${group.members.map(m => m.name).join(', ')}`);
+  socket.emit('buzz', { message: `Buzz sent to all members of ${group.name}` }); // Emit buzz to server
 }
 
 function buzzSelected(groupName) {
   const group = groups.find(g => g.name === groupName);
   if (!group) return;
-
+  
   const selectedMembers = Array.from(document.querySelectorAll('.select-member:checked'))
     .map(checkbox => group.members[checkbox.dataset.index].name);
-
+  
   if (selectedMembers.length > 0) {
     alert(`Buzz sent to selected members: ${selectedMembers.join(', ')}`);
+    socket.emit('buzz', { message: `Buzz sent to selected members: ${selectedMembers.join(', ')}` }); // Emit buzz to server
   } else {
     alert('No members selected');
   }
