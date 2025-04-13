@@ -7,9 +7,7 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <main id="app">
-    <!-- Content will be dynamically rendered here -->
-  </main>
+  <main id="app">Loading BUZZUR...</main>
 
   <!-- Buzz sound -->
   <audio id="buzz-sound" src="buzz.mp3" preload="auto"></audio>
@@ -17,8 +15,13 @@
   <!-- Socket.IO from Render backend -->
   <script src="https://buzzur-server.onrender.com/socket.io/socket.io.js"></script>
   <script>
-    const socket = io("https://buzzur-server.onrender.com");
-    window.socket = socket;
+    try {
+      const socket = io("https://buzzur-server.onrender.com");
+      window.socket = socket;
+    } catch (e) {
+      alert("Failed to connect to buzzur-server backend.");
+      console.error(e);
+    }
   </script>
 
   <script src="script.js"></script>
