@@ -1,46 +1,28 @@
-// Initialize Firebase
+// Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyDMW9B11WwuDgaqGMP161snISp-Y9eYGw4",
   authDomain: "buzapp-45e3e.firebaseapp.com",
-  databaseURL: "https://buzapp-45e3e.firebaseio.com",
   projectId: "buzapp-45e3e",
   storageBucket: "buzapp-45e3e.appspot.com",
   messagingSenderId: "929630057360",
-  appId: "1:929630057360:web:1bc4bddcddd27fd28bf915"
+  appId: "1:929630057360:web:1bc4bddcddd27fd28bf915",
+  databaseURL: "https://buzapp-45e3e-default-rtdb.firebaseio.com"
 };
 
+// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 
 // Initialize Socket.IO
 const socket = io();
 
-// DOM Elements
+// DOM element
 const app = document.getElementById('app');
 
-// Global Variables
+// Current user
 let currentUser = null;
-let users = {};
-let groups = {};
 
-// Load users and groups from Firebase
-function loadData() {
-  database.ref('users').once('value').then(snapshot => {
-    users = snapshot.val() || {};
-  });
-
-  database.ref('groups').once('value').then(snapshot => {
-    groups = snapshot.val() || {};
-  });
-}
-
-// Save users and groups to Firebase
-function saveData() {
-  database.ref('users').set(users);
-  database.ref('groups').set(groups);
-}
-
-// Function to play a beep sound using AudioContext
+// Function to play a beep sound
 function playBeep() {
   const audioContext = new (window.AudioContext || window.webkitAudioContext)();
   const oscillator = audioContext.createOscillator();
@@ -57,7 +39,7 @@ socket.on('buzz', (data) => {
   playBeep();
 });
 
-// Show Login Page
+// Show login form
 function showLogin() {
   app.innerHTML = `
     <div class="container">
@@ -71,7 +53,7 @@ function showLogin() {
   `;
 }
 
-// Show Signup Page
+// Show signup form
 function showSignup() {
   app.innerHTML = `
     <div class="container">
@@ -91,7 +73,7 @@ function showSignup() {
   document.getElementById('showPassword').addEventListener('change', togglePasswordVisibility);
 }
 
-// Toggle Password Visibility
+// Toggle password visibility
 function togglePasswordVisibility() {
   const passwordField = document.getElementById('password');
   const confirmPasswordField = document.getElementById('confirmPassword');
@@ -100,7 +82,7 @@ function togglePasswordVisibility() {
   confirmPasswordField.type = isChecked ? 'text' : 'password';
 }
 
-// Show Forgot Password Page
+// Show forgot password form
 function showForgotPassword() {
   app.innerHTML = `
     <div class="container">
@@ -112,35 +94,49 @@ function showForgotPassword() {
   `;
 }
 
-// Reset Password
+// Reset password
 function resetPassword() {
   const phone = document.getElementById('phone').value;
-  const user = users[phone];
-  if (user) {
-    const newPassword = prompt('Enter a new password');
-    user.password = newPassword;
-    saveData();
-    alert('Password reset successful');
-    showLogin();
-  } else {
-    alert('User not found');
-  }
+  const usersRef = database.ref('users');
+
+  usersRef.orderByChild('phone').equalTo(phone).once('value', snapshot => {
+    if (snapshot.exists()) {
+      const userKey = Object.keys(snapshot.val())[0];
+      const newPassword = prompt('Enter a new password');
+      if (newPassword) {
+        usersRef.child(userKey).update({ password: newPassword });
+        alert('Password reset successful');
+        showLogin();
+      }
+    } else {
+      alert('User not found');
+    }
+  });
 }
 
-// Login Function
+// Login function
 function login() {
   const phone = document.getElementById('phone').value;
   const password = document.getElementById('password').value;
-  const user = users[phone];
-  if (user && user.password === password) {
-    currentUser = user;
-    showGroups();
-  } else {
-    alert('Invalid login');
-  }
+  const usersRef = database.ref('users');
+
+  usersRef.orderByChild('phone').equalTo(phone).once('value', snapshot => {
+    if (snapshot.exists()) {
+      const user = Object.values(snapshot.val())[0];
+      if (user.password === password) {
+        currentUser = user;
+        currentUser.key = Object.keys(snapshot.val())[0];
+        showGroups();
+      } else {
+        alert('Invalid password');
+      }
+    } else {
+      alert('User not found');
+    }
+  });
 }
 
-// Signup Function
+// Signup function
 function signup() {
   const name = document.getElementById('name').value;
   const phone = document.getElementById('phone').value;
@@ -152,50 +148,49 @@ function signup() {
     return;
   }
 
-  if (users[phone]) {
-    alert('User already exists');
-    return;
-  }
+  const usersRef = database.ref('users');
 
-  const newUser = { name, phone, password };
-  users[phone] = newUser;
-  saveData();
-  alert('Signup successful');
-  showLogin();
+  usersRef.orderByChild('phone').equalTo(phone).once('value', snapshot => {
+    if (snapshot.exists()) {
+      alert('User already exists');
+    } else {
+      const newUser = { name, phone, password };
+      usersRef.push(newUser, error => {
+        if (error) {
+          alert('Error signing up');
+        } else {
+          alert('Signup successful');
+          showLogin();
+        }
+      });
+    }
+  });
 }
 
-// Logout Function
+// Logout function
 function logout() {
   currentUser = null;
   showLogin();
 }
 
-// Show Groups Page
+// Show groups
 function showGroups() {
-  const userGroups = Object.values(groups).filter(g => g.owner === currentUser.phone);
-  app.innerHTML = `
-    <div class="container">
-      <div class="banner">My Groups</div>
-      ${userGroups.map(g => `
-        <div class="group-section">
-          <b>${g.name}</b><br>
-          <button onclick="editGroup('${g.name}')">Edit</button>
-          <button onclick="removeGroup('${g.name}')">Remove</button>
-          <button onclick="buzzAll('${g.name}')">Buzz All</button>
-        </div>
-      `).join('')}
-      <button onclick="createGroup()">Create New Group</button>
-      <button onclick="logout()">Logout</button>
-    </div>
-  `;
-}
+  const groupsRef = database.ref('groups');
+  groupsRef.orderByChild('owner').equalTo(currentUser.phone).once('value', snapshot => {
+    const groupsData = snapshot.val() || {};
+    const groupEntries = Object.entries(groupsData);
 
-// Create New Group
-function createGroup() {
-  const groupName = prompt('Enter group name:');
-  if (!groupName) return;
-  const newGroup = { name: groupName, members: [], owner: currentUser.phone };
-  groups[groupName] = newGroup;
-  save
+    app.innerHTML = `
+      <div class="container">
+        <div class="banner">My Groups</div>
+        ${groupEntries.map(([key, group]) => `
+          <div class="group-section">
+            <b>${group.name}</b><br>
+            <button onclick="editGroup('${key}')">Edit</button>
+            <button onclick="removeGroup('${key}')">Remove</button>
+            <button onclick="buzzAll('${key}')">Buzz All</button>
+          </div>
+        `).join('')}
+        <button onclick="createGroup
 ::contentReference[oaicite:0]{index=0}
  
