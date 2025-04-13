@@ -1,4 +1,9 @@
 // Import necessary Firebase modules
+// src/app.js
+import { auth, db } from './firebase-config';
+
+// Now you can use auth and db in your application
+
 import { initializeApp } from "firebase/app";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
 
