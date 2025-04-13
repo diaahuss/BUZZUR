@@ -1,6 +1,6 @@
 body {
   font-family: Arial, sans-serif;
-  background-color: #e3f2fd; /* Pale blue */
+  background-color: #e3f2fd;
   margin: 0;
   padding: 0;
 }
@@ -15,7 +15,7 @@ body {
 }
 
 .banner {
-  background-color: #1e3a5f; /* Dark blue */
+  background-color: #1e3a5f;
   color: white;
   padding: 15px;
   text-align: center;
@@ -25,7 +25,6 @@ body {
   font-weight: bold;
 }
 
-/* inputs and buttons will stay within .container width */
 input, button {
   display: block;
   width: 100%;
@@ -37,20 +36,19 @@ input, button {
   border: 1px solid #ccc;
 }
 
-/* Blue shades for buttons */
 button {
-  background-color: #5e92f3; /* Light blue */
+  background-color: #5e92f3;
   color: white;
   border: none;
   cursor: pointer;
 }
 
 button:hover {
-  background-color: #3f80d1; /* Medium blue on hover */
+  background-color: #3f80d1;
 }
 
 button:active {
-  background-color: #2d69a7; /* Darker blue when button is clicked */
+  background-color: #2d69a7;
 }
 
 a {
