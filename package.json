@@ -1,7 +1,7 @@
-
 {
-  "name": "buzzur-app",
+  "name": "buzzur-server",
   "version": "1.0.0",
+  "description": "BUZZUR backend server with Socket.IO",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
@@ -9,5 +9,7 @@
   "dependencies": {
     "express": "^4.18.2",
     "socket.io": "^4.7.2"
-  }
+  },
+  "author": "",
+  "license": "ISC"
 }
