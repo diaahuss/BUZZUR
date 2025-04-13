@@ -1,4 +1,4 @@
-/* General Reset and Layout */
+/* Reset & Base Layout */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -15,34 +15,26 @@ body {
   min-height: 100vh;
 }
 
-/* App Container */
+/* Main App Container */
 #app {
   background: #ffffff;
-  width: 100%;
+  width: 90%;
   max-width: 400px;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   overflow: hidden;
+  padding: 20px;
 }
 
-/* Banner */
-.banner {
-  background-color: #b0d4f1;
+/* Headings */
+h1 {
+  font-size: 1.8rem;
   color: #003366;
   text-align: center;
-  padding: 20px;
-  font-size: 1.5rem;
-  font-weight: bold;
+  margin-bottom: 20px;
 }
 
-/* Form & Button Styling */
-form, .form-section {
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
+/* Form Inputs */
 input[type="text"],
 input[type="password"],
 input[type="tel"] {
@@ -50,8 +42,10 @@ input[type="tel"] {
   font-size: 1rem;
   border: 1px solid #ccc;
   border-radius: 6px;
+  width: 100%;
 }
 
+/* Buttons */
 button {
   background-color: #a3d9a5;
   border: none;
@@ -60,30 +54,15 @@ button {
   border-radius: 6px;
   cursor: pointer;
   transition: background 0.2s;
+  margin-top: 8px;
+  width: 100%;
 }
 
 button:hover {
   background-color: #8fd291;
 }
 
-/* Links Row */
-.links-row {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.9rem;
-  padding: 0 20px 20px;
-}
-
-.links-row a {
-  color: #0077cc;
-  text-decoration: none;
-}
-
-.links-row a:hover {
-  text-decoration: underline;
-}
-
-/* Group Section */
+/* Group Cards */
 .group-card {
   border: 1px solid #ccc;
   border-radius: 8px;
@@ -95,17 +74,24 @@ button:hover {
   margin-bottom: 8px;
 }
 
-.group-card .member {
-  display: flex;
-  justify-content: space-between;
-  padding: 4px 0;
+/* Member List */
+ul#member-list {
+  list-style: none;
+  margin-top: 10px;
+  padding-left: 0;
 }
 
+ul#member-list li {
+  padding: 6px 0;
+  border-bottom: 1px solid #eee;
+}
+
+/* Controls */
 .controls {
   display: flex;
-  gap: 10px;
   flex-wrap: wrap;
-  margin-top: 10px;
+  gap: 10px;
+  margin-top: 12px;
 }
 
 .controls button {
@@ -113,14 +99,10 @@ button:hover {
   min-width: 48%;
 }
 
-/* Logout Button at Bottom */
-.logout-button {
-  display: block;
-  width: 100%;
-  margin-top: 20px;
-  background-color: #f5a3a3;
-}
-
-.logout-button:hover {
-  background-color: #f08080;
+/* Status Message */
+#status {
+  margin-top: 10px;
+  font-size: 0.95rem;
+  color: green;
+  text-align: center;
 }
