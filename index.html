@@ -2,13 +2,37 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Buzzer App</title>
-  <link rel="stylesheet" href="style.css">
+  <title>BuzzApp</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding-top: 50px;
+    }
+    #buzzButton {
+      padding: 10px 20px;
+      font-size: 16px;
+    }
+    #buzzList {
+      margin-top: 20px;
+      list-style-type: none;
+      padding: 0;
+    }
+    #buzzList li {
+      padding: 5px 0;
+    }
+  </style>
 </head>
 <body>
-  <div id="app"></div>
-  <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
-  <script src="script.js"></script>
+  <h1>BuzzApp</h1>
+  <button id="buzzButton">Send Buzz</button>
+  <ul id="buzzList"></ul>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+
+  <!-- Your custom script -->
+  <script src="app.js"></script>
 </body>
 </html>
