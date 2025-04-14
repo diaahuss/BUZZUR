@@ -1,198 +1,226 @@
-// Entry point
-document.addEventListener("DOMContentLoaded", () => {
-  renderLogin();
-});
-
-// DOM reference
 const app = document.getElementById("app");
+let users = JSON.parse(localStorage.getItem("buzzerUsers")) || [];
+let groups = JSON.parse(localStorage.getItem("buzzerGroups")) || [];
+let currentUser = null;
+let showPass = false;
 
-// View: Login
-function renderLogin() {
-  app.innerHTML = `
-    <form onsubmit="handleLogin(event)">
-      <h2>Login</h2>
-      <input type="tel" id="loginPhone" placeholder="Phone Number" required />
-      <input type="password" id="loginPassword" placeholder="Password" required />
-      <button type="submit">Login</button>
-      <div class="link-row">
-        <a href="#" onclick="renderSignup()">Sign Up</a>
-        <a href="#" onclick="renderForgotPassword()">Forgot Password?</a>
-      </div>
-    </form>
-  `;
+function saveUsers() {
+  localStorage.setItem("buzzerUsers", JSON.stringify(users));
 }
 
-// View: Signup
-function renderSignup() {
-  app.innerHTML = `
-    <form onsubmit="handleSignup(event)">
-      <h2>Sign Up</h2>
-      <input type="text" id="signupName" placeholder="Name" required />
-      <input type="tel" id="signupPhone" placeholder="Phone Number" required />
-      <input type="password" id="signupPassword" placeholder="Password" required />
-      <input type="password" id="signupConfirmPassword" placeholder="Confirm Password" required />
-      <label><input type="checkbox" onclick="togglePasswordVisibility()"> Show Password</label>
-      <button type="submit">Sign Up</button>
-      <div class="link-row">
-        <a href="#" onclick="renderLogin()">Back to Login</a>
-      </div>
-    </form>
-  `;
+function saveGroups() {
+  localStorage.setItem("buzzerGroups", JSON.stringify(groups));
 }
 
-// View: Forgot Password
-function renderForgotPassword() {
+function showLogin() {
   app.innerHTML = `
-    <form onsubmit="handleForgotPassword(event)">
-      <h2>Forgot Password</h2>
-      <input type="tel" id="resetPhone" placeholder="Phone Number" required />
-      <button type="submit">Reset Password</button>
+    <div class="container">
+      <div class="banner">BUZZUR</div>
+      <input type="text" placeholder="Phone Number" id="loginPhone">
+      <input type="${showPass ? "text" : "password"}" placeholder="Password" id="loginPass">
+      <button onclick="togglePassword()">Show Password</button>
+      <button onclick="login()">Login</button>
       <div class="link-row">
-        <a href="#" onclick="renderLogin()">Back to Login</a>
+        <span onclick="showSignup()">Sign Up</span>
+        <span onclick="showForgot()">Forgot Password</span>
       </div>
-    </form>
-  `;
-}
-
-// View: My Groups
-function renderGroups() {
-  const user = JSON.parse(localStorage.getItem("currentUser"));
-  if (!user) return renderLogin();
-
-  const groups = JSON.parse(localStorage.getItem("groups")) || [];
-  const userGroups = groups.filter(g => g.owner === user.phone);
-
-  app.innerHTML = `
-    <div class="form-box">
-      <h2>My Groups</h2>
-      <input type="text" id="newGroupName" placeholder="New Group Name" />
-      <button onclick="createGroup()">Create Group</button>
     </div>
-    <div id="groupList">
-      ${userGroups.map(group => `
-        <div class="group">
-          <h3>${group.name}</h3>
-          <button onclick="editGroup('${group.id}')">Edit</button>
-          <button onclick="buzzAll('${group.id}')">Buzz All</button>
-        </div>
-      `).join("")}
-    </div>
-    <div class="logout-btn" onclick="logout()">Logout</div>
   `;
 }
 
-// Handle: Login
-function handleLogin(event) {
-  event.preventDefault();
+function showSignup() {
+  app.innerHTML = `
+    <div class="container">
+      <div class="banner">Sign Up</div>
+      <input type="text" placeholder="Name" id="signupName">
+      <input type="text" placeholder="Phone Number" id="signupPhone">
+      <input type="${showPass ? "text" : "password"}" placeholder="Password" id="signupPass">
+      <input type="${showPass ? "text" : "password"}" placeholder="Confirm Password" id="signupConfirm">
+      <button onclick="togglePassword()">Show Password</button>
+      <button onclick="signup()">Sign Up</button>
+      <div class="link-row"><span onclick="showLogin()">Back to Login</span></div>
+    </div>
+  `;
+}
+
+function showForgot() {
+  app.innerHTML = `
+    <div class="container">
+      <div class="banner">Forgot Password</div>
+      <input type="text" placeholder="Phone Number" id="forgotPhone">
+      <button onclick="resetPassword()">Reset Password</button>
+      <div class="link-row"><span onclick="showLogin()">Back to Login</span></div>
+    </div>
+  `;
+}
+
+function togglePassword() {
+  showPass = !showPass;
+  currentUser ? showGroups() : showLogin();
+}
+
+function login() {
   const phone = document.getElementById("loginPhone").value;
-  const password = document.getElementById("loginPassword").value;
-  const users = JSON.parse(localStorage.getItem("users")) || [];
-
-  const user = users.find(u => u.phone === phone && u.password === password);
+  const pass = document.getElementById("loginPass").value;
+  const user = users.find(u => u.phone === phone && u.pass === pass);
   if (user) {
-    localStorage.setItem("currentUser", JSON.stringify(user));
-    renderGroups();
+    currentUser = user;
+    showGroups();
   } else {
-    alert("Invalid credentials.");
+    alert("Invalid phone or password");
   }
 }
 
-// Handle: Signup
-function handleSignup(event) {
-  event.preventDefault();
+function signup() {
   const name = document.getElementById("signupName").value;
   const phone = document.getElementById("signupPhone").value;
-  const password = document.getElementById("signupPassword").value;
-  const confirm = document.getElementById("signupConfirmPassword").value;
-
-  if (password !== confirm) {
-    return alert("Passwords do not match.");
-  }
-
-  const users = JSON.parse(localStorage.getItem("users")) || [];
+  const pass = document.getElementById("signupPass").value;
+  const confirm = document.getElementById("signupConfirm").value;
   if (users.find(u => u.phone === phone)) {
-    return alert("User already exists.");
+    alert("Phone already registered");
+    return;
   }
-
-  const user = { name, phone, password };
+  if (pass !== confirm) {
+    alert("Passwords do not match");
+    return;
+  }
+  const user = { name, phone, pass };
   users.push(user);
-  localStorage.setItem("users", JSON.stringify(users));
-  alert("Sign-up successful. Please login.");
-  renderLogin();
+  saveUsers();
+  alert("Signup successful. Please login.");
+  showLogin();
 }
 
-// Handle: Forgot Password
-function handleForgotPassword(event) {
-  event.preventDefault();
-  const phone = document.getElementById("resetPhone").value;
-  const users = JSON.parse(localStorage.getItem("users")) || [];
+function resetPassword() {
+  const phone = document.getElementById("forgotPhone").value;
   const user = users.find(u => u.phone === phone);
   if (user) {
-    alert(`Password: ${user.password}`);
+    const newPass = prompt("Enter new password:");
+    if (newPass) {
+      user.pass = newPass;
+      saveUsers();
+      alert("Password reset successful.");
+      showLogin();
+    }
   } else {
     alert("User not found.");
   }
 }
 
-// Utility: Toggle password visibility
-function togglePasswordVisibility() {
-  const pwd = document.getElementById("signupPassword");
-  const confirm = document.getElementById("signupConfirmPassword");
-  const type = pwd.type === "password" ? "text" : "password";
-  pwd.type = type;
-  confirm.type = type;
-}
-
-// Group logic
-function createGroup() {
-  const name = document.getElementById("newGroupName").value;
-  if (!name) return alert("Enter group name");
-
-  const user = JSON.parse(localStorage.getItem("currentUser"));
-  const groups = JSON.parse(localStorage.getItem("groups")) || [];
-
-  const newGroup = {
-    id: Date.now().toString(),
-    name,
-    owner: user.phone,
-    members: []
-  };
-
-  groups.push(newGroup);
-  localStorage.setItem("groups", JSON.stringify(groups));
-  renderGroups();
-}
-
-function editGroup(groupId) {
-  const groups = JSON.parse(localStorage.getItem("groups")) || [];
-  const group = groups.find(g => g.id === groupId);
-  if (!group) return;
-
-  const newName = prompt("Edit Group Name:", group.name);
-  if (newName) {
-    group.name = newName;
-  }
-
-  const newMember = prompt("Add Member (name, phone):");
-  if (newMember) {
-    const [name, phone] = newMember.split(",");
-    group.members.push({ name: name.trim(), phone: phone.trim() });
-  }
-
-  localStorage.setItem("groups", JSON.stringify(groups));
-  renderGroups();
-}
-
-function buzzAll(groupId) {
-  const groups = JSON.parse(localStorage.getItem("groups")) || [];
-  const group = groups.find(g => g.id === groupId);
-  if (!group) return;
-
-  alert(`Buzz sent to all ${group.members.length} members of ${group.name}!`);
-}
-
-// Logout
 function logout() {
-  localStorage.removeItem("currentUser");
-  renderLogin();
+  currentUser = null;
+  showLogin();
 }
+
+function showGroups() {
+  const userGroups = groups.filter(g => g.owner === currentUser.phone);
+  app.innerHTML = `
+    <div class="container">
+      <div class="banner">My Groups</div>
+      ${userGroups.map(g => `
+        <div class="group-section">
+          <b>${g.name}</b><br>
+          <button onclick="editGroup('${g.name}')">Edit</button>
+          <button onclick="removeGroup('${g.name}')">Remove</button>
+          <button onclick="buzzAll('${g.name}')">Buzz All</button>
+        </div>
+      `).join('')}
+      <button onclick="createGroup()">Create New Group</button>
+      <button onclick="logout()">Logout</button>
+    </div>
+  `;
+}
+
+function createGroup() {
+  const groupName = prompt("Enter group name:");
+  if (!groupName) return;
+  const newGroup = { name: groupName, members: [], owner: currentUser.phone };
+  groups.push(newGroup);
+  saveGroups();
+  showGroups();
+}
+
+function editGroup(name) {
+  const group = groups.find(g => g.name === name && g.owner === currentUser.phone);
+  if (!group) return;
+
+  let membersList = group.members.map((m, i) => `
+    <div>
+      <input value="${m.name}" onchange="updateMember(${i}, 'name', this.value)">
+      <input value="${m.phone}" onchange="updateMember(${i}, 'phone', this.value)">
+      <input type="checkbox" class="select-member" data-index="${i}"> Select
+      <button onclick="removeMember(${i})">Remove</button>
+    </div>
+  `).join('');
+
+  app.innerHTML = `
+    <div class="container">
+      <div class="banner">Edit Group: ${group.name}</div>
+      <input type="text" id="newGroupName" value="${group.name}">
+      <button onclick="updateGroupName('${group.name}')">Update Name</button>
+      ${membersList}
+      <button onclick="addMember('${group.name}')">Add Member</button>
+      <button onclick="buzzSelected('${group.name}')">Buzz Selected</button>
+      <button onclick="removeGroup('${group.name}')">Remove Group</button>
+      <button onclick="showGroups()">Back</button>
+      <button onclick="logout()">Logout</button>
+    </div>
+  `;
+  window.editingGroup = group;
+}
+
+function updateGroupName(oldName) {
+  const newName = document.getElementById("newGroupName").value;
+  if (newName && newName !== oldName) {
+    window.editingGroup.name = newName;
+    saveGroups();
+    showGroups();
+  }
+}
+
+function addMember(groupName) {
+  const name = prompt("Member name:");
+  const phone = prompt("Member phone:");
+  if (name && phone) {
+    window.editingGroup.members.push({ name, phone });
+    saveGroups();
+    editGroup(groupName);
+  }
+}
+
+function updateMember(index, field, value) {
+  window.editingGroup.members[index][field] = value;
+  saveGroups();
+}
+
+function removeMember(index) {
+  window.editingGroup.members.splice(index, 1);
+  saveGroups();
+  editGroup(window.editingGroup.name);
+}
+
+function removeGroup(name) {
+  const groupIndex = groups.findIndex(g => g.name === name && g.owner === currentUser.phone);
+  if (groupIndex > -1) {
+    groups.splice(groupIndex, 1);
+    saveGroups();
+    showGroups();
+  }
+}
+
+function buzzAll(groupName) {
+  const group = groups.find(g => g.name === groupName);
+  if (!group) return;
+  alert(`Buzz sent to: ${group.members.map(m => m.name).join(', ')}`);
+}
+
+function buzzSelected(groupName) {
+  const group = groups.find(g => g.name === groupName);
+  if (!group) return;
+
+  const selected = Array.from(document.querySelectorAll(".select-member:checked"))
+    .map(cb => group.members[cb.dataset.index].name);
+  alert(selected.length ? `Buzz sent to: ${selected.join(", ")}` : "No members selected.");
+}
+
+showLogin();
