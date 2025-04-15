@@ -1,13 +1,25 @@
+/* style.css */
+
+/* General reset and body styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 body {
   font-family: Arial, sans-serif;
   background-color: #e3f2fd; /* Pale blue */
-  margin: 0;
-  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  padding: 20px;
 }
 
 .container {
   max-width: 400px;
-  margin: 60px auto;
+  width: 100%;
   padding: 20px;
   background-color: #ffffff;
   border-radius: 10px;
@@ -25,12 +37,10 @@ body {
   font-weight: bold;
 }
 
-/* Inputs and buttons */
-input,
-button {
+/* Form inputs and buttons */
+input, button {
   display: block;
   width: 100%;
-  box-sizing: border-box;
   padding: 10px;
   margin-top: 10px;
   font-size: 16px;
@@ -38,6 +48,7 @@ button {
   border: 1px solid #ccc;
 }
 
+/* Button color scheme */
 button {
   background-color: #5e92f3; /* Light blue */
   color: white;
@@ -63,7 +74,7 @@ a:hover {
   text-decoration: underline;
 }
 
-/* Group section style */
+/* Group management section */
 .group-section {
   margin-top: 15px;
   border-bottom: 1px solid #ddd;
@@ -72,9 +83,20 @@ a:hover {
 
 .member-input {
   margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .member-input input {
   margin-top: 5px;
 }
+
+.link-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.link-row a {
+  font-size: 14px;
 }
