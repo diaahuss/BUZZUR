@@ -1,63 +1,101 @@
 body {
   font-family: Arial, sans-serif;
-  background: #f2f9ff;
+  background-color: #e3f2fd; /* Pale blue */
   margin: 0;
   padding: 0;
 }
 
 .container {
   max-width: 400px;
-  margin: 40px auto;
+  margin: 60px auto;
   padding: 20px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .banner {
-  background: #007acc;
+  background-color: #1e3a5f; /* Dark blue */
   color: white;
   padding: 15px;
   text-align: center;
-  border-radius: 10px;
+  border-radius: 8px;
   margin-bottom: 20px;
   font-size: 20px;
+  font-weight: bold;
 }
 
-input, button {
+/* Inputs and buttons */
+input, button, select {
   display: block;
   width: 100%;
-  margin: 10px 0;
+  box-sizing: border-box;
   padding: 10px;
+  margin-top: 10px;
   font-size: 16px;
-  border-radius: 8px;
+  border-radius: 6px;
   border: 1px solid #ccc;
+}
+
+input[type="checkbox"] {
+  display: inline-block;
+  width: auto;
+  margin-right: 8px;
 }
 
 button {
-  background: #88cc88;
+  background-color: #5e92f3; /* Light blue */
   color: white;
   border: none;
   cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
 button:hover {
-  background: #66aa66;
+  background-color: #3f80d1; /* Medium blue */
 }
 
-.group-section {
-  border: 1px solid #ccc;
-  padding: 10px;
-  border-radius: 10px;
-  margin: 10px 0;
+button:active {
+  background-color: #2d69a7; /* Darker blue */
 }
 
 a {
+  color: #007bff;
   text-decoration: none;
-  color: #007acc;
-  margin: 0 5px;
+  font-size: 14px;
 }
 
 a:hover {
   text-decoration: underline;
+}
+
+/* Group section styling */
+.group-section {
+  margin-top: 15px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: #f9f9f9;
+}
+
+.group-section b {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 16px;
+}
+
+/* Member inputs vertical stack */
+.member-input {
+  margin-top: 10px;
+}
+
+.member-input input {
+  margin-top: 5px;
+}
+
+/* Responsive tweak */
+@media (max-width: 420px) {
+  .container {
+    margin: 30px 10px;
+  }
 }
