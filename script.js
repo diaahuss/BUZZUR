@@ -1,5 +1,7 @@
 // BUZZUR Frontend Script
 
+console.log("Script loaded!");
+
 // Socket.IO connection
 const socket = io();
 
@@ -241,3 +243,5 @@ function loadGroups() {
 function saveGroups(groups) {
   localStorage.setItem("groups", JSON.stringify(groups));
 }
+
+renderLogin();
