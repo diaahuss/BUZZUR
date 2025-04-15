@@ -1,28 +1,31 @@
-const express = require('express');
-const http = require('http');
-const socketIo = require('socket.io');
+// server.js
+const express = require("express");
+const http = require("http");
+const socketIo = require("socket.io");
 
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
-// Serve static files from the 'buzzur' folder
-app.use(express.static('buzzur'));
+app.use(express.static("public")); // serve static files
 
-// Basic endpoint to handle POST requests for sending a "buzz" alert
-app.post('/send-buzz', (req, res) => {
-  io.emit('buzz', { message: 'Buzz sent to all members!' }); // Broadcast the buzz
-  res.send({ success: true });
-});
+// Socket.IO connection
+io.on("connection", (socket) => {
+  console.log("A user connected");
 
-io.on('connection', (socket) => {
-  console.log('A user connected');
-  socket.on('disconnect', () => {
-    console.log('User disconnected');
+  socket.on("buzz", (data) => {
+    console.log(`Buzzing group: ${data.group}`);
+    console.log("Members: ", data.members);
+    // Here you can add logic to send notifications to members
+  });
+
+  socket.on("disconnect", () => {
+    console.log("User disconnected");
   });
 });
 
-server.listen(3000, () => {
-  console.log('Server is running on http://localhost:3000');
+// Start server
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
-
