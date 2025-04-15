@@ -26,7 +26,8 @@ body {
 }
 
 /* Inputs and buttons */
-input, button, select {
+input,
+button {
   display: block;
   width: 100%;
   box-sizing: border-box;
@@ -37,26 +38,19 @@ input, button, select {
   border: 1px solid #ccc;
 }
 
-input[type="checkbox"] {
-  display: inline-block;
-  width: auto;
-  margin-right: 8px;
-}
-
 button {
   background-color: #5e92f3; /* Light blue */
   color: white;
   border: none;
   cursor: pointer;
-  transition: background-color 0.2s ease;
 }
 
 button:hover {
-  background-color: #3f80d1; /* Medium blue */
+  background-color: #3f80d1; /* Medium blue on hover */
 }
 
 button:active {
-  background-color: #2d69a7; /* Darker blue */
+  background-color: #2d69a7; /* Darker blue when button is clicked */
 }
 
 a {
@@ -69,33 +63,17 @@ a:hover {
   text-decoration: underline;
 }
 
-/* Group section styling */
+/* Group section style */
 .group-section {
   margin-top: 15px;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  background-color: #f9f9f9;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
 }
 
-.group-section b {
-  display: block;
-  margin-bottom: 8px;
-  font-size: 16px;
-}
-
-/* Member inputs vertical stack */
+/* Member input stacked layout */
 .member-input {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
   margin-top: 10px;
-}
-
-.member-input input {
-  margin-top: 5px;
-}
-
-/* Responsive tweak */
-@media (max-width: 420px) {
-  .container {
-    margin: 30px 10px;
-  }
 }
