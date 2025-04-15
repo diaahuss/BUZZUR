@@ -70,10 +70,11 @@ a:hover {
   padding-bottom: 10px;
 }
 
-/* Member input stacked layout */
 .member-input {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
   margin-top: 10px;
+}
+
+.member-input input {
+  margin-top: 5px;
+}
 }
