@@ -1,6 +1,4 @@
-// BUZZUR Frontend Script
-
-console.log("Script loaded!");
+// script.js
 
 // Socket.IO connection
 const socket = io();
@@ -11,12 +9,11 @@ const app = document.getElementById("app");
 // Entry point: show login on load
 renderLogin();
 
-// Utility: clear main container
+// Utility functions
 function clearApp() {
   app.innerHTML = "";
 }
 
-// Utility: create input
 function createInput(type, placeholder, value = "") {
   const input = document.createElement("input");
   input.type = type;
@@ -25,7 +22,6 @@ function createInput(type, placeholder, value = "") {
   return input;
 }
 
-// Utility: create button
 function createButton(text, onClick) {
   const button = document.createElement("button");
   button.textContent = text;
@@ -33,7 +29,6 @@ function createButton(text, onClick) {
   return button;
 }
 
-// Utility: member input block
 function createMemberInput(name = "", phone = "") {
   const memberDiv = document.createElement("div");
   memberDiv.className = "member-input";
@@ -88,8 +83,7 @@ function renderLogin() {
   };
 
   const linkRow = document.createElement("div");
-  linkRow.style.display = "flex";
-  linkRow.style.justifyContent = "space-between";
+  linkRow.className = "link-row";
   linkRow.appendChild(forgotLink);
   linkRow.appendChild(signupLink);
 
@@ -122,7 +116,7 @@ function renderSignup() {
   app.appendChild(container);
 }
 
-// Render forgot password
+// Render forgot password screen
 function renderForgotPassword() {
   clearApp();
 
@@ -143,7 +137,7 @@ function renderForgotPassword() {
   app.appendChild(container);
 }
 
-// Render main dashboard
+// Render main dashboard (My Groups)
 function renderMyGroups() {
   clearApp();
 
@@ -174,7 +168,7 @@ function renderMyGroups() {
   loadGroups();
 }
 
-// Add a new group
+// Add a new group to local storage
 function addGroup(name) {
   const groups = JSON.parse(localStorage.getItem("groups") || "[]");
   const newGroup = { name, members: [] };
@@ -183,7 +177,7 @@ function addGroup(name) {
   loadGroups();
 }
 
-// Load groups into UI
+// Load groups into the UI
 function loadGroups() {
   const list = document.getElementById("group-list");
   list.innerHTML = "";
@@ -240,8 +234,7 @@ function loadGroups() {
   });
 }
 
+// Save groups to local storage
 function saveGroups(groups) {
   localStorage.setItem("groups", JSON.stringify(groups));
 }
-
-renderLogin();
