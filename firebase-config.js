@@ -1,24 +1,20 @@
-// src/firebase-config.js
-import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+// firebase-config.js
 
-// Your Firebase configuration object
+// Import and configure Firebase
+import firebase from "firebase/app";
+import "firebase/auth";
+import "firebase/database"; // If you plan to use Firebase Realtime Database
+
 const firebaseConfig = {
-  apiKey: "AIzaSyDMW9B11WwuDgaqGMP161snISp-Y9eYGw4",
-  authDomain: "buzapp-45e3e.firebaseapp.com",
-  databaseURL: "https://buzapp-45e3e-default-rtdb.firebaseio.com",
-  projectId: "buzapp-45e3e",
-  storageBucket: "buzapp-45e3e.firebasestorage.app",
-  messagingSenderId: "929630057360",
-  appId: "1:929630057360:web:1bc4bddcddd27fd28bf915"
+  apiKey: "YOUR_API_KEY",               // Get from your Firebase Console
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com", // Firebase auth domain
+  databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com", // Firebase DB URL
+  projectId: "YOUR_PROJECT_ID",         // Project ID from Firebase
+  storageBucket: "YOUR_PROJECT_ID.appspot.com", // Storage bucket
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID",                 // Get from your Firebase Console
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+firebase.initializeApp(firebaseConfig);
 
-// Initialize Firebase services
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-export { auth, db };
+export default firebase;
