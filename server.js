@@ -1,41 +1,47 @@
-const express = require('express');
-const http = require('http');
-const { Server } = require('socket.io');
-const cors = require('cors');
+const express = require("express");
+const http = require("http");
+const cors = require("cors");
+const { Server } = require("socket.io");
 
 const app = express();
 const server = http.createServer(app);
+
+// Allow CORS from all origins or restrict to your frontend domain
+app.use(cors());
+app.use(express.json());
+
 const io = new Server(server, {
   cors: {
-    origin: '*',
-    methods: ['GET', 'POST']
+    origin: "*", // Replace * with your frontend URL for security in production
+    methods: ["GET", "POST"]
   }
 });
 
-app.use(cors());
-app.use(express.json());
-app.use(express.static(__dirname)); // To serve HTML/CSS/JS
+io.on("connection", (socket) => {
+  console.log("A user connected");
 
-// Handle WebSocket connections
-io.on('connection', (socket) => {
-  console.log('Client connected:', socket.id);
+  socket.on("buzz", (member) => {
+    console.log("Buzz received for:", member);
 
-  // Listen for buzz events
-  socket.on('sendBuzz', ({ to, message }) => {
-    console.log('Buzzing:', to, message);
+    // Confirm buzz to the sender
+    socket.emit("buzz-confirmation", member);
 
-    // Broadcast buzz to all connected clients
-    io.emit('buzzReceived', message); 
-    // In future: only buzz selected sockets based on user auth
+    // Optional: broadcast buzz to other users (if needed)
+    // socket.broadcast.emit("buzz-received", member);
   });
 
-  socket.on('disconnect', () => {
-    console.log('Client disconnected:', socket.id);
+  socket.on("disconnect", () => {
+    console.log("A user disconnected");
   });
+});
+
+// Optional basic root endpoint
+app.get("/", (req, res) => {
+  res.send("Buzzur server is running");
 });
 
 // Start server
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });
