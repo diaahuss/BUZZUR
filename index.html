@@ -1,25 +1,16 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BUZZUR</title>
-
-  <!-- Link to your CSS -->
-  <link rel="stylesheet" href="style.css" />
-
-  <!-- Socket.IO (served from your own server) -->
-  <script defer src="/socket.io/socket.io.js"></script>
-
-  <!-- Main JS -->
-  <script defer src="script.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buzzer App</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Dynamic app content goes here -->
-  <main id="app"></main>
+  <div id="app"></div> <!-- Main app container -->
 
-  <!-- Audio for buzz sound -->
-  <audio id="buzz-audio" src="buzz.mp3" preload="auto"></audio>
+  <!-- Connect to Socket.IO -->
+  <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script> <!-- Add this for WebSocket connection -->
+  <script src="script.js"></script> <!-- Your JavaScript code -->
 </body>
 </html>
