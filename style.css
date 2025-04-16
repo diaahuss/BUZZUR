@@ -1,31 +1,22 @@
-/* style.css */
-
-/* General reset and body styles */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
+/* Global styles */
 body {
   font-family: Arial, sans-serif;
   background-color: #e3f2fd; /* Pale blue */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  padding: 20px;
+  margin: 0;
+  padding: 0;
 }
 
+/* Container for forms and main content */
 .container {
   max-width: 400px;
-  width: 100%;
+  margin: 60px auto;
   padding: 20px;
   background-color: #ffffff;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
+/* Banner styling */
 .banner {
   background-color: #1e3a5f; /* Dark blue */
   color: white;
@@ -37,10 +28,11 @@ body {
   font-weight: bold;
 }
 
-/* Form inputs and buttons */
+/* Inputs and buttons */
 input, button {
   display: block;
   width: 100%;
+  box-sizing: border-box;
   padding: 10px;
   margin-top: 10px;
   font-size: 16px;
@@ -48,7 +40,7 @@ input, button {
   border: 1px solid #ccc;
 }
 
-/* Button color scheme */
+/* Blue shades for buttons */
 button {
   background-color: #5e92f3; /* Light blue */
   color: white;
@@ -64,6 +56,7 @@ button:active {
   background-color: #2d69a7; /* Darker blue when button is clicked */
 }
 
+/* Links */
 a {
   color: #007bff;
   text-decoration: none;
@@ -74,29 +67,70 @@ a:hover {
   text-decoration: underline;
 }
 
-/* Group management section */
+/* Group section styles */
 .group-section {
   margin-top: 15px;
   border-bottom: 1px solid #ddd;
   padding-bottom: 10px;
 }
 
-.member-input {
+/* Form control for checkboxes */
+label.show-password {
+  display: inline-block;
   margin-top: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.member-input input {
-  margin-top: 5px;
-}
-
-.link-row {
-  display: flex;
-  justify-content: space-between;
-}
-
-.link-row a {
   font-size: 14px;
 }
+
+input[type="checkbox"] {
+  margin-right: 5px;
+}
+
+/* Selected member input styles */
+input[type="text"], input[type="password"] {
+  width: calc(50% - 10px);
+  display: inline-block;
+  margin-right: 10px;
+}
+
+/* Group management and actions */
+button:disabled {
+  background-color: #b0bec5; /* Disabled state for buttons */
+  cursor: not-allowed;
+}
+
+button + button {
+  margin-left: 10px;
+}
+
+/* Add padding for groups */
+.group-section > b {
+  font-weight: bold;
+}
+
+button {
+  display: inline-block;
+  margin-top: 10px;
+  margin-bottom: 5px;
+}
+
+.container > button {
+  margin-top: 15px;
+}
+
+/* Screen responsiveness */
+@media (max-width: 500px) {
+  .container {
+    width: 100%;
+    padding: 15px;
+  }
+
+  button {
+    padding: 12px;
+  }
+
+  input {
+    font-size: 14px;
+    padding: 8px;
+  }
+}
+
