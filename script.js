@@ -195,3 +195,9 @@ function logout() {
 
 if (currentUser) showGroups();
 else showLogin();
+
+socket.on("buzz", (member) => {
+  const audio = document.getElementById("buzzSound");
+  if (audio) audio.play();
+  console.log("Received buzz for", member.name || "Unknown");
+});
