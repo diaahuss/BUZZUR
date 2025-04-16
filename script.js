@@ -173,18 +173,32 @@ function updateMemberPhone(groupName, index, newPhone) {
 
 function buzzAll(groupName) {
   const group = groups.find(g => g.name === groupName);
-  const phones = group.members.map(m => m.phone);
+  if (!group || group.members.length === 0) {
+    return alert("No members in this group");
+  }
+  const phones = group.members.map(m => m.phone).filter(Boolean);
+  if (phones.length === 0) return alert("No valid phone numbers");
   socket.emit("buzz", { from: currentUser.name, phones });
+
+  const sound = document.getElementById("buzzSound");
+  if (sound) sound.play(); // Optional: play buzz on sender side
 }
 
 function buzzSelected(groupName) {
   const checkboxes = document.querySelectorAll(".member-select");
   const group = groups.find(g => g.name === groupName);
+  if (!group) return;
+
   const phones = [...checkboxes]
     .filter(cb => cb.checked)
-    .map(cb => group.members[cb.dataset.index].phone);
+    .map(cb => group.members[cb.dataset.index].phone)
+    .filter(Boolean);
+
   if (phones.length === 0) return alert("No members selected");
   socket.emit("buzz", { from: currentUser.name, phones });
+
+  const sound = document.getElementById("buzzSound");
+  if (sound) sound.play(); // Optional: play buzz on sender side
 }
 
 // ====== Init ======
