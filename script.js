@@ -1,240 +1,243 @@
-// script.js
+const app = document.getElementById('app');
+let currentUser = null;
+let groups = JSON.parse(localStorage.getItem('buzzerGroups') || '[]');
+let users = JSON.parse(localStorage.getItem('buzzerUsers') || '[]');
 
-// Socket.IO connection
-const socket = io();
+// Socket.IO setup
+const socket = io('https://buzzur-server.onrender.com');  // Connect to the Render backend
 
-// Main render container
-const app = document.getElementById("app");
+socket.on('connect', () => {
+  console.log('Connected to the server');
+});
 
-// Entry point: show login on load
-renderLogin();
+socket.on('buzzReceived', (message) => {
+  alert(message);  // Display alert when a buzz is received
+});
 
-// Utility functions
-function clearApp() {
-  app.innerHTML = "";
+function showLogin() {
+  app.innerHTML = `
+    <div class="container">
+      <div class="banner">Login</div>
+      <input type="text" id="phone" placeholder="Phone Number">
+      <input type="password" id="password" placeholder="Password">
+      <button onclick="login()">Login</button>
+      <p>Don't have an account? <a href="#" onclick="showSignup()">Sign up</a></p>
+      <p><a href="#" onclick="showForgotPassword()">Forgot Password?</a></p>
+    </div>
+  `;
 }
 
-function createInput(type, placeholder, value = "") {
-  const input = document.createElement("input");
-  input.type = type;
-  input.placeholder = placeholder;
-  input.value = value;
-  return input;
+function showSignup() {
+  app.innerHTML = `
+    <div class="container">
+      <div class="banner">Signup</div>
+      <input type="text" id="name" placeholder="Name">
+      <input type="text" id="phone" placeholder="Phone Number">
+      <input type="password" id="password" placeholder="Password">
+      <input type="password" id="confirmPassword" placeholder="Confirm Password">
+      <label class="show-password">
+        <input type="checkbox" id="showPassword"> Show Password
+      </label>
+      <button onclick="signup()">Sign Up</button>
+      <p>Already have an account? <a href="#" onclick="showLogin()">Login</a></p>
+    </div>
+  `;
+  document.getElementById('showPassword').addEventListener('change', togglePasswordVisibility);
 }
 
-function createButton(text, onClick) {
-  const button = document.createElement("button");
-  button.textContent = text;
-  button.onclick = onClick;
-  return button;
+function togglePasswordVisibility() {
+  const passwordField = document.getElementById('password');
+  const confirmPasswordField = document.getElementById('confirmPassword');
+  const isChecked = document.getElementById('showPassword').checked;
+  passwordField.type = isChecked ? 'text' : 'password';
+  confirmPasswordField.type = isChecked ? 'text' : 'password';
 }
 
-function createMemberInput(name = "", phone = "") {
-  const memberDiv = document.createElement("div");
-  memberDiv.className = "member-input";
-
-  const nameInput = createInput("text", "Name", name);
-  const phoneInput = createInput("text", "Phone", phone);
-
-  memberDiv.appendChild(nameInput);
-  memberDiv.appendChild(phoneInput);
-
-  return memberDiv;
+function showForgotPassword() {
+  app.innerHTML = `
+    <div class="container">
+      <div class="banner">Forgot Password</div>
+      <input type="text" id="phone" placeholder="Phone Number">
+      <button onclick="resetPassword()">Reset Password</button>
+      <p>Remembered your password? <a href="#" onclick="showLogin()">Login</a></p>
+    </div>
+  `;
 }
 
-// Render login screen
-function renderLogin() {
-  clearApp();
-
-  const container = document.createElement("div");
-  container.className = "container";
-
-  const banner = document.createElement("div");
-  banner.className = "banner";
-  banner.textContent = "BUZZUR - Login";
-
-  const phoneInput = createInput("text", "Phone Number");
-  const passwordInput = createInput("password", "Password");
-
-  const loginBtn = createButton("Login", () => {
-    const phone = phoneInput.value;
-    const password = passwordInput.value;
-    // Handle login logic here (Firebase/localStorage/etc.)
-    if (phone && password) {
-      localStorage.setItem("currentUser", phone);
-      renderMyGroups();
-    }
-  });
-
-  const signupLink = document.createElement("a");
-  signupLink.href = "#";
-  signupLink.textContent = "Sign Up";
-  signupLink.onclick = (e) => {
-    e.preventDefault();
-    renderSignup();
-  };
-
-  const forgotLink = document.createElement("a");
-  forgotLink.href = "#";
-  forgotLink.textContent = "Forgot Password?";
-  forgotLink.onclick = (e) => {
-    e.preventDefault();
-    renderForgotPassword();
-  };
-
-  const linkRow = document.createElement("div");
-  linkRow.className = "link-row";
-  linkRow.appendChild(forgotLink);
-  linkRow.appendChild(signupLink);
-
-  container.append(banner, phoneInput, passwordInput, loginBtn, linkRow);
-  app.appendChild(container);
+function resetPassword() {
+  const phone = document.getElementById('phone').value;
+  const user = users.find(u => u.phone === phone);
+  if (user) {
+    const newPassword = prompt('Enter a new password');
+    user.password = newPassword;
+    localStorage.setItem('buzzerUsers', JSON.stringify(users));
+    alert('Password reset successful');
+    showLogin();
+  } else {
+    alert('User not found');
+  }
 }
 
-// Render signup screen
-function renderSignup() {
-  clearApp();
-
-  const container = document.createElement("div");
-  container.className = "container";
-
-  const banner = document.createElement("div");
-  banner.className = "banner";
-  banner.textContent = "BUZZUR - Sign Up";
-
-  const nameInput = createInput("text", "Name");
-  const phoneInput = createInput("text", "Phone Number");
-  const passwordInput = createInput("password", "Password");
-  const confirmPasswordInput = createInput("password", "Confirm Password");
-
-  const signupBtn = createButton("Sign Up", () => {
-    // Sign up logic here
-    renderLogin();
-  });
-
-  container.append(banner, nameInput, phoneInput, passwordInput, confirmPasswordInput, signupBtn);
-  app.appendChild(container);
+function login() {
+  const phone = document.getElementById('phone').value;
+  const password = document.getElementById('password').value;
+  const user = users.find(u => u.phone === phone && u.password === password);
+  if (user) {
+    currentUser = user;
+    showGroups();
+  } else {
+    alert('Invalid login');
+  }
 }
 
-// Render forgot password screen
-function renderForgotPassword() {
-  clearApp();
+function signup() {
+  const name = document.getElementById('name').value;
+  const phone = document.getElementById('phone').value;
+  const password = document.getElementById('password').value;
+  const confirmPassword = document.getElementById('confirmPassword').value;
 
-  const container = document.createElement("div");
-  container.className = "container";
+  if (password !== confirmPassword) {
+    alert('Passwords do not match');
+    return;
+  }
 
-  const banner = document.createElement("div");
-  banner.className = "banner";
-  banner.textContent = "Reset Password";
+  if (users.find(u => u.phone === phone)) {
+    alert('User already exists');
+    return;
+  }
 
-  const phoneInput = createInput("text", "Phone Number");
-  const resetBtn = createButton("Reset Password", () => {
-    alert("Password reset link sent!");
-    renderLogin();
-  });
-
-  container.append(banner, phoneInput, resetBtn);
-  app.appendChild(container);
+  const newUser = { name, phone, password };
+  users.push(newUser);
+  localStorage.setItem('buzzerUsers', JSON.stringify(users));
+  alert('Signup successful');
+  showLogin();
 }
 
-// Render main dashboard (My Groups)
-function renderMyGroups() {
-  clearApp();
-
-  const container = document.createElement("div");
-  container.className = "container";
-
-  const banner = document.createElement("div");
-  banner.className = "banner";
-  banner.textContent = "My Groups";
-
-  const createGroupBtn = createButton("Create Group", () => {
-    const groupName = prompt("Enter group name:");
-    if (groupName) addGroup(groupName);
-  });
-
-  const logoutBtn = createButton("Logout", () => {
-    localStorage.removeItem("currentUser");
-    renderLogin();
-  });
-  logoutBtn.style.marginTop = "20px";
-
-  const groupList = document.createElement("div");
-  groupList.id = "group-list";
-
-  container.append(banner, createGroupBtn, groupList, logoutBtn);
-  app.appendChild(container);
-
-  loadGroups();
+function logout() {
+  currentUser = null;
+  showLogin();
 }
 
-// Add a new group to local storage
-function addGroup(name) {
-  const groups = JSON.parse(localStorage.getItem("groups") || "[]");
-  const newGroup = { name, members: [] };
+function showGroups() {
+  const userGroups = groups.filter(g => g.owner === currentUser.phone);
+  app.innerHTML = `
+    <div class="container">
+      <div class="banner">My Groups</div>
+      ${userGroups.map(g => `
+        <div class="group-section">
+          <b>${g.name}</b><br>
+          <button onclick="editGroup('${g.name}')">Edit</button>
+          <button onclick="removeGroup('${g.name}')">Remove</button>
+          <button onclick="buzzAll('${g.name}')">Buzz All</button>
+        </div>
+      `).join('')}
+      <button onclick="createGroup()">Create New Group</button>
+      <button onclick="logout()">Logout</button>
+    </div>
+  `;
+}
+
+function createGroup() {
+  const groupName = prompt('Enter group name:');
+  if (!groupName) return;
+  const newGroup = { name: groupName, members: [], owner: currentUser.phone };
   groups.push(newGroup);
-  localStorage.setItem("groups", JSON.stringify(groups));
-  loadGroups();
+  saveGroups();
+  showGroups();
 }
 
-// Load groups into the UI
-function loadGroups() {
-  const list = document.getElementById("group-list");
-  list.innerHTML = "";
-  const groups = JSON.parse(localStorage.getItem("groups") || "[]");
+function editGroup(name) {
+  const group = groups.find(g => g.name === name && g.owner === currentUser.phone);
+  if (!group) return;
 
-  groups.forEach((group, index) => {
-    const section = document.createElement("div");
-    section.className = "group-section";
+  let membersList = group.members.map((m, i) => `
+    <div>
+      <input value="${m.name}" onchange="updateMember(${i}, 'name', this.value)">
+      <input value="${m.phone}" onchange="updateMember(${i}, 'phone', this.value)">
+      <input type="checkbox" class="select-member" data-index="${i}"> Select
+      <button onclick="removeMember(${i})">Remove Member</button>
+    </div>
+  `).join('');
 
-    const title = document.createElement("h3");
-    title.textContent = group.name;
-
-    const renameBtn = createButton("Rename", () => {
-      const newName = prompt("New group name:", group.name);
-      if (newName) {
-        group.name = newName;
-        saveGroups(groups);
-        loadGroups();
-      }
-    });
-
-    const removeBtn = createButton("Remove", () => {
-      if (confirm("Are you sure?")) {
-        groups.splice(index, 1);
-        saveGroups(groups);
-        loadGroups();
-      }
-    });
-
-    const memberList = document.createElement("div");
-    memberList.id = `group-${index}-members`;
-
-    group.members.forEach((member) => {
-      const memberInput = createMemberInput(member.name, member.phone);
-      memberList.appendChild(memberInput);
-    });
-
-    const addMemberBtn = createButton("Add Member", () => {
-      const newMember = createMemberInput();
-      memberList.appendChild(newMember);
-    });
-
-    const buzzAllBtn = createButton("Buzz All", () => {
-      const members = [...memberList.querySelectorAll(".member-input")].map(m => ({
-        name: m.children[0].value,
-        phone: m.children[1].value
-      }));
-      socket.emit("buzz", { group: group.name, members });
-      alert("Buzzed!");
-    });
-
-    section.append(title, renameBtn, removeBtn, memberList, addMemberBtn, buzzAllBtn);
-    list.appendChild(section);
-  });
+  app.innerHTML = `
+    <div class="container">
+      <div class="banner">Edit Group: ${group.name}</div>
+      <input type="text" id="newGroupName" placeholder="New Group Name" value="${group.name}">
+      <button onclick="updateGroupName('${group.name}')">Update Group Name</button>
+      ${membersList}
+      <button onclick="addMember('${group.name}')">Add Member</button>
+      <button onclick="removeGroup('${group.name}')">Remove Group</button>
+      <button onclick="buzzSelected('${group.name}')">Buzz Selected Members</button>
+      <button onclick="showGroups()">Back</button>
+      <button onclick="logout()">Logout</button>
+    </div>
+  `;
+  window.editingGroup = group;
 }
 
-// Save groups to local storage
-function saveGroups(groups) {
-  localStorage.setItem("groups", JSON.stringify(groups));
+function updateGroupName(oldName) {
+  const newName = document.getElementById('newGroupName').value;
+  if (newName && newName !== oldName) {
+    window.editingGroup.name = newName;
+    saveGroups();
+    showGroups();
+  }
 }
+
+function addMember(groupName) {
+  const name = prompt('Member name:');
+  const phone = prompt('Member phone:');
+  if (name && phone) {
+    window.editingGroup.members.push({ name, phone });
+    saveGroups();
+    editGroup(groupName);
+  }
+}
+
+function removeMember(index) {
+  window.editingGroup.members.splice(index, 1);
+  saveGroups();
+  editGroup(window.editingGroup.name);
+}
+
+function removeGroup(name) {
+  const groupIndex = groups.findIndex(g => g.name === name && g.owner === currentUser.phone);
+  if (groupIndex > -1) {
+    groups.splice(groupIndex, 1);
+    saveGroups();
+    showGroups();
+  }
+}
+
+function buzzAll(groupName) {
+  const group = groups.find(g => g.name === groupName);
+  if (!group) return;
+
+  // Emit a buzz event to the backend
+  socket.emit('buzzAll', { groupName, members: group.members });
+
+  alert(`Buzz sent to all members: ${group.members.map(m => m.name).join(', ')}`);
+}
+
+function buzzSelected(groupName) {
+  const group = groups.find(g => g.name === groupName);
+  if (!group) return;
+
+  const selectedMembers = Array.from(document.querySelectorAll('.select-member:checked'))
+    .map(checkbox => group.members[checkbox.dataset.index].name);
+
+  if (selectedMembers.length > 0) {
+    // Emit a buzz event to the backend
+    socket.emit('buzzSelected', { groupName, selectedMembers });
+
+    alert(`Buzz sent to selected members: ${selectedMembers.join(', ')}`);
+  } else {
+    alert('No members selected');
+  }
+}
+
+function saveGroups() {
+  localStorage.setItem('buzzerGroups', JSON.stringify(groups));
+}
+
+showLogin();
