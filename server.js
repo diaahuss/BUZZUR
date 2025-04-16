@@ -1,31 +1,41 @@
-// server.js
-const express = require("express");
-const http = require("http");
-const socketIo = require("socket.io");
+const express = require('express');
+const http = require('http');
+const { Server } = require('socket.io');
+const cors = require('cors');
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server);
+const io = new Server(server, {
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST']
+  }
+});
 
-app.use(express.static("public")); // serve static files
+app.use(cors());
+app.use(express.json());
+app.use(express.static(__dirname)); // To serve HTML/CSS/JS
 
-// Socket.IO connection
-io.on("connection", (socket) => {
-  console.log("A user connected");
+// Handle WebSocket connections
+io.on('connection', (socket) => {
+  console.log('Client connected:', socket.id);
 
-  socket.on("buzz", (data) => {
-    console.log(`Buzzing group: ${data.group}`);
-    console.log("Members: ", data.members);
-    // Here you can add logic to send notifications to members
+  // Listen for buzz events
+  socket.on('sendBuzz', ({ to, message }) => {
+    console.log('Buzzing:', to, message);
+
+    // Broadcast buzz to all connected clients
+    io.emit('buzzReceived', message); 
+    // In future: only buzz selected sockets based on user auth
   });
 
-  socket.on("disconnect", () => {
-    console.log("User disconnected");
+  socket.on('disconnect', () => {
+    console.log('Client disconnected:', socket.id);
   });
 });
 
 // Start server
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`Server running on http://localhost:${PORT}`);
 });
