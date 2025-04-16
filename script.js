@@ -1,7 +1,7 @@
 const app = document.getElementById("app");
 let users = JSON.parse(localStorage.getItem("users")) || [];
 let currentUser = JSON.parse(localStorage.getItem("currentUser")) || null;
-let socket = io(); // Ensure your server is running and connected
+let socket = io();
 
 function togglePassword(id) {
   const input = document.getElementById(id);
@@ -98,6 +98,7 @@ function showGroups() {
       <div id="groupList"></div>
       <button onclick="createGroup()">Create Group</button>
       <button onclick="logout()" style="margin-top:20px;">Logout</button>
+      <button onclick="showLogin()" style="margin-top:10px;">Back</button>
     </div>`;
   renderGroups();
 }
@@ -112,8 +113,8 @@ function renderGroups() {
       <button onclick="removeGroup(${i})">Remove</button>
       <div id="members${i}">${group.members.map((m, j) => `
         <div class="member">
-          <input value="${m.name}" onchange="updateMember(${i}, ${j}, 'name', this.value)">
-          <input value="${m.phone}" onchange="updateMember(${i}, ${j}, 'phone', this.value)">
+          <input placeholder="Name" value="${m.name}" onchange="updateMember(${i}, ${j}, 'name', this.value)">
+          <input placeholder="Phone" value="${m.phone}" onchange="updateMember(${i}, ${j}, 'phone', this.value)">
           <input type="checkbox" id="select${i}_${j}">
           <button onclick="removeMember(${i}, ${j})">X</button>
         </div>`).join('')}</div>
@@ -145,7 +146,7 @@ function removeGroup(index) {
 
 function addMember(groupIndex) {
   const groups = JSON.parse(localStorage.getItem("groups_" + currentUser.phone)) || [];
-  groups[groupIndex].members.push({ name: "Name", phone: "Phone" });
+  groups[groupIndex].members.push({ name: "", phone: "" });
   localStorage.setItem("groups_" + currentUser.phone, JSON.stringify(groups));
   renderGroups();
 }
@@ -192,6 +193,5 @@ function logout() {
   showLogin();
 }
 
-// Initial screen
 if (currentUser) showGroups();
 else showLogin();
