@@ -126,9 +126,11 @@ function showGroups() {
       ${userGroups.map(g => `
         <div class="group-section">
           <b>${g.name}</b><br>
-          <button onclick="editGroup('${g.name}')">Edit</button>
-          <button onclick="removeGroup('${g.name}')">Remove</button>
-          <button onclick="buzzAll('${g.name}')">Buzz All</button>
+          <div class="group-buttons">
+            <button onclick="editGroup('${g.name}')">Edit</button>
+            <button onclick="removeGroup('${g.name}')">Remove</button>
+            <button onclick="buzzAll('${g.name}')">Buzz All</button>
+          </div>
         </div>
       `).join('')}
       <button onclick="createGroup()">Create New Group</button>
