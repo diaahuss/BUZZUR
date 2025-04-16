@@ -1,80 +1,123 @@
-// Global variables
-let currentUser = null; // Will hold the current user object
-let groups = []; // Array to store groups
-const app = document.getElementById('app'); // Main app container
+const socket = io(); // Connect to server
+const app = document.getElementById('app');
 
-// Function to display the login screen
-function showLogin() {
+// Load buzz sound
+const buzzSound = new Audio('buzz.mp3'); // Ensure buzz.mp3 is in the same folder
+
+// Dummy localStorage auth for demo (replace with Firebase later)
+let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+let users = JSON.parse(localStorage.getItem('users')) || [];
+let groups = JSON.parse(localStorage.getItem('groups')) || [];
+
+function save() {
+  localStorage.setItem('users', JSON.stringify(users));
+  localStorage.setItem('groups', JSON.stringify(groups));
+  if (currentUser) {
+    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+  }
+}
+
+function renderLogin() {
   app.innerHTML = `
     <div class="container">
       <div class="banner">Login</div>
-      <input type="text" id="phone" placeholder="Phone Number" />
-      <input type="password" id="password" placeholder="Password" />
+      <input type="tel" id="loginPhone" placeholder="Phone Number">
+      <input type="password" id="loginPassword" placeholder="Password">
       <button onclick="login()">Login</button>
-      <a href="javascript:void(0);" onclick="showSignup()">Don't have an account? Sign Up</a>
+      <a href="#" onclick="renderSignup()">Sign Up</a> |
+      <a href="#" onclick="renderForgotPassword()">Forgot Password</a>
     </div>
   `;
 }
 
-// Function to display the signup screen
-function showSignup() {
+function renderSignup() {
   app.innerHTML = `
     <div class="container">
       <div class="banner">Sign Up</div>
-      <input type="text" id="name" placeholder="Full Name" />
-      <input type="text" id="phone" placeholder="Phone Number" />
-      <input type="password" id="password" placeholder="Password" />
-      <input type="password" id="confirmPassword" placeholder="Confirm Password" />
+      <input type="text" id="signupName" placeholder="Your Name">
+      <input type="tel" id="signupPhone" placeholder="Phone Number">
+      <input type="password" id="signupPassword" placeholder="Password">
       <button onclick="signup()">Sign Up</button>
-      <a href="javascript:void(0);" onclick="showLogin()">Already have an account? Login</a>
+      <a href="#" onclick="renderLogin()">Back to Login</a>
     </div>
   `;
 }
 
-// Function to handle login
-function login() {
-  const phone = document.getElementById('phone').value;
-  const password = document.getElementById('password').value;
-  
-  // Simulate login (replace with actual logic or API call)
-  currentUser = { phone, name: "User" }; // Replace with real user data
-  
-  // Display the groups screen
-  showGroups();
+function renderForgotPassword() {
+  app.innerHTML = `
+    <div class="container">
+      <div class="banner">Reset Password</div>
+      <input type="tel" id="resetPhone" placeholder="Your Phone Number">
+      <input type="password" id="newPassword" placeholder="New Password">
+      <button onclick="resetPassword()">Reset Password</button>
+      <a href="#" onclick="renderLogin()">Back to Login</a>
+    </div>
+  `;
 }
 
-// Function to handle signup
-function signup() {
-  const name = document.getElementById('name').value;
-  const phone = document.getElementById('phone').value;
-  const password = document.getElementById('password').value;
-  const confirmPassword = document.getElementById('confirmPassword').value;
+function login() {
+  const phone = document.getElementById('loginPhone').value;
+  const password = document.getElementById('loginPassword').value;
+  const user = users.find(u => u.phone === phone && u.password === password);
+  if (user) {
+    currentUser = user;
+    save();
+    showGroups();
+  } else {
+    alert('Invalid credentials');
+  }
+}
 
-  if (password !== confirmPassword) {
-    alert("Passwords do not match!");
+function signup() {
+  const name = document.getElementById('signupName').value;
+  const phone = document.getElementById('signupPhone').value;
+  const password = document.getElementById('signupPassword').value;
+
+  if (users.find(u => u.phone === phone)) {
+    alert('Phone already registered');
     return;
   }
 
-  // Simulate signup (replace with actual logic or API call)
-  currentUser = { phone, name };
-
-  // Display the groups screen
+  const newUser = { name, phone, password };
+  users.push(newUser);
+  currentUser = newUser;
+  save();
   showGroups();
 }
 
-// Function to show the groups page
+function resetPassword() {
+  const phone = document.getElementById('resetPhone').value;
+  const newPassword = document.getElementById('newPassword').value;
+  const user = users.find(u => u.phone === phone);
+  if (user) {
+    user.password = newPassword;
+    save();
+    alert('Password updated');
+    renderLogin();
+  } else {
+    alert('User not found');
+  }
+}
+
+function logout() {
+  currentUser = null;
+  localStorage.removeItem('currentUser');
+  renderLogin();
+}
+
 function showGroups() {
   const userGroups = groups.filter(g => g.owner === currentUser.phone);
-
   app.innerHTML = `
     <div class="container">
       <div class="banner">My Groups</div>
       ${userGroups.map(g => `
         <div class="group-section">
           <b>${g.name}</b><br>
-          <button onclick="editGroup('${g.name}')">Edit</button>
-          <button onclick="removeGroup('${g.name}')">Remove</button>
-          <button onclick="buzzAll('${g.name}')">Buzz All</button>
+          <div class="group-buttons">
+            <button onclick="editGroup('${g.name}')">Edit</button>
+            <button onclick="removeGroup('${g.name}')">Remove</button>
+            <button onclick="buzzAll('${g.name}')">Buzz All</button>
+          </div>
         </div>
       `).join('')}
       <button onclick="createGroup()">Create New Group</button>
@@ -83,64 +126,87 @@ function showGroups() {
   `;
 }
 
-// Function to create a new group
 function createGroup() {
-  const groupName = prompt("Enter group name:");
-
-  if (groupName) {
-    const newGroup = {
-      name: groupName,
-      owner: currentUser.phone,
-      members: []
-    };
-    groups.push(newGroup);
-    showGroups();
-  }
-}
-
-// Function to edit a group (placeholder)
-function editGroup(groupName) {
-  alert(`Editing group: ${groupName}`);
-  // Add your editing logic here
-}
-
-// Function to remove a group
-function removeGroup(groupName) {
-  groups = groups.filter(g => g.name !== groupName);
+  const name = prompt('Enter group name:');
+  if (!name) return;
+  groups.push({ name, owner: currentUser.phone, members: [] });
+  save();
   showGroups();
 }
 
-// Function to handle buzzing all members in a group
+function editGroup(groupName) {
+  const group = groups.find(g => g.name === groupName && g.owner === currentUser.phone);
+  if (!group) return;
+  const newName = prompt('Edit group name:', group.name);
+  if (newName) group.name = newName;
+
+  const membersHTML = group.members.map((m, i) => `
+    <div>
+      <input type="text" value="${m.name}" placeholder="Name" onchange="updateMember('${group.name}', ${i}, 'name', this.value)">
+      <input type="tel" value="${m.phone}" placeholder="Phone" onchange="updateMember('${group.name}', ${i}, 'phone', this.value)">
+      <button onclick="removeMember('${group.name}', ${i})">Remove</button>
+    </div>
+  `).join('');
+
+  app.innerHTML = `
+    <div class="container">
+      <div class="banner">Edit Group: ${group.name}</div>
+      ${membersHTML}
+      <button onclick="addMember('${group.name}')">Add Member</button>
+      <button onclick="showGroups()">Back</button>
+    </div>
+  `;
+}
+
+function updateMember(groupName, index, field, value) {
+  const group = groups.find(g => g.name === groupName);
+  if (group) {
+    group.members[index][field] = value;
+    save();
+  }
+}
+
+function removeGroup(name) {
+  groups = groups.filter(g => g.name !== name || g.owner !== currentUser.phone);
+  save();
+  showGroups();
+}
+
+function addMember(groupName) {
+  const group = groups.find(g => g.name === groupName);
+  if (!group) return;
+  group.members.push({ name: '', phone: '' });
+  save();
+  editGroup(groupName);
+}
+
+function removeMember(groupName, index) {
+  const group = groups.find(g => g.name === groupName);
+  if (group) {
+    group.members.splice(index, 1);
+    save();
+    editGroup(groupName);
+  }
+}
+
 function buzzAll(groupName) {
   const group = groups.find(g => g.name === groupName);
-
-  if (!group) {
-    alert("Group not found.");
-    return;
-  }
-
-  // Send a buzz to all group members
-  group.members.forEach(member => {
-    buzz(member.phone);
-  });
-
-  alert("Buzz sent to all members!");
+  if (!group || !group.members.length) return alert("No members to buzz.");
+  const numbers = group.members.map(m => m.phone);
+  socket.emit('sendBuzz', { to: numbers, message: `Buzz from ${currentUser.name}!` });
+  alert('Buzz sent to all members!');
 }
 
-// Function to simulate buzzing a user (using WebSocket or similar in real app)
-function buzz(phoneNumber) {
-  // Simulate a buzz sound being sent
-  console.log(`Buzz sent to ${phoneNumber}`);
-  // Play the buzz sound
-  document.getElementById('buzzSound').play();
-}
+// Socket.IO receive buzz and play sound
+socket.on('buzzReceived', (message) => {
+  console.log('Buzz received:', message);
+  buzzSound.play();
+  alert(message);
+});
 
-// Function to logout
-function logout() {
-  currentUser = null;
-  groups = [];
-  showLogin();
+// Start app
+if (currentUser) {
+  showGroups();
+} else {
+  renderLogin();
 }
-
-// Initialize the app to show the login screen
-showLogin();
