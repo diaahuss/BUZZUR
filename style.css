@@ -6,36 +6,35 @@ body {
   padding: 0;
 }
 
-/* Container for forms and main content */
+
 .container {
-  max-width: 400px;
+  max-width: 600px;  /* Increased width */
   margin: 60px auto;
-  padding: 20px;
+  padding: 30px;  /* Increased padding for more spacing */
   background-color: #ffffff;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Banner styling */
 .banner {
   background-color: #1e3a5f; /* Dark blue */
   color: white;
-  padding: 15px;
+  padding: 20px;  /* Increased padding */
   text-align: center;
   border-radius: 8px;
-  margin-bottom: 20px;
-  font-size: 20px;
+  margin-bottom: 30px;  /* Increased space between sections */
+  font-size: 24px;  /* Increased font size */
   font-weight: bold;
 }
 
-/* Inputs and buttons */
+/* inputs and buttons will stay within .container width */
 input, button {
   display: block;
   width: 100%;
   box-sizing: border-box;
-  padding: 10px;
-  margin-top: 10px;
-  font-size: 16px;
+  padding: 12px;  /* Increased padding for larger input fields */
+  margin-top: 15px;  /* Increased space between inputs/buttons */
+  font-size: 18px;  /* Larger font size for better readability */
   border-radius: 6px;
   border: 1px solid #ccc;
 }
