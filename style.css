@@ -23,7 +23,7 @@ body {
   padding: 16px;
   text-align: center;
   border-radius: 8px;
-  margin-bottom: 20px; /* Reduced space below banner */
+  margin-bottom: 15px; /* Slightly closer to inputs */
   font-size: 22px;
   font-weight: bold;
 }
@@ -42,7 +42,7 @@ input, button {
 
 /* Buttons */
 button {
-  background-color: #5e92f3; /* Light blue */
+  background-color: #5e92f3;
   color: white;
   border: none;
   cursor: pointer;
@@ -87,7 +87,7 @@ input[type="checkbox"] {
 .group-section {
   margin-top: 20px;
   border-bottom: 1px solid #ddd;
-  padding-bottom: 10px;
+  padding-bottom: 15px;
 }
 
 /* Member input layout */
@@ -97,15 +97,20 @@ input[type="checkbox"] {
   margin-top: 8px;
 }
 
-/* Buttons inside group sections */
-.group-section button {
-  width: auto;
-  display: inline-block;
+/* Group action buttons stack vertically and match width */
+.group-section .group-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   margin-top: 10px;
-  margin-right: 10px;
 }
 
-/* Buttons at the bottom of container */
+.group-section .group-actions button {
+  width: 100%;
+  margin: 0;
+}
+
+/* Container-level buttons */
 .container > button {
   margin-top: 20px;
 }
