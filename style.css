@@ -6,40 +6,41 @@ body {
   padding: 0;
 }
 
-
+/* Centered container */
 .container {
-  max-width: 600px;  /* Increased width */
-  margin: 60px auto;
-  padding: 30px;  /* Increased padding for more spacing */
+  max-width: 400px;
+  margin: 40px auto;
+  padding: 20px;
   background-color: #ffffff;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
+/* Top banner */
 .banner {
   background-color: #1e3a5f; /* Dark blue */
   color: white;
-  padding: 20px;  /* Increased padding */
+  padding: 16px;
   text-align: center;
   border-radius: 8px;
-  margin-bottom: 30px;  /* Increased space between sections */
-  font-size: 24px;  /* Increased font size */
+  margin-bottom: 20px; /* Reduced space below banner */
+  font-size: 22px;
   font-weight: bold;
 }
 
-/* inputs and buttons will stay within .container width */
+/* Inputs and buttons match container width */
 input, button {
   display: block;
   width: 100%;
   box-sizing: border-box;
-  padding: 12px;  /* Increased padding for larger input fields */
-  margin-top: 15px;  /* Increased space between inputs/buttons */
-  font-size: 18px;  /* Larger font size for better readability */
+  padding: 10px;
+  margin-top: 12px;
+  font-size: 16px;
   border-radius: 6px;
   border: 1px solid #ccc;
 }
 
-/* Blue shades for buttons */
+/* Buttons */
 button {
   background-color: #5e92f3; /* Light blue */
   color: white;
@@ -48,11 +49,16 @@ button {
 }
 
 button:hover {
-  background-color: #3f80d1; /* Medium blue on hover */
+  background-color: #3f80d1;
 }
 
 button:active {
-  background-color: #2d69a7; /* Darker blue when button is clicked */
+  background-color: #2d69a7;
+}
+
+button:disabled {
+  background-color: #b0bec5;
+  cursor: not-allowed;
 }
 
 /* Links */
@@ -66,14 +72,7 @@ a:hover {
   text-decoration: underline;
 }
 
-/* Group section styles */
-.group-section {
-  margin-top: 15px;
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 10px;
-}
-
-/* Form control for checkboxes */
+/* Checkbox label styling */
 label.show-password {
   display: inline-block;
   margin-top: 10px;
@@ -84,52 +83,46 @@ input[type="checkbox"] {
   margin-right: 5px;
 }
 
-/* Selected member input styles */
-input[type="text"], input[type="password"] {
-  width: calc(50% - 10px);
+/* Group section styling */
+.group-section {
+  margin-top: 20px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
+}
+
+/* Member input layout */
+.group-section input[type="text"],
+.group-section input[type="tel"] {
+  width: 100%;
+  margin-top: 8px;
+}
+
+/* Buttons inside group sections */
+.group-section button {
+  width: auto;
   display: inline-block;
+  margin-top: 10px;
   margin-right: 10px;
 }
 
-/* Group management and actions */
-button:disabled {
-  background-color: #b0bec5; /* Disabled state for buttons */
-  cursor: not-allowed;
-}
-
-button + button {
-  margin-left: 10px;
-}
-
-/* Add padding for groups */
-.group-section > b {
-  font-weight: bold;
-}
-
-button {
-  display: inline-block;
-  margin-top: 10px;
-  margin-bottom: 5px;
-}
-
+/* Buttons at the bottom of container */
 .container > button {
-  margin-top: 15px;
+  margin-top: 20px;
 }
 
-/* Screen responsiveness */
+/* Responsive */
 @media (max-width: 500px) {
   .container {
-    width: 100%;
+    width: 90%;
     padding: 15px;
-  }
-
-  button {
-    padding: 12px;
   }
 
   input {
     font-size: 14px;
     padding: 8px;
   }
-}
 
+  button {
+    padding: 10px;
+  }
+}
