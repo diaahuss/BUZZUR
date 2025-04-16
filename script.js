@@ -116,7 +116,7 @@ function renderGroups() {
           <input placeholder="Name" value="${m.name}" onchange="updateMember(${i}, ${j}, 'name', this.value)">
           <input placeholder="Phone" value="${m.phone}" onchange="updateMember(${i}, ${j}, 'phone', this.value)">
           <input type="checkbox" id="select${i}_${j}">
-          <button onclick="removeMember(${i}, ${j})">X</button>
+          <button onclick="removeMember(${i}, ${j})">Remove</button>
         </div>`).join('')}</div>
       <button onclick="addMember(${i})">Add Member</button>
       <button onclick="buzzSelected(${i})">Buzz Selected</button>
@@ -183,7 +183,7 @@ function buzzSelected(groupIndex) {
 function buzz(member) {
   const audio = document.getElementById("buzzSound");
   if (audio) audio.play();
-  socket.emit("buzz", member);
+  socket.emit("buzz", member); // Send the buzz message to the backend
   console.log("Buzzed", member);
 }
 
