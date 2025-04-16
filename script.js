@@ -1,7 +1,9 @@
 // ====== Socket.IO Setup ======
 const socket = io();
 socket.on("connect", () => console.log("Connected to server"));
+
 socket.on("buzzReceived", (message) => {
+  console.log("Buzz received:", message);
   const sound = document.getElementById("buzzSound");
   if (sound) sound.play();
   alert(message);
@@ -57,7 +59,7 @@ function signup() {
   const pass = document.getElementById("signupPass").value;
   const confirm = document.getElementById("signupConfirm").value;
   if (pass !== confirm) return alert("Passwords do not match");
-  if (users.find(u => u.phone === phone)) return alert("User exists");
+  if (users.find(u => u.phone === phone)) return alert("User already exists");
   users.push({ name, phone, pass });
   localStorage.setItem("users", JSON.stringify(users));
   showLogin();
@@ -171,23 +173,22 @@ function updateMemberPhone(groupName, index, newPhone) {
   localStorage.setItem("groups", JSON.stringify(groups));
 }
 
+// ====== Buzzing ======
 function buzzAll(groupName) {
   const group = groups.find(g => g.name === groupName);
-  if (!group || group.members.length === 0) {
-    return alert("No members in this group");
-  }
+  if (!group || group.members.length === 0) return alert("No members to buzz");
+
   const phones = group.members.map(m => m.phone).filter(Boolean);
   if (phones.length === 0) return alert("No valid phone numbers");
-  socket.emit("buzz", { from: currentUser.name, phones });
 
-  const sound = document.getElementById("buzzSound");
-  if (sound) sound.play(); // Optional: play buzz on sender side
+  console.log("Buzz All clicked");
+  socket.emit("buzz", { from: currentUser.name || "Someone", phones });
 }
 
 function buzzSelected(groupName) {
   const checkboxes = document.querySelectorAll(".member-select");
   const group = groups.find(g => g.name === groupName);
-  if (!group) return;
+  if (!group) return alert("Group not found");
 
   const phones = [...checkboxes]
     .filter(cb => cb.checked)
@@ -195,10 +196,9 @@ function buzzSelected(groupName) {
     .filter(Boolean);
 
   if (phones.length === 0) return alert("No members selected");
-  socket.emit("buzz", { from: currentUser.name, phones });
 
-  const sound = document.getElementById("buzzSound");
-  if (sound) sound.play(); // Optional: play buzz on sender side
+  console.log("Buzz Selected clicked");
+  socket.emit("buzz", { from: currentUser.name || "Someone", phones });
 }
 
 // ====== Init ======
