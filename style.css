@@ -1,12 +1,12 @@
 /* Global styles */
 body {
   font-family: Arial, sans-serif;
-  background-color: #e3f2fd; /* Pale blue */
+  background-color: #e3f2fd;
   margin: 0;
   padding: 0;
 }
 
-/* Centered container */
+/* Main container */
 .container {
   max-width: 400px;
   margin: 40px auto;
@@ -16,21 +16,20 @@ body {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Top banner */
+/* Banner */
 .banner {
-  background-color: #1e3a5f; /* Dark blue */
+  background-color: #1e3a5f;
   color: white;
   padding: 16px;
   text-align: center;
   border-radius: 8px;
-  margin-bottom: 15px; /* Slightly closer to inputs */
+  margin-bottom: 20px;
   font-size: 22px;
   font-weight: bold;
 }
 
-/* Inputs and buttons match container width */
+/* Inputs and buttons */
 input, button {
-  display: block;
   width: 100%;
   box-sizing: border-box;
   padding: 10px;
@@ -40,7 +39,7 @@ input, button {
   border: 1px solid #ccc;
 }
 
-/* Buttons */
+/* General button styles */
 button {
   background-color: #5e92f3;
   color: white;
@@ -72,7 +71,7 @@ a:hover {
   text-decoration: underline;
 }
 
-/* Checkbox label styling */
+/* Show password checkbox */
 label.show-password {
   display: inline-block;
   margin-top: 10px;
@@ -83,34 +82,34 @@ input[type="checkbox"] {
   margin-right: 5px;
 }
 
-/* Group section styling */
+/* Group section */
 .group-section {
   margin-top: 20px;
   border-bottom: 1px solid #ddd;
   padding-bottom: 15px;
 }
 
-/* Member input layout */
+/* Member input fields */
 .group-section input[type="text"],
 .group-section input[type="tel"] {
   width: 100%;
   margin-top: 8px;
 }
 
-/* Group action buttons stack vertically and match width */
-.group-section .group-actions {
+/* Group action buttons stacked */
+.group-buttons {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-top: 10px;
+  margin-top: 12px;
 }
 
-.group-section .group-actions button {
+.group-buttons button {
   width: 100%;
   margin: 0;
 }
 
-/* Container-level buttons */
+/* Bottom buttons */
 .container > button {
   margin-top: 20px;
 }
