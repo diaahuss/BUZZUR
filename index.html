@@ -2,16 +2,25 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>BUZZUR</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <main id="app"></main> <!-- Dynamic content will render here -->
+  <header class="banner">
+    <h1>BUZZUR</h1>
+  </header>
 
-  <!-- Socket.IO for real-time communication -->
-<script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
-<script src="script.js"></script>
-<audio id="buzzSound" src="buzz.mp3" preload="auto"></audio>
+  <main id="app">
+    <!-- JavaScript will inject login/signup/reset forms here -->
+  </main>
+
+  <audio id="buzz-audio" src="buzz.mp3" preload="auto"></audio>
+
+  <!-- Socket.IO -->
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+
+  <!-- Your App Logic -->
+  <script src="script.js"></script>
 </body>
 </html>
