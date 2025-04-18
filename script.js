@@ -1,5 +1,5 @@
 const app = document.getElementById('app');
-const socket = io("https://buzzur-server.onrender.com");
+const socket = io('https://your-app-name.onrender.com'); // Replace with actual URL
 let currentUser = null;
 let groups = JSON.parse(localStorage.getItem('groups') || '[]');
 let users = JSON.parse(localStorage.getItem('users') || '[]');
