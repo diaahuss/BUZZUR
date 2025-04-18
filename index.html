@@ -1,25 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>BUZZUR</title>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BUZZUR</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="banner">
-    <h1>BUZZUR</h1>
-  </header>
 
-  <main id="app">
-    <!-- Dynamic content goes here (login, signup, my groups, etc.) -->
-  </main>
+    <!-- Banner -->
+    <div id="banner" style="text-align: center; padding: 20px; background-color: lightblue;">
+        <h1>BUZZUR</h1>
+    </div>
 
-  <!-- Buzz sound -->
-  <audio id="buzz-sound" src="buzz.mp3" preload="auto"></audio>
+    <!-- Login Form -->
+    <div id="login-form" style="display: none;">
+        <h2>Login</h2>
+        <input type="text" id="login-phone" placeholder="Phone Number" />
+        <input type="password" id="login-password" placeholder="Password" />
+        <button id="login-button">Login</button>
+        <a href="javascript:void(0);" onclick="switchToSignup()">Sign up</a>
+    </div>
 
-  <!-- Socket.IO -->
-  <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
-  <script src="script.js"></script>
+    <!-- Signup Form -->
+    <div id="signup-form" style="display: none;">
+        <h2>Sign Up</h2>
+        <input type="text" id="signup-name" placeholder="Name" />
+        <input type="text" id="signup-phone" placeholder="Phone Number" />
+        <input type="password" id="signup-password" placeholder="Password" />
+        <input type="password" id="signup-confirm-password" placeholder="Confirm Password" />
+        <label><input type="checkbox" id="show-password" /> Show Password</label>
+        <button id="signup-button">Sign Up</button>
+        <a href="javascript:void(0);" onclick="switchToLogin()">Already have an account? Log in</a>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboard" style="display: none;">
+        <h2 id="dashboard-name"></h2>
+        <button id="logout-button">Logout</button>
+        <button id="buzz-button">Buzz</button>
+        <ul id="users-list"></ul>
+    </div>
+
+    <audio id="buzz-sound" src="buzz.mp3" preload="auto"></audio>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.min.js"></script>
+    <script src="script.js"></script>
+
 </body>
 </html>
