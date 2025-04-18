@@ -1,132 +1,81 @@
-/* Global styles */
+/* General body and layout */
 body {
   font-family: Arial, sans-serif;
-  background-color: #e3f2fd;
   margin: 0;
   padding: 0;
-}
-
-/* Main container */
-.container {
-  max-width: 400px;
-  margin: 40px auto;
-  padding: 20px;
-  background-color: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-/* Banner */
-.banner {
-  background-color: #1e3a5f;
-  color: white;
-  padding: 16px;
   text-align: center;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  font-size: 22px;
-  font-weight: bold;
+  background-color: #f4f4f4;
 }
 
-/* Inputs and buttons */
-input, button {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 10px;
-  margin-top: 12px;
-  font-size: 16px;
-  border-radius: 6px;
+/* Banner style */
+#banner {
+  background-color: lightblue;
+  padding: 20px;
+  color: #004d80;
+  font-size: 24px;
+}
+
+/* Form and Dashboard Container */
+#login-form, #signup-form, #dashboard {
+  width: 400px;
+  margin: 20px auto;
+  padding: 20px;
   border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: white;
+  display: none;
 }
 
-/* General button styles */
+/* Input fields and buttons */
+input[type="text"], input[type="password"], button {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
 button {
-  background-color: #5e92f3;
+  background-color: #4CAF50;
   color: white;
-  border: none;
   cursor: pointer;
+  border: none;
+  padding: 10px;
+  font-size: 16px;
 }
 
 button:hover {
-  background-color: #3f80d1;
+  background-color: #45a049;
 }
 
-button:active {
-  background-color: #2d69a7;
-}
-
-button:disabled {
-  background-color: #b0bec5;
-  cursor: not-allowed;
-}
-
-/* Links */
+/* Links styling */
 a {
-  color: #007bff;
+  color: #0066cc;
   text-decoration: none;
-  font-size: 14px;
 }
 
 a:hover {
   text-decoration: underline;
 }
 
-/* Show password checkbox */
-label.show-password {
-  display: inline-block;
-  margin-top: 10px;
-  font-size: 14px;
+/* Dashboard Specific Styles */
+#users-list {
+  list-style-type: none;
+  padding: 0;
 }
 
-input[type="checkbox"] {
-  margin-right: 5px;
-}
-
-/* Group section */
-.group-section {
-  margin-top: 20px;
+#users-list li {
+  padding: 5px;
   border-bottom: 1px solid #ddd;
-  padding-bottom: 15px;
 }
 
-/* Member input fields */
-.group-section input[type="text"],
-.group-section input[type="tel"] {
-  width: 100%;
-  margin-top: 8px;
+/* Show/hide password checkbox */
+label {
+  display: block;
+  margin-top: 10px;
 }
 
-/* Group action buttons stacked */
-.group-buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 12px;
-}
-
-.group-buttons button {
-  width: 100%;
-  margin: 0;
-}
-
-/* Bottom buttons */
-.container > button {
-  margin-top: 20px;
-}
-
-/* Responsive */
-@media (max-width: 500px) {
-  .container {
-    width: 90%;
-    padding: 15px;
-  }
-
-  input {
-    font-size: 14px;
-    padding: 8px;
-  }
-
-  button {
-    padding: 10px;
-  }
+/* Style for the audio element (invisible) */
+#buzz-sound {
+  display: none;
 }
