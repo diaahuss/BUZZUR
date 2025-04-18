@@ -1,41 +1,37 @@
 const express = require('express');
 const http = require('http');
-const { Server } = require('socket.io');
-const cors = require('cors');
+const socketIo = require('socket.io');
 
 const app = express();
 const server = http.createServer(app);
-
-// Allow GitHub Pages to connect
-const io = new Server(server, {
+const io = socketIo(server, {
   cors: {
-    origin: "https://diaahuss.github.io", // your frontend origin
-    methods: ["GET", "POST"]
-  }
-});
-
-// Basic route just to confirm server is alive
-app.get("/", (req, res) => {
-  res.send("BUZZUR server is running!");
+    origin: ['https://diaahuss.github.io', 'https://your-app-name.onrender.com'],
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type'],
+    credentials: true,
+  },
 });
 
 const PORT = process.env.PORT || 10000;
 
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+app.use(express.static('public')); // Serve static files from 'public' directory
+
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/index.html');
 });
 
-// Handle WebSocket events
-io.on("connection", (socket) => {
-  console.log("A user connected");
-
-  socket.on("buzz", (data) => {
-    console.log("Buzz received:", data);
-    // Broadcast the buzz event to all clients except sender
-    socket.broadcast.emit("buzz", data);
+io.on('connection', (socket) => {
+  console.log('A user connected');
+  socket.on('buzz', (data) => {
+    console.log('Buzz received:', data);
+    io.emit('buzzed', data); // Emit 'buzzed' event to all clients
   });
-
-  socket.on("disconnect", () => {
-    console.log("A user disconnected");
+  socket.on('disconnect', () => {
+    console.log('User disconnected');
   });
+});
+
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
