@@ -1,51 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BUZZUR</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>BUZZUR</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
+  <div id="app">
     <!-- Banner -->
-    <div id="banner" style="text-align: center; padding: 20px; background-color: lightblue;">
-        <h1>BUZZUR</h1>
-    </div>
+    <header class="banner">
+      <h1 id="banner-title">BUZZUR</h1>
+    </header>
 
-    <!-- Login Form -->
-    <div id="login-form" style="display: none;">
-        <h2>Login</h2>
-        <input type="text" id="login-phone" placeholder="Phone Number" />
-        <input type="password" id="login-password" placeholder="Password" />
-        <button id="login-button">Login</button>
-        <a href="javascript:void(0);" onclick="switchToSignup()">Sign up</a>
-    </div>
+    <!-- Login View -->
+    <section id="login-view" class="view">
+      <h2>Login</h2>
+      <input type="text" id="login-phone" placeholder="Phone">
+      <input type="password" id="login-password" placeholder="Password">
+      <button id="login-button">Login</button>
+      <div class="auth-links">
+        <a href="#" id="go-to-signup">Sign up</a> | 
+        <a href="#" id="go-to-reset">Forgot password?</a>
+      </div>
+    </section>
 
-    <!-- Signup Form -->
-    <div id="signup-form" style="display: none;">
-        <h2>Sign Up</h2>
-        <input type="text" id="signup-name" placeholder="Name" />
-        <input type="text" id="signup-phone" placeholder="Phone Number" />
-        <input type="password" id="signup-password" placeholder="Password" />
-        <input type="password" id="signup-confirm-password" placeholder="Confirm Password" />
-        <label><input type="checkbox" id="show-password" /> Show Password</label>
-        <button id="signup-button">Sign Up</button>
-        <a href="javascript:void(0);" onclick="switchToLogin()">Already have an account? Log in</a>
-    </div>
+    <!-- Sign Up View -->
+    <section id="signup-view" class="view" style="display: none;">
+      <h2>Sign Up</h2>
+      <input type="text" id="signup-name" placeholder="Name">
+      <input type="text" id="signup-phone" placeholder="Phone">
+      <input type="password" id="signup-password" placeholder="Password">
+      <input type="password" id="signup-confirm-password" placeholder="Confirm Password">
+      <label><input type="checkbox" id="show-password"> Show Password</label>
+      <button id="signup-button">Sign Up</button>
+      <div class="auth-links">
+        <a href="#" id="go-to-login">Back to Login</a>
+      </div>
+    </section>
 
-    <!-- Dashboard -->
-    <div id="dashboard" style="display: none;">
-        <h2 id="dashboard-name"></h2>
-        <button id="logout-button">Logout</button>
-        <button id="buzz-button">Buzz</button>
-        <ul id="users-list"></ul>
-    </div>
+    <!-- Forgot Password View -->
+    <section id="reset-view" class="view" style="display: none;">
+      <h2>Reset Password</h2>
+      <input type="text" id="reset-phone" placeholder="Enter your phone">
+      <button id="reset-button">Reset Password</button>
+      <div class="auth-links">
+        <a href="#" id="go-to-login2">Back to Login</a>
+      </div>
+    </section>
 
-    <audio id="buzz-sound" src="buzz.mp3" preload="auto"></audio>
+    <!-- Dashboard View -->
+    <section id="dashboard-view" class="view" style="display: none;">
+      <h2>My Groups</h2>
+      <button id="create-group-button">+ Create Group</button>
+      <div id="groups-container"></div>
+      <button id="logout-button" class="logout">Logout</button>
+    </section>
+  </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.min.js"></script>
-    <script src="script.js"></script>
+  <!-- Buzz Sound -->
+  <audio id="buzz-sound" src="buzz.mp3" preload="auto"></audio>
 
+  <!-- Scripts -->
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
