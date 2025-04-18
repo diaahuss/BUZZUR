@@ -1,37 +1,41 @@
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
+const cors = require('cors');
 
 const app = express();
 const server = http.createServer(app);
+
+// Configure CORS for Express
+app.use(cors({
+  origin: 'https://diaahuss.github.io', // Replace with your frontend's domain
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type'],
+}));
+
+// Initialize Socket.IO with CORS options
 const io = socketIo(server, {
   cors: {
-    origin: ['https://diaahuss.github.io', 'https://your-app-name.onrender.com'],
+    origin: 'https://diaahuss.github.io', // Replace with your frontend's domain
     methods: ['GET', 'POST'],
-    allowedHeaders: ['Content-Type'],
-    credentials: true,
   },
 });
 
-const PORT = process.env.PORT || 10000;
-
-app.use(express.static('public')); // Serve static files from 'public' directory
-
-app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/index.html');
-});
-
+// Define your Socket.IO events
 io.on('connection', (socket) => {
   console.log('A user connected');
+
   socket.on('buzz', (data) => {
     console.log('Buzz received:', data);
-    io.emit('buzzed', data); // Emit 'buzzed' event to all clients
+    // Handle the buzz event here
   });
+
   socket.on('disconnect', () => {
     console.log('User disconnected');
   });
 });
 
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+// Start the server
+server.listen(10000, () => {
+  console.log('Server running on port 10000');
 });
