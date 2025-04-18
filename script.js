@@ -12,6 +12,19 @@ const passwordInput = document.getElementById('password-input');
 const usersList = document.getElementById('users-list');
 const logoutButton = document.getElementById('logout-button');
 
+// Show/hide password functionality
+const showPasswordCheckbox = document.getElementById('show-password');
+const signupPassword = document.getElementById('signup-password');
+const signupConfirmPassword = document.getElementById('signup-confirm-password');
+const loginPassword = document.getElementById('login-password');
+
+showPasswordCheckbox.addEventListener('change', () => {
+  const passwordType = showPasswordCheckbox.checked ? 'text' : 'password';
+  signupPassword.type = passwordType;
+  signupConfirmPassword.type = passwordType;
+  loginPassword.type = passwordType;
+});
+
 // Initialize socket connection
 const socket = io();
 
