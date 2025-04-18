@@ -1,25 +1,21 @@
-// server.js
 const express = require("express");
 const http = require("http");
-const { Server } = require("socket.io");
 const path = require("path");
+const { Server } = require("socket.io");
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-// Serve static files from the current directory
+// Serve static files (index.html, script.js, style.css, buzz.mp3, etc.)
 app.use(express.static(path.join(__dirname)));
 
 io.on("connection", (socket) => {
   console.log("A user connected");
 
   socket.on("buzz", (data) => {
-    const { groupId, members } = data;
-    console.log(`Buzz received for group ${groupId} with ${members.length} members.`);
-
-    // Emit buzzed event to all connected clients with the group and member info
-    io.emit("buzzed", { groupId, members });
+    console.log("Buzz triggered:", data);
+    io.emit("buzzed", data); // emit to all clients
   });
 
   socket.on("disconnect", () => {
