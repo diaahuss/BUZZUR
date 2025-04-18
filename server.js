@@ -8,16 +8,18 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-// Serve static files (index.html, script.js, style.css, buzz.mp3, etc.)
+// Serve static files from the current directory
 app.use(express.static(path.join(__dirname)));
 
 io.on("connection", (socket) => {
   console.log("A user connected");
 
-  socket.on("buzz", (member) => {
-    console.log(`Buzz sent to: ${member.name || "Unknown"} (${member.phone})`);
-    // Optionally emit buzz to all connected clients
-    io.emit("buzz", member);
+  socket.on("buzz", (data) => {
+    const { groupId, members } = data;
+    console.log(`Buzz received for group ${groupId} with ${members.length} members.`);
+
+    // Emit buzzed event to all connected clients with the group and member info
+    io.emit("buzzed", { groupId, members });
   });
 
   socket.on("disconnect", () => {
