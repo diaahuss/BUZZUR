@@ -2,69 +2,16 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BUZZUR</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="app">
-    <!-- Banner -->
-    <header class="banner">
-      <h1 id="banner-title">BUZZUR</h1>
-    </header>
+  <div id="app"></div>
 
-    <!-- Login View -->
-    <section id="login-view" class="view">
-      <h2>Login</h2>
-      <input type="text" id="login-phone" placeholder="Phone">
-      <input type="password" id="login-password" placeholder="Password">
-      <button id="login-button">Login</button>
-      <div class="auth-links">
-        <a href="#" id="go-to-signup">Sign up</a> | 
-        <a href="#" id="go-to-reset">Forgot password?</a>
-      </div>
-    </section>
-
-    <!-- Sign Up View -->
-    <section id="signup-view" class="view" style="display: none;">
-      <h2>Sign Up</h2>
-      <input type="text" id="signup-name" placeholder="Name">
-      <input type="text" id="signup-phone" placeholder="Phone">
-      <input type="password" id="signup-password" placeholder="Password">
-      <input type="password" id="signup-confirm-password" placeholder="Confirm Password">
-      <label><input type="checkbox" id="show-password"> Show Password</label>
-      <button id="signup-button">Sign Up</button>
-      <div class="auth-links">
-        <a href="#" id="go-to-login">Back to Login</a>
-      </div>
-    </section>
-
-    <!-- Forgot Password View -->
-    <section id="reset-view" class="view" style="display: none;">
-      <h2>Reset Password</h2>
-      <input type="text" id="reset-phone" placeholder="Enter your phone">
-      <button id="reset-button">Reset Password</button>
-      <div class="auth-links">
-        <a href="#" id="go-to-login2">Back to Login</a>
-      </div>
-    </section>
-
-    <!-- Dashboard View -->
-    <section id="dashboard-view" class="view" style="display: none;">
-      <h2>My Groups</h2>
-      <button id="create-group-button">+ Create Group</button>
-      <div id="groups-container"></div>
-      <button id="logout-button" class="logout">Logout</button>
-    </section>
-  </div>
-
-  <!-- Buzz Sound -->
   <audio id="buzz-sound" src="buzz.mp3" preload="auto"></audio>
 
-  <!-- Scripts -->
-<script src="https://buzzur-server.onrender.com/socket.io/socket.io.js"></script>
-<script src="script.js"></script>
+  <script src="https://buzzur-server.onrender.com/socket.io/socket.io.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
-
-
-
