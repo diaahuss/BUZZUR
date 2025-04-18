@@ -1,57 +1,47 @@
-/* Global Styles */
 body {
-  font-family: Arial, sans-serif;
-  background-color: #f3f4f6;
+  font-family: sans-serif;
+  background: #f0f8ff;
+  margin: 0;
+  padding: 20px;
   display: flex;
   justify-content: center;
-  align-items: center;
-  height: 100vh;
-  margin: 0;
 }
 
 #app {
   width: 100%;
-  max-width: 450px;
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 500px;
+}
+
+.container {
+  background: white;
+  border-radius: 12px;
   padding: 20px;
+  box-shadow: 0 0 10px #ccc;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+input, button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 16px;
 }
 
 button {
-  background-color: #4CAF50;
-  color: white;
+  background-color: #add8e6;
   border: none;
-  padding: 10px;
-  width: 100%;
-  border-radius: 8px;
   cursor: pointer;
-  font-size: 16px;
 }
 
 button:hover {
-  background-color: #45a049;
-}
-
-input[type="text"],
-input[type="tel"],
-input[type="password"] {
-  width: 100%;
-  padding: 10px;
-  margin: 10px 0;
-  font-size: 16px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-}
-
-input[type="checkbox"] {
-  margin-top: 8px;
-}
-
-input[type="password"]:focus,
-input[type="text"]:focus,
-input[type="tel"]:focus {
-  border-color: #4CAF50;
+  background-color: #87ceeb;
 }
 
 .link-row {
@@ -61,80 +51,33 @@ input[type="tel"]:focus {
   margin-top: 10px;
 }
 
-.link-row span {
-  cursor: pointer;
-  color: #4CAF50;
+.group-card {
+  margin: 20px 0;
+  border: 1px solid #ccc;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #f9f9f9;
 }
 
-.link-row span:hover {
-  text-decoration: underline;
-}
-
-/* Member input styles */
 .member-inputs {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  border: 1px solid #ccc;
-  padding: 10px;
-  margin-bottom: 8px;
-  border-radius: 8px;
-  background-color: #f9f9f9;
-  width: 100%;
-  max-width: 300px;
+  margin-bottom: 15px;
 }
 
-.member-inputs input[type="text"],
-.member-inputs input[type="tel"] {
-  width: 100%;
-  margin: 4px 0;
-  padding: 8px;
-  font-size: 14px;
-  box-sizing: border-box;
+.member-inputs input {
+  margin-bottom: 5px;
 }
 
 .member-inputs input[type="checkbox"] {
-  margin-top: 6px;
+  margin: 5px auto;
+  width: 20px;
+  height: 20px;
 }
 
-.member-inputs button {
-  margin-top: 8px;
-  align-self: flex-end;
-  background-color: palegreen;
-  border: none;
-  padding: 6px 10px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.group-card {
-  background-color: #f9f9f9;
-  margin-bottom: 15px;
-  padding: 10px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.group-card input {
-  margin-bottom: 10px;
-  padding: 10px;
-  font-size: 14px;
-  width: 100%;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-}
-
-.actions button {
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  margin-top: 8px;
-  font-size: 14px;
-}
-
-.actions button:hover {
-  background-color: #45a049;
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
 }
