@@ -1,81 +1,140 @@
-/* General body and layout */
+/* Base styles */
 body {
   font-family: Arial, sans-serif;
+  background: #f5faff;
   margin: 0;
   padding: 0;
+  display: flex;
+  justify-content: center;
+}
+
+#app {
+  width: 100%;
+  max-width: 400px;
+  padding: 0;
+  margin: 0 auto;
+}
+
+/* Banner */
+.banner {
+  background-color: #4da6ff;
+  color: white;
   text-align: center;
-  background-color: #f4f4f4;
-}
-
-/* Banner style */
-#banner {
-  background-color: lightblue;
   padding: 20px;
-  color: #004d80;
   font-size: 24px;
+  font-weight: bold;
+  border-bottom: 2px solid #3399ff;
 }
 
-/* Form and Dashboard Container */
-#login-form, #signup-form, #dashboard {
-  width: 400px;
-  margin: 20px auto;
+#banner-title {
+  margin: 0;
+}
+
+/* Views */
+.view {
   padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  background-color: white;
-  display: none;
+  background: white;
+  margin-top: 10px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
-/* Input fields and buttons */
-input[type="text"], input[type="password"], button {
+/* Headings */
+.view h2 {
+  margin-top: 0;
+  font-size: 22px;
+  text-align: center;
+  color: #333;
+}
+
+/* Input fields */
+input[type="text"],
+input[type="password"] {
   width: 100%;
   padding: 10px;
-  margin: 10px 0;
+  margin-top: 10px;
+  margin-bottom: 10px;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: 6px;
+  font-size: 16px;
+  box-sizing: border-box;
 }
 
+/* Buttons */
 button {
-  background-color: #4CAF50;
-  color: white;
-  cursor: pointer;
-  border: none;
+  width: 100%;
   padding: 10px;
+  background-color: #a0d468;
+  border: none;
+  border-radius: 6px;
+  color: white;
   font-size: 16px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background 0.3s;
 }
 
 button:hover {
-  background-color: #45a049;
+  background-color: #8cc152;
 }
 
-/* Links styling */
-a {
-  color: #0066cc;
+/* Links */
+.auth-links {
+  text-align: center;
+  margin-top: 15px;
+}
+
+.auth-links a {
+  color: #4da6ff;
   text-decoration: none;
+  font-size: 14px;
 }
 
-a:hover {
+.auth-links a:hover {
   text-decoration: underline;
 }
 
-/* Dashboard Specific Styles */
-#users-list {
-  list-style-type: none;
-  padding: 0;
-}
-
-#users-list li {
-  padding: 5px;
-  border-bottom: 1px solid #ddd;
-}
-
-/* Show/hide password checkbox */
+/* Checkbox label */
 label {
+  font-size: 14px;
+  color: #333;
   display: block;
-  margin-top: 10px;
+  margin-top: 5px;
 }
 
-/* Style for the audio element (invisible) */
-#buzz-sound {
+/* Logout button (positioned at bottom of dashboard) */
+.logout {
+  background-color: #ff6666;
+  margin-top: 20px;
+}
+
+.logout:hover {
+  background-color: #ff4c4c;
+}
+
+/* Groups container */
+#groups-container {
+  margin-top: 15px;
+}
+
+/* Group card */
+.group {
+  background: #eef6ff;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 8px;
+  border: 1px solid #cce0ff;
+}
+
+/* Group buttons inside dashboard */
+.group button {
+  margin-top: 5px;
+  margin-right: 5px;
+  width: auto;
+  display: inline-block;
+}
+
+/* Hide elements easily */
+.hidden {
   display: none;
 }
