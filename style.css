@@ -1,140 +1,140 @@
-/* Base styles */
+/* Global Styles */
 body {
   font-family: Arial, sans-serif;
-  background: #f5faff;
-  margin: 0;
-  padding: 0;
+  background-color: #f3f4f6;
   display: flex;
   justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
 }
 
 #app {
   width: 100%;
-  max-width: 400px;
-  padding: 0;
-  margin: 0 auto;
-}
-
-/* Banner */
-.banner {
-  background-color: #4da6ff;
-  color: white;
-  text-align: center;
+  max-width: 450px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 20px;
-  font-size: 24px;
-  font-weight: bold;
-  border-bottom: 2px solid #3399ff;
 }
 
-#banner-title {
-  margin: 0;
-}
-
-/* Views */
-.view {
-  padding: 20px;
-  background: white;
-  margin-top: 10px;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
-}
-
-/* Headings */
-.view h2 {
-  margin-top: 0;
-  font-size: 22px;
-  text-align: center;
-  color: #333;
-}
-
-/* Input fields */
-input[type="text"],
-input[type="password"] {
-  width: 100%;
-  padding: 10px;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 16px;
-  box-sizing: border-box;
-}
-
-/* Buttons */
 button {
-  width: 100%;
-  padding: 10px;
-  background-color: #a0d468;
-  border: none;
-  border-radius: 6px;
+  background-color: #4CAF50;
   color: white;
-  font-size: 16px;
+  border: none;
+  padding: 10px;
+  width: 100%;
+  border-radius: 8px;
   cursor: pointer;
-  margin-top: 10px;
-  transition: background 0.3s;
+  font-size: 16px;
 }
 
 button:hover {
-  background-color: #8cc152;
+  background-color: #45a049;
 }
 
-/* Links */
-.auth-links {
-  text-align: center;
-  margin-top: 15px;
+input[type="text"],
+input[type="tel"],
+input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
 }
 
-.auth-links a {
-  color: #4da6ff;
-  text-decoration: none;
+input[type="checkbox"] {
+  margin-top: 8px;
+}
+
+input[type="password"]:focus,
+input[type="text"]:focus,
+input[type="tel"]:focus {
+  border-color: #4CAF50;
+}
+
+.link-row {
+  display: flex;
+  justify-content: space-between;
   font-size: 14px;
+  margin-top: 10px;
 }
 
-.auth-links a:hover {
+.link-row span {
+  cursor: pointer;
+  color: #4CAF50;
+}
+
+.link-row span:hover {
   text-decoration: underline;
 }
 
-/* Checkbox label */
-label {
-  font-size: 14px;
-  color: #333;
-  display: block;
-  margin-top: 5px;
-}
-
-/* Logout button (positioned at bottom of dashboard) */
-.logout {
-  background-color: #ff6666;
-  margin-top: 20px;
-}
-
-.logout:hover {
-  background-color: #ff4c4c;
-}
-
-/* Groups container */
-#groups-container {
-  margin-top: 15px;
-}
-
-/* Group card */
-.group {
-  background: #eef6ff;
+/* Member input styles */
+.member-inputs {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  border: 1px solid #ccc;
   padding: 10px;
-  margin-top: 10px;
+  margin-bottom: 8px;
   border-radius: 8px;
-  border: 1px solid #cce0ff;
+  background-color: #f9f9f9;
+  width: 100%;
+  max-width: 300px;
 }
 
-/* Group buttons inside dashboard */
-.group button {
-  margin-top: 5px;
-  margin-right: 5px;
-  width: auto;
-  display: inline-block;
+.member-inputs input[type="text"],
+.member-inputs input[type="tel"] {
+  width: 100%;
+  margin: 4px 0;
+  padding: 8px;
+  font-size: 14px;
+  box-sizing: border-box;
 }
 
-/* Hide elements easily */
-.hidden {
-  display: none;
+.member-inputs input[type="checkbox"] {
+  margin-top: 6px;
+}
+
+.member-inputs button {
+  margin-top: 8px;
+  align-self: flex-end;
+  background-color: palegreen;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.group-card {
+  background-color: #f9f9f9;
+  margin-bottom: 15px;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.group-card input {
+  margin-bottom: 10px;
+  padding: 10px;
+  font-size: 14px;
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.actions button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 8px;
+  font-size: 14px;
+}
+
+.actions button:hover {
+  background-color: #45a049;
 }
