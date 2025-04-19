@@ -1,47 +1,54 @@
 body {
-  font-family: Arial, sans-serif;
-  background: #f0f8ff;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  justify-content: center;
-}
-
-main#app {
-  width: 90%;
-  max-width: 600px;
-  margin-top: 30px;
+    font-family: Arial, sans-serif;
+    background-color: #eef6fb;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
 }
 
 .container {
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    width: 400px;
 }
 
-input, button {
-  width: 100%;
-  margin: 8px 0;
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
+h1 {
+    color: #1f78d1;
+    text-align: center;
+}
+
+label {
+    display: block;
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
 }
 
 button {
-  background: #8fd694;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
+    width: 100%;
+    margin-top: 20px;
+    padding: 12px;
+    background-color: #1f78d1;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
 }
 
-.group-card {
-  margin-top: 20px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 10px;
-}
-
-.actions button {
-  margin: 4px 0;
+button:hover {
+    background-color: #155f9b;
 }
