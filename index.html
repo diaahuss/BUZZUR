@@ -1,16 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>BUZZUR - Send A Buzz</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BUZZUR - Send a Buzz</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <main id="app"></main>
+    <div class="container">
+        <h1>BUZZUR - Send A Buzz</h1>
 
-  <audio id="buzz-sound" src="buzz.mp3" preload="auto"></audio>
+        <label for="phoneNumbers">Phone Numbers (comma separated):</label>
+        <input type="text" id="phoneNumbers" placeholder="e.g. 8284482580, 1234567890">
 
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="script.js"></script>
+        <label for="message">Message:</label>
+        <textarea id="message" placeholder="Enter your message here..."></textarea>
+
+        <button id="sendBuzzBtn">Send Buzz</button>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
