@@ -1,6 +1,5 @@
 const app = document.getElementById('app');
-const socket = io('https://your-app-name.onrender.com'); // Replace with your actual Render app URL
-
+const socket = io(); // Connects to the server that served the page
 let currentUser = null;
 let groups = JSON.parse(localStorage.getItem('groups') || '[]');
 let users = JSON.parse(localStorage.getItem('users') || '[]');
@@ -130,59 +129,6 @@ function renameGroup(id, name) {
 }
 
 function deleteGroup(id) {
-  groups = groups.filter(g => g.id !== id);
-  localStorage.setItem('groups', JSON.stringify(groups));
-  renderGroups();
-}
-
-function addMember(groupId) {
-  const group = groups.find(g => g.id === groupId);
-  group.members.push({ name: '', phone: '' });
-  localStorage.setItem('groups', JSON.stringify(groups));
-  renderMembers(groupId);
-}
-
-function removeMember(groupId, index) {
-  const group = groups.find(g => g.id === groupId);
-  group.members.splice(index, 1);
-  localStorage.setItem('groups', JSON.stringify(groups));
-  renderMembers(groupId);
-}
-
-function updateMember(groupId, index, field, value) {
-  const group = groups.find(g => g.id === groupId);
-  group.members[index][field] = value;
-  localStorage.setItem('groups', JSON.stringify(groups));
-}
-
-function renderMembers(groupId) {
-  const group = groups.find(g => g.id === groupId);
-  const container = document.getElementById(`members-${groupId}`);
-  container.innerHTML = '';
-  group.members.forEach((member, index) => {
-    const row = document.createElement('div');
-    row.className = 'member-inputs';
-    row.innerHTML = `
-      <input type="text" value="${member.name}" placeholder="Name" 
-        onchange="updateMember('${groupId}', ${index}, 'name', this.value)">
-      <input type="tel" value="${member.phone}" placeholder="Phone" 
-        onchange="updateMember('${groupId}', ${index}, 'phone', this.value)">
-      <input type="checkbox" data-index="${index}">
-      <button onclick="removeMember('${groupId}', ${index})">Remove</button>
-    `;
-    container.appendChild(row);
-  });
-}
-
-function buzzSelected(groupId) {
-  const checkboxes = document.querySelectorAll(`#members-${groupId} input[type="checkbox"]`);
-  const group = groups.find(g => g.id === groupId);
-  const selected = [];
-  checkboxes.forEach((box, i) => {
-    if (box.checked) selected.push(group.members[i]);
-  });
-  if (selected.length) {
-    socket.emit("buzz", { groupId, members: selected });
-  } else
+  groups = groups.filter(g => g
 ::contentReference[oaicite:0]{index=0}
  
