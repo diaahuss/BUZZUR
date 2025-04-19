@@ -1,3 +1,5 @@
+const app = document.getElementById('app');
+
 function renderLogin() {
   app.innerHTML = `
     <div class="container">
@@ -33,14 +35,25 @@ function renderSignup() {
   `;
 }
 
-// Eye toggle function
-function togglePassword(id, el) {
+function togglePassword(id, icon) {
   const input = document.getElementById(id);
   if (input.type === "password") {
     input.type = "text";
-    el.textContent = "🙈";
+    icon.textContent = "🙈";
   } else {
     input.type = "password";
-    el.textContent = "👁️";
+    icon.textContent = "👁️";
   }
 }
+
+// Dummy login/signup functions
+function login() {
+  alert("Login clicked");
+}
+
+function signup() {
+  alert("Signup clicked");
+}
+
+// Start with login screen
+renderLogin();
