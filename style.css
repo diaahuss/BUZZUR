@@ -1,43 +1,55 @@
 body {
   font-family: Arial, sans-serif;
-  background-color: #f0f0f0;
   margin: 0;
   padding: 0;
+  background-color: #f0f0f0;
 }
 
-.container {
-  max-width: 500px;
-  margin: 50px auto;
-  background: #fff;
+header {
+  background-color: #3a8dff;
+  padding: 20px;
+  color: white;
+  text-align: center;
+}
+
+main {
+  padding: 20px;
+}
+
+#send-buzz-form {
+  background-color: white;
   padding: 20px;
   border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  width: 300px;
+  margin: 0 auto;
 }
 
-input, button {
-  display: block;
+h2 {
+  text-align: center;
+}
+
+input, textarea, button {
   width: 100%;
-  margin: 10px 0;
   padding: 10px;
-}
-
-.link-row {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 10px;
-}
-
-.group-card {
+  margin-bottom: 10px;
   border: 1px solid #ccc;
-  padding: 10px;
-  margin-top: 10px;
+  border-radius: 5px;
 }
 
-.member-inputs {
-  display: flex;
-  gap: 10px;
-  margin-top: 5px;
+button {
+  background-color: #4CAF50;
+  color: white;
+  cursor: pointer;
 }
 
-.actions {
-  margin-top: 10px;
+button:hover {
+  background-color: #45a049;
 }
+
+#statusMessage {
+  text-align: center;
+  font-weight: bold;
+  color: green;
+}
+
