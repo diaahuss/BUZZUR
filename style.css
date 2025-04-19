@@ -1,6 +1,6 @@
 body {
   font-family: Arial, sans-serif;
-  background-color: #eef6ff;
+  background-color: #f0f8ff;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -9,47 +9,51 @@ body {
 }
 
 .container {
-  background: white;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+  background-color: white;
+  padding: 30px 20px;
+  border-radius: 10px;
   width: 100%;
   max-width: 400px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-h2 {
+.banner {
   text-align: center;
-  margin-bottom: 20px;
+  font-size: 28px;
+  margin-bottom: 30px;
   color: #0077cc;
 }
 
-input {
+input[type="text"],
+input[type="tel"],
+input[type="password"] {
   width: 100%;
-  padding: 10px;
-  margin-bottom: 12px;
-  border-radius: 6px;
+  padding: 10px 40px 10px 10px;
+  margin-bottom: 15px;
+  box-sizing: border-box;
   border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
 }
 
 button {
   width: 100%;
+  background-color: #66cc99;
+  color: white;
   padding: 10px;
-  background-color: #4caf50;
+  font-size: 16px;
   border: none;
   border-radius: 6px;
-  color: white;
-  font-weight: bold;
   cursor: pointer;
-  margin-top: 10px;
 }
 
 button:hover {
-  background-color: #45a049;
+  background-color: #55bb88;
 }
 
 p {
   text-align: center;
-  margin-top: 10px;
+  margin-top: 15px;
 }
 
 a {
@@ -57,23 +61,12 @@ a {
   text-decoration: none;
 }
 
-/* Banner styling */
-.banner {
-  font-size: 28px;
-  color: #0077cc;
-  text-align: center;
-  margin-bottom: 30px;
+a:hover {
+  text-decoration: underline;
 }
 
-/* Password field with eye icon */
 .password-wrapper {
   position: relative;
-  margin-bottom: 12px;
-}
-
-.password-wrapper input {
-  width: 100%;
-  padding-right: 40px; /* make space for the icon */
 }
 
 .toggle-eye {
