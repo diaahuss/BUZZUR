@@ -1,54 +1,70 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: #eef6fb;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+  font-family: Arial, sans-serif;
+  background-color: #e3f2fd; /* Pale blue */
+  margin: 0;
+  padding: 0;
 }
 
 .container {
-    background: #fff;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.1);
-    width: 400px;
+  max-width: 400px;
+  margin: 60px auto;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-h1 {
-    color: #1f78d1;
-    text-align: center;
+.banner {
+  background-color: #1e3a5f; /* Dark blue */
+  color: white;
+  padding: 15px;
+  text-align: center;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 20px;
+  font-weight: bold;
 }
 
-label {
-    display: block;
-    margin-top: 15px;
-    font-weight: bold;
+/* inputs and buttons will stay within .container width */
+input, button {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+  margin-top: 10px;
+  font-size: 16px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
 }
 
-input, textarea {
-    width: 100%;
-    padding: 10px;
-    margin-top: 5px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    box-sizing: border-box;
-}
-
+/* Blue shades for buttons */
 button {
-    width: 100%;
-    margin-top: 20px;
-    padding: 12px;
-    background-color: #1f78d1;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-size: 16px;
-    cursor: pointer;
+  background-color: #5e92f3; /* Light blue */
+  color: white;
+  border: none;
+  cursor: pointer;
 }
 
 button:hover {
-    background-color: #155f9b;
+  background-color: #3f80d1; /* Medium blue on hover */
+}
+
+button:active {
+  background-color: #2d69a7; /* Darker blue when button is clicked */
+}
+
+a {
+  color: #007bff;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.group-section {
+  margin-top: 15px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
 }
