@@ -122,6 +122,20 @@ function renderGroups() {
   });
 }
 
+function renderMembers(groupId) {
+  const group = groups.find(g => g.id === groupId);
+  const membersContainer = document.getElementById(`members-${groupId}`);
+  membersContainer.innerHTML = '';
+  group.members.forEach(member => {
+    const memberDiv = document.createElement('div');
+    memberDiv.innerHTML = `
+      <span>${member.name} (${member.phone})</span>
+      <button onclick="removeMember('${groupId}', '${member.phone}')">Remove</button>
+    `;
+    membersContainer.appendChild(memberDiv);
+  });
+}
+
 function renameGroup(id, name) {
   const group = groups.find(g => g.id === id);
   group.name = name;
@@ -129,6 +143,75 @@ function renameGroup(id, name) {
 }
 
 function deleteGroup(id) {
-  groups = groups.filter(g => g
-::contentReference[oaicite:0]{index=0}
- 
+  groups = groups.filter(g => g.id !== id);
+  localStorage.setItem('groups', JSON.stringify(groups));
+  renderGroups();
+}
+
+function addMember(groupId) {
+  const phone = prompt('Enter member phone number');
+  if (!phone) return;
+  const group = groups.find(g => g.id === groupId);
+  group.members.push({ name: prompt('Enter member name'), phone });
+  localStorage.setItem('groups', JSON.stringify(groups));
+  renderGroups();
+}
+
+function removeMember(groupId, phone) {
+  const group = groups.find(g => g.id === groupId);
+  group.members = group.members.filter(m => m.phone !== phone);
+  localStorage.setItem('groups', JSON.stringify(groups));
+  renderGroups();
+}
+
+function buzzSelected(groupId) {
+  const group = groups.find(g => g.id === groupId);
+  const selectedMembers = group.members.filter(member => member.selected);
+  if (selectedMembers.length === 0) {
+    alert('Please select members to buzz.');
+    return;
+  }
+
+  const message = prompt('Enter your message to send to selected members:');
+  if (!message) return;
+
+  const phoneNumbers = selectedMembers.map(member => member.phone);
+  sendBuzz(phoneNumbers, message);
+}
+
+function buzzAll(groupId) {
+  const group = groups.find(g => g.id === groupId);
+  const phoneNumbers = group.members.map(member => member.phone);
+  const message = prompt('Enter your message to send to all members:');
+  if (!message) return;
+
+  sendBuzz(phoneNumbers, message);
+}
+
+async function sendBuzz(phoneNumbers, message) {
+  try {
+    const response = await fetch('http://localhost:10000/send-buzz', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        phoneNumbers,
+        message,
+      }),
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      alert('Buzz sent successfully!');
+    } else {
+      alert('Failed to send buzz: ' + result.error);
+    }
+  } catch (error) {
+    console.error('Error sending buzz:', error);
+    alert('Error sending buzz: ' + error.message);
+  }
+}
+
+renderLogin();  // Initial call to render the login page
