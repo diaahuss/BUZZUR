@@ -1,39 +1,32 @@
 const express = require('express');
 const http = require('http');
-const socketIo = require('socket.io');
+const { Server } = require('socket.io');
+const path = require('path');
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server, {
-  cors: {
-    origin: ['https://diaahuss.github.io', 'https://your-app-name.onrender.com'],
-    methods: ['GET', 'POST'],
-    allowedHeaders: ['Content-Type'],
-    credentials: true,
-  },
-});
+const io = new Server(server);
 
-// Use the PORT environment variable or default to 10000
 const PORT = process.env.PORT || 10000;
 
-app.use(express.static('public')); // Serve static files from 'public' directory
+// Serve static files from root directory
+app.use(express.static(path.join(__dirname)));
 
-app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/index.html');
-});
-
+// Socket.IO connection
 io.on('connection', (socket) => {
   console.log('A user connected');
+
   socket.on('buzz', (data) => {
-    console.log('Buzz received:', data);
-    io.emit('buzzed', data); // Emit 'buzzed' event to all clients
+    console.log('Buzz sent:', data);
+    io.emit('buzzed', data); // broadcast buzz
   });
+
   socket.on('disconnect', () => {
-    console.log('User disconnected');
+    console.log('A user disconnected');
   });
 });
 
-// Ensure the server listens on 0.0.0.0 and the correct port
-server.listen(PORT, '0.0.0.0', () => {
+// Start server
+server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
