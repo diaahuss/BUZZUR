@@ -1,43 +1,35 @@
 require('dotenv').config();
 const express = require('express');
-const cors = require('cors');
-const bodyParser = require('body-parser');
-const twilio = require('twilio');
-const http = require('http');
-const { Server } = require('socket.io');
-
 const app = express();
-const server = http.createServer(app);
-const io = new Server(server);
+const cors = require('cors');
+const twilio = require('twilio');
 
-const client = twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH);
+const PORT = process.env.PORT || 3000;
+const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
 app.use(cors());
-app.use(bodyParser.json());
-app.use(express.static(__dirname)); // Serve frontend files
+app.use(express.json());
+app.use(express.static(__dirname)); // to serve index.html, script.js, styles.css
 
 app.post('/send-buzz', async (req, res) => {
   const { phoneNumbers, message } = req.body;
+
   try {
-    await Promise.all(
-      phoneNumbers.map(number =>
-        client.messages.create({
-          body: message,
-          from: process.env.TWILIO_PHONE,
-          to: number
-        })
-      )
-    );
-    io.emit('buzz');
+    for (const number of phoneNumbers) {
+      await client.messages.create({
+        body: message,
+        from: process.env.TWILIO_PHONE,
+        to: number
+      });
+    }
+
     res.json({ success: true });
-  } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
+  } catch (error) {
+    console.error('Buzz send failed:', error.message);
+    res.status(500).json({ success: false });
   }
 });
 
-io.on('connection', socket => {
-  console.log('Client connected');
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
-
-const PORT = process.env.PORT || 10000;
-server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
