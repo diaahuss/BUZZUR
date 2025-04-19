@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buzzur App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to Buzzur</h1>
+        <button id="buzzButton">Send Buzz</button>
+    </div>
+
+    <!-- Include socket.io -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        // Connect to the Socket.IO server
+        const socket = io();
+
+        // Send a "buzz" event when the button is clicked
+        document.getElementById('buzzButton').addEventListener('click', () => {
+            socket.emit('buzz', { message: 'Buzz sent!' });
+        });
+
+        // Listen for the "buzz" event and log the data
+        socket.on('buzz', (data) => {
+            console.log('Received buzz:', data);
+            alert(data.message);
+        });
+    </script>
+</body>
+</html>
