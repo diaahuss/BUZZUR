@@ -1,83 +1,43 @@
 body {
-  font-family: sans-serif;
-  background: #f0f8ff;
+  font-family: Arial, sans-serif;
+  background-color: #f0f0f0;
   margin: 0;
-  padding: 20px;
-  display: flex;
-  justify-content: center;
-}
-
-#app {
-  width: 100%;
-  max-width: 500px;
+  padding: 0;
 }
 
 .container {
-  background: white;
-  border-radius: 12px;
+  max-width: 500px;
+  margin: 50px auto;
+  background: #fff;
   padding: 20px;
-  box-shadow: 0 0 10px #ccc;
-}
-
-h2 {
-  text-align: center;
-  margin-bottom: 20px;
+  border-radius: 8px;
 }
 
 input, button {
   display: block;
   width: 100%;
+  margin: 10px 0;
   padding: 10px;
-  margin: 8px 0;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 16px;
-}
-
-button {
-  background-color: #add8e6;
-  border: none;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #87ceeb;
 }
 
 .link-row {
   display: flex;
   justify-content: space-between;
-  font-size: 14px;
   margin-top: 10px;
 }
 
 .group-card {
-  margin: 20px 0;
   border: 1px solid #ccc;
-  padding: 15px;
-  border-radius: 8px;
-  background-color: #f9f9f9;
+  padding: 10px;
+  margin-top: 10px;
 }
 
 .member-inputs {
   display: flex;
-  flex-direction: column;
-  margin-bottom: 15px;
-}
-
-.member-inputs input {
-  margin-bottom: 5px;
-}
-
-.member-inputs input[type="checkbox"] {
-  margin: 5px auto;
-  width: 20px;
-  height: 20px;
+  gap: 10px;
+  margin-top: 5px;
 }
 
 .actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
   margin-top: 10px;
 }
