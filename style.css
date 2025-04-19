@@ -1,70 +1,93 @@
 body {
   font-family: Arial, sans-serif;
-  background-color: #e3f2fd; /* Pale blue */
+  background-color: #f0f8ff;
   margin: 0;
-  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px 10px;
 }
 
 .container {
-  max-width: 400px;
-  margin: 60px auto;
-  padding: 20px;
-  background-color: #ffffff;
+  background: white;
+  padding: 25px 20px;
   border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .banner {
-  background-color: #1e3a5f; /* Dark blue */
-  color: white;
-  padding: 15px;
+  font-size: 28px;
   text-align: center;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  font-size: 20px;
-  font-weight: bold;
+  margin-bottom: 30px;
+  color: #0077cc;
 }
 
-/* inputs and buttons will stay within .container width */
-input, button {
-  display: block;
+input {
   width: 100%;
-  box-sizing: border-box;
-  padding: 10px;
-  margin-top: 10px;
-  font-size: 16px;
-  border-radius: 6px;
+  padding: 10px 40px 10px 10px;
+  margin-bottom: 15px;
   border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+  box-sizing: border-box;
 }
 
-/* Blue shades for buttons */
-button {
-  background-color: #5e92f3; /* Light blue */
-  color: white;
-  border: none;
+.password-wrapper {
+  position: relative;
+}
+
+.toggle-eye {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
   cursor: pointer;
 }
 
+button {
+  width: 100%;
+  background-color: #66cc99;
+  color: white;
+  padding: 10px;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
 button:hover {
-  background-color: #3f80d1; /* Medium blue on hover */
+  background-color: #55bb88;
 }
 
-button:active {
-  background-color: #2d69a7; /* Darker blue when button is clicked */
+.group {
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 15px;
 }
 
-a {
-  color: #007bff;
-  text-decoration: none;
-  font-size: 14px;
+.group h3 {
+  margin-top: 0;
 }
 
-a:hover {
-  text-decoration: underline;
+.group input {
+  margin-bottom: 5px;
 }
 
-.group-section {
-  margin-top: 15px;
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 10px;
+.member {
+  margin-bottom: 10px;
+}
+
+.member input {
+  width: 100%;
+  margin-bottom: 5px;
+}
+
+.controls {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
 }
