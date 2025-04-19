@@ -1,56 +1,47 @@
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #f4f4f9;
+  font-family: Arial, sans-serif;
+  background: #f0f8ff;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+}
+
+main#app {
+  width: 90%;
+  max-width: 600px;
+  margin-top: 30px;
 }
 
 .container {
-    background-color: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-    width: 300px;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
-h2 {
-    text-align: center;
-}
-
-input, textarea, button {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border-radius: 5px;
-    border: 1px solid #ccc;
+input, button {
+  width: 100%;
+  margin: 8px 0;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
 }
 
 button {
-    background-color: #4CAF50;
-    color: white;
-    cursor: pointer;
-    border: none;
-}
-
-button:hover {
-    background-color: #45a049;
-}
-
-.link-row {
-    text-align: center;
+  background: #8fd694;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
 }
 
 .group-card {
-    margin: 10px 0;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+  margin-top: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
 }
 
 .actions button {
-    margin-right: 5px;
+  margin: 4px 0;
 }
