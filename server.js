@@ -1,53 +1,43 @@
-require('dotenv').config(); // Load environment variables from .env file
+require('dotenv').config();
 const express = require('express');
-const bodyParser = require('body-parser');
 const cors = require('cors');
+const bodyParser = require('body-parser');
 const twilio = require('twilio');
+const http = require('http');
+const { Server } = require('socket.io');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const server = http.createServer(app);
+const io = new Server(server);
+
+const client = twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH);
 
 app.use(cors());
 app.use(bodyParser.json());
+app.use(express.static(__dirname)); // Serve frontend files
 
-// ✅ Use environment variables for Twilio credentials
-const accountSid = process.env.TWILIO_SID;
-const authToken = process.env.TWILIO_AUTH;
-const twilioPhone = process.env.TWILIO_PHONE;
-
-const client = twilio(accountSid, authToken);
-
-// 🟡 Test route (optional)
-app.get('/', (req, res) => {
-  res.send('BUZZUR Server is running');
-});
-
-// 📲 Buzz endpoint
 app.post('/send-buzz', async (req, res) => {
   const { phoneNumbers, message } = req.body;
-
-  if (!Array.isArray(phoneNumbers) || phoneNumbers.length === 0 || !message) {
-    return res.status(400).json({ error: 'Missing phone numbers or message' });
-  }
-
   try {
-    const results = await Promise.all(
+    await Promise.all(
       phoneNumbers.map(number =>
         client.messages.create({
           body: message,
-          from: twilioPhone,
+          from: process.env.TWILIO_PHONE,
           to: number
         })
       )
     );
-
-    res.json({ success: true, message: 'Buzz sent!', details: results });
+    io.emit('buzz');
+    res.json({ success: true });
   } catch (err) {
-    console.error('Error sending buzz:', err.message);
-    res.status(500).json({ error: 'Failed to send buzz', details: err.message });
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 BUZZUR server running on http://localhost:${PORT}`);
+io.on('connection', socket => {
+  console.log('Client connected');
 });
+
+const PORT = process.env.PORT || 10000;
+server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
