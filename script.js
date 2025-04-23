@@ -68,18 +68,31 @@ function updateGroup(groupId, newGroupData) {
 // Event Listeners
 loginForm.addEventListener('submit', (e) => {
   e.preventDefault();
-  const phoneNumber = document.getElementById('login-phone').value;
-  const password = document.getElementById('login-password').value;
   
-  // Validate login (this should be handled via server)
+  const phoneNumber = document.getElementById('login-phone').value.trim();
+  const password = document.getElementById('login-password').value.trim();
+  
+  if (!phoneNumber || !password) {
+    alert('Please fill in both fields.');
+    return;
+  }
+
+  // Placeholder login validation (replace with real server-side auth later)
   if (phoneNumber === 'test' && password === 'password') {
     currentUser = { phoneNumber };
-    renderGroups();
     alert('Login Successful!');
+
+    // Hide login form, show group area
+    loginForm.reset();
+    loginForm.style.display = 'none';
+    document.getElementById('create-group-btn').style.display = 'block';
+    
+    renderGroups();
   } else {
     alert('Invalid login credentials');
   }
 });
+
 
 signupForm.addEventListener('submit', (e) => {
   e.preventDefault();
