@@ -1,4 +1,10 @@
 console.log("✅ script.js loaded");
+const socket = io();
+console.log("🟡 Attempting to connect to Socket.IO...");
+
+socket.on('connect', () => {
+  console.log("🟢 Connected to Socket.IO server");
+});
 const app = document.getElementById('app');
 const socket = io(); // Connect to server
 
