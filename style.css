@@ -1,43 +1,94 @@
+/* General Body Styles */
 body {
   font-family: Arial, sans-serif;
-  background-color: #f0f0f0;
   margin: 0;
   padding: 0;
+  background-color: #f0f0f0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
 
+/* Container for each page (Login, Signup, Dashboard) */
 .container {
-  max-width: 500px;
-  margin: 50px auto;
-  background: #fff;
+  width: 100%;
+  max-width: 400px;
+  background-color: #fff;
   padding: 20px;
   border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
 }
 
+/* Form Inputs and Buttons */
 input, button {
-  display: block;
   width: 100%;
-  margin: 10px 0;
   padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
 }
 
+/* Link Row (For Sign Up / Forgot Password links) */
 .link-row {
   display: flex;
   justify-content: space-between;
+  font-size: 14px;
   margin-top: 10px;
 }
 
+/* Styling for Group Cards */
 .group-card {
   border: 1px solid #ccc;
-  padding: 10px;
-  margin-top: 10px;
+  padding: 15px;
+  margin: 15px 0;
+  border-radius: 8px;
+  background-color: #fafafa;
 }
 
+.group-card input {
+  margin-bottom: 10px;
+}
+
+/* Member Inputs */
 .member-inputs {
   display: flex;
   gap: 10px;
   margin-top: 5px;
 }
 
+/* Actions buttons for groups (Add Member, Buzz Selected, etc.) */
 .actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
   margin-top: 10px;
+}
+
+.actions button {
+  width: auto;
+  padding: 8px 15px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* Styling for the title of the page */
+h2 {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+/* Specific Styles for the Show Password checkbox */
+label {
+  font-size: 14px;
+  display: inline-block;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+input[type="checkbox"] {
+  margin-right: 5px;
 }
