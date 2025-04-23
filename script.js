@@ -1,10 +1,25 @@
 const app = document.getElementById('app');
-const socket = io(); // Connects to the server that served the page
-let currentUser = null;
-let groups = JSON.parse(localStorage.getItem('groups') || '[]');
-let users = JSON.parse(localStorage.getItem('users') || '[]');
+const socket = io(); // Connect to server
 
-// Pages
+let currentUser = null;
+let users = JSON.parse(localStorage.getItem('users') || '[]');
+let groups = JSON.parse(localStorage.getItem('groups') || '[]');
+
+// SOCKET LISTENER
+socket.on('buzzed', data => {
+  if (currentUser && currentUser.phone === data.to) {
+    playBuzzSound();
+    alert('You got buzzed!');
+  }
+});
+
+// BUZZ SOUND
+function playBuzzSound() {
+  const sound = document.getElementById('buzz-sound');
+  sound.play();
+}
+
+// LOGIN PAGE
 function renderLogin() {
   app.innerHTML = `
     <div class="container">
@@ -20,6 +35,7 @@ function renderLogin() {
   `;
 }
 
+// SIGNUP PAGE
 function renderSignup() {
   app.innerHTML = `
     <div class="container">
@@ -37,6 +53,7 @@ function renderSignup() {
   `;
 }
 
+// DASHBOARD
 function renderDashboard() {
   app.innerHTML = `
     <div class="container">
@@ -49,10 +66,10 @@ function renderDashboard() {
   renderGroups();
 }
 
-// Logic
+// AUTH
 function login() {
-  const phone = document.getElementById('login-phone').value;
-  const pass = document.getElementById('login-password').value;
+  const phone = document.getElementById('login-phone').value.trim();
+  const pass = document.getElementById('login-password').value.trim();
   const user = users.find(u => u.phone === phone && u.password === pass);
   if (user) {
     currentUser = user;
@@ -63,11 +80,13 @@ function login() {
 }
 
 function signup() {
-  const name = document.getElementById('signup-name').value;
-  const phone = document.getElementById('signup-phone').value;
+  const name = document.getElementById('signup-name').value.trim();
+  const phone = document.getElementById('signup-phone').value.trim();
   const pw = document.getElementById('signup-password').value;
   const confirm = document.getElementById('signup-confirm').value;
+  if (!name || !phone || !pw || !confirm) return alert('Please fill in all fields');
   if (pw !== confirm) return alert('Passwords do not match');
+  if (users.find(u => u.phone === phone)) return alert('Phone already registered');
   users.push({ name, phone, password: pw });
   localStorage.setItem('users', JSON.stringify(users));
   alert('Signup successful');
@@ -87,6 +106,7 @@ function togglePassword() {
   confirm.type = type;
 }
 
+// GROUPS
 function createGroup() {
   const name = prompt('Group name?');
   if (!name) return;
@@ -124,8 +144,10 @@ function renderGroups() {
 
 function renameGroup(id, name) {
   const group = groups.find(g => g.id === id);
-  group.name = name;
-  localStorage.setItem('groups', JSON.stringify(groups));
+  if (group) {
+    group.name = name;
+    localStorage.setItem('groups', JSON.stringify(groups));
+  }
 }
 
 function deleteGroup(id) {
@@ -134,16 +156,17 @@ function deleteGroup(id) {
   renderGroups();
 }
 
+// MEMBERS
 function renderMembers(groupId) {
   const group = groups.find(g => g.id === groupId);
   const container = document.getElementById(`members-${groupId}`);
   container.innerHTML = '';
   group.members.forEach((member, index) => {
     const div = document.createElement('div');
-    div.className = 'member-row';
+    div.className = 'member';
     div.innerHTML = `
-      <input type="text" value="${member.name}" onchange="updateMemberName('${groupId}', ${index}, this.value)">
-      <input type="tel" value="${member.phone}" onchange="updateMemberPhone('${groupId}', ${index}, this.value)">
+      <input type="text" value="${member.name}" onchange="updateMember('${groupId}', ${index}, 'name', this.value)">
+      <input type="tel" value="${member.phone}" onchange="updateMember('${groupId}', ${index}, 'phone', this.value)">
       <input type="checkbox" id="select-${groupId}-${index}">
       <button onclick="removeMember('${groupId}', ${index})">Remove</button>
     `;
@@ -152,11 +175,8 @@ function renderMembers(groupId) {
 }
 
 function addMember(groupId) {
-  const name = prompt('Member name?');
-  const phone = prompt('Phone number?');
-  if (!name || !phone) return;
   const group = groups.find(g => g.id === groupId);
-  group.members.push({ name, phone });
+  group.members.push({ name: '', phone: '' });
   localStorage.setItem('groups', JSON.stringify(groups));
   renderMembers(groupId);
 }
@@ -168,26 +188,21 @@ function removeMember(groupId, index) {
   renderMembers(groupId);
 }
 
-function updateMemberName(groupId, index, value) {
+function updateMember(groupId, index, field, value) {
   const group = groups.find(g => g.id === groupId);
-  group.members[index].name = value;
+  group.members[index][field] = value;
   localStorage.setItem('groups', JSON.stringify(groups));
 }
 
-function updateMemberPhone(groupId, index, value) {
-  const group = groups.find(g => g.id === groupId);
-  group.members[index].phone = value;
-  localStorage.setItem('groups', JSON.stringify(groups));
-}
-
+// BUZZ
 function buzzSelected(groupId) {
   const group = groups.find(g => g.id === groupId);
-  const selected = group.members.filter((_, i) => document.getElementById(`select-${groupId}-${i}`).checked);
-  if (selected.length === 0) return alert('No members selected');
-  selected.forEach(member => {
-    socket.emit('buzz', { to: member.phone });
+  group.members.forEach((member, index) => {
+    const checkbox = document.getElementById(`select-${groupId}-${index}`);
+    if (checkbox.checked) {
+      socket.emit('buzz', { to: member.phone });
+    }
   });
-  playBuzzSound();
 }
 
 function buzzAll(groupId) {
@@ -195,19 +210,7 @@ function buzzAll(groupId) {
   group.members.forEach(member => {
     socket.emit('buzz', { to: member.phone });
   });
-  playBuzzSound();
 }
 
-// Play buzz sound
-function playBuzzSound() {
-  const audio = document.getElementById('buzz-sound');
-  if (audio) audio.play();
-}
-
-// Listen for buzzes sent to this user
-socket.on('buzzed', data => {
-  if (currentUser && currentUser.phone === data.to) {
-    playBuzzSound();
-    alert('You got buzzed!');
-  }
-});
+// START
+renderLogin();
