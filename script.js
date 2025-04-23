@@ -129,6 +129,85 @@ function renameGroup(id, name) {
 }
 
 function deleteGroup(id) {
-  groups = groups.filter(g => g
-::contentReference[oaicite:0]{index=0}
- 
+  groups = groups.filter(g => g.id !== id);
+  localStorage.setItem('groups', JSON.stringify(groups));
+  renderGroups();
+}
+
+function renderMembers(groupId) {
+  const group = groups.find(g => g.id === groupId);
+  const container = document.getElementById(`members-${groupId}`);
+  container.innerHTML = '';
+  group.members.forEach((member, index) => {
+    const div = document.createElement('div');
+    div.className = 'member-row';
+    div.innerHTML = `
+      <input type="text" value="${member.name}" onchange="updateMemberName('${groupId}', ${index}, this.value)">
+      <input type="tel" value="${member.phone}" onchange="updateMemberPhone('${groupId}', ${index}, this.value)">
+      <input type="checkbox" id="select-${groupId}-${index}">
+      <button onclick="removeMember('${groupId}', ${index})">Remove</button>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function addMember(groupId) {
+  const name = prompt('Member name?');
+  const phone = prompt('Phone number?');
+  if (!name || !phone) return;
+  const group = groups.find(g => g.id === groupId);
+  group.members.push({ name, phone });
+  localStorage.setItem('groups', JSON.stringify(groups));
+  renderMembers(groupId);
+}
+
+function removeMember(groupId, index) {
+  const group = groups.find(g => g.id === groupId);
+  group.members.splice(index, 1);
+  localStorage.setItem('groups', JSON.stringify(groups));
+  renderMembers(groupId);
+}
+
+function updateMemberName(groupId, index, value) {
+  const group = groups.find(g => g.id === groupId);
+  group.members[index].name = value;
+  localStorage.setItem('groups', JSON.stringify(groups));
+}
+
+function updateMemberPhone(groupId, index, value) {
+  const group = groups.find(g => g.id === groupId);
+  group.members[index].phone = value;
+  localStorage.setItem('groups', JSON.stringify(groups));
+}
+
+function buzzSelected(groupId) {
+  const group = groups.find(g => g.id === groupId);
+  const selected = group.members.filter((_, i) => document.getElementById(`select-${groupId}-${i}`).checked);
+  if (selected.length === 0) return alert('No members selected');
+  selected.forEach(member => {
+    socket.emit('buzz', { to: member.phone });
+  });
+  playBuzzSound();
+}
+
+function buzzAll(groupId) {
+  const group = groups.find(g => g.id === groupId);
+  group.members.forEach(member => {
+    socket.emit('buzz', { to: member.phone });
+  });
+  playBuzzSound();
+}
+
+// Play buzz sound
+function playBuzzSound() {
+  const audio = document.getElementById('buzz-sound');
+  if (audio) audio.play();
+}
+
+// Listen for buzzes sent to this user
+socket.on('buzzed', data => {
+  if (currentUser && currentUser.phone === data.to) {
+    playBuzzSound();
+    alert('You got buzzed!');
+  }
+});
