@@ -13,6 +13,9 @@ let currentUser = null;
 let users = JSON.parse(localStorage.getItem('users') || '[]');
 let groups = JSON.parse(localStorage.getItem('groups') || '[]');
 
+console.log("🟡 Users:", users);
+console.log("🟡 Groups:", groups);
+
 // SOCKET LISTENER
 socket.on('buzzed', data => {
   if (currentUser && currentUser.phone === data.to) {
