@@ -1,3 +1,4 @@
+console.log("✅ script.js loaded");
 const app = document.getElementById('app');
 const socket = io(); // Connect to server
 
