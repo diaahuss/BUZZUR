@@ -1,12 +1,13 @@
 console.log("✅ script.js loaded");
-const socket = io();
+
+const socket = io();  // Keep this line only once
 console.log("🟡 Attempting to connect to Socket.IO...");
 
 socket.on('connect', () => {
   console.log("🟢 Connected to Socket.IO server");
 });
+
 const app = document.getElementById('app');
-const socket = io(); // Connect to server
 
 let currentUser = null;
 let users = JSON.parse(localStorage.getItem('users') || '[]');
