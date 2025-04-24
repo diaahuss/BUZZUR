@@ -1,42 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Buzzur</title>
-  <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BUZZUR</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="login-form">
-    <form>
-      <input type="text" id="login-phone" placeholder="Phone Number">
-      <input type="password" id="login-password" placeholder="Password">
-      <button type="submit">Login</button>
-    </form>
-  </div>
+  <main id="app"></main>
 
-  <div id="signup-form" style="display: none;">
-    <form>
-      <input type="text" id="signup-name" placeholder="Name">
-      <input type="text" id="signup-phone" placeholder="Phone Number">
-      <input type="password" id="signup-password" placeholder="Password">
-      <input type="password" id="signup-confirm-password" placeholder="Confirm Password">
-      <button type="submit">Sign Up</button>
-    </form>
-  </div>
+  <!-- Buzz Sound -->
+  <audio id="buzz-audio" src="buzz.mp3" preload="auto"></audio>
 
-  <div id="forgot-password-form" style="display: none;">
-    <form>
-      <input type="email" id="forgot-email" placeholder="Email">
-      <button type="submit">Send Reset Link</button>
-    </form>
-  </div>
-
-  <div id="groups-container"></div>
-
-  <button id="create-group-btn" style="display: none;">Create Group</button>
-  
-  <script src="/socket.io/socket.io.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
