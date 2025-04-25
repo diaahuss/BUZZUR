@@ -5,46 +5,26 @@ const http = require('http');
 const cors = require('cors');
 const { Server } = require('socket.io');
 
-<<<<<<< HEAD
-// Initialize Express and HTTP Server
-=======
 // Initialize Express and HTTP server
->>>>>>> 18c589041182852b3bc1644a627a34b610ec81f6
 const app = express();
 const server = http.createServer(app);
 
 // Enable CORS for all origins and parse JSON
 app.use(cors());
-<<<<<<< HEAD
 app.use(express.json()); // To parse JSON requests
-=======
-app.use(express.json());
->>>>>>> 18c589041182852b3bc1644a627a34b610ec81f6
 
 // Set up Socket.IO with CORS
 const io = new Server(server, {
   cors: {
-<<<<<<< HEAD
     origin: '*', // Allow all origins (you might restrict this in production)
-=======
-    origin: '*',
->>>>>>> 18c589041182852b3bc1644a627a34b610ec81f6
     methods: ['GET', 'POST'],
   },
 });
 
-<<<<<<< HEAD
 // WebSocket connection
-io.on('connection', (socket) => {
-  console.log(`A user connected: ${socket.id}`);
-
-  // Handle the 'buzz' event from the client
-=======
-// Socket.IO connection handler
 io.on('connection', (socket) => {
   console.log(`User connected: ${socket.id}`);
 
->>>>>>> 18c589041182852b3bc1644a627a34b610ec81f6
   socket.on('buzz', (payload) => {
     console.log('Buzz received via socket:', payload);
 
@@ -89,9 +69,6 @@ app.post('/send-buzz', (req, res) => {
 // Start server
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-<<<<<<< HEAD
   console.log(`Server listening on port ${PORT}`);
-=======
   console.log(`Buzzur server listening on port ${PORT}`);
->>>>>>> 18c589041182852b3bc1644a627a34b610ec81f6
 });
