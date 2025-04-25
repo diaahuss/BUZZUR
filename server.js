@@ -16,7 +16,7 @@ const { Server } = require('socket.io');
 const app = express();
 const server = http.createServer(app);
 
-// Enable CORS for all origins
+// Enable CORS for all origins (for deployment environments)
 app.use(cors());
 <<<<<<< HEAD
 
@@ -33,10 +33,16 @@ app.use(express.json());
 // Socket.IO setup
 const io = new Server(server, {
   cors: {
+<<<<<<< HEAD
     origin: '*', // Allow all origins
 >>>>>>> 1e57d4453086b558bb8a04ff23f32cafb32750b8
     methods: ['GET', 'POST']
   }
+=======
+    origin: '*', // Allow all origins (you might restrict this in production)
+    methods: ['GET', 'POST'],
+  },
+>>>>>>> 2fb01014207b83b4c48b14c95ecd9a767bfcfe8e
 });
 
 <<<<<<< HEAD
@@ -67,28 +73,49 @@ server.listen(port, () => {
 =======
 // WebSocket connection
 io.on('connection', (socket) => {
-  console.log('A user connected:', socket.id);
+  console.log(`A user connected: ${socket.id}`);
 
+  // Handle the 'buzz' event from the client
   socket.on('buzz', (payload) => {
     console.log('Buzz received:', payload);
-    // Broadcast to all clients except the sender
-    socket.broadcast.emit('buzz', payload);
+
+    // Ensure payload is valid
+    if (Array.isArray(payload) && payload.length > 0) {
+      // Broadcast to all clients except the sender
+      socket.broadcast.emit('buzz', payload);
+    } else {
+      console.warn('Invalid buzz payload:', payload);
+    }
   });
 
+  // Handle user disconnection
   socket.on('disconnect', () => {
-    console.log('A user disconnected:', socket.id);
+    console.log(`A user disconnected: ${socket.id}`);
   });
 });
 
-// Test endpoint
+// Test endpoint to check if server is running
 app.get('/', (req, res) => {
   res.send('Buzzur server is running.');
 });
 
-// Buzz API endpoint
+// Buzz API endpoint (e.g., triggered from frontend)
 app.post('/send-buzz', (req, res) => {
   const { to, from, group } = req.body;
+
+  // Simple validation of the request
+  if (!to || !Array.isArray(to) || to.length === 0) {
+    return res.status(400).json({ success: false, message: 'Recipient list is required.' });
+  }
+  if (!from || !group) {
+    return res.status(400).json({ success: false, message: 'Sender and group information are required.' });
+  }
+
   console.log(`Buzz sent from ${from} to ${to.join(', ')} in group "${group}"`);
+
+  // Here you could trigger the Socket.IO buzz event as well if needed
+  io.emit('buzz', { to, from, group });
+
   res.status(200).json({ success: true });
 });
 

@@ -21,6 +21,11 @@ function showLogin() {
 // Connect to deployed Socket.IO server
 const socket = io('https://buzzur-server.onrender.com');
 
+// Log socket connection for debugging
+socket.on('connect', () => {
+  console.log('Connected to server via Socket.IO');
+});
+
 // Handle incoming buzz
 const buzzAudio = document.getElementById('buzz-audio');
 socket.on('buzz', () => {
@@ -420,16 +425,18 @@ function removeGroup(name) {
 }
 
 function buzzAll(groupName) {
-  const group = groups.find(g => g.name === groupName);
-  if (!group) return;
-  sendBuzz(group.members.map(m => m.phone), group.name);
+  const group = groups.find(g => g.name === groupName && g.owner === currentUser.phone);
+  if (group) {
+    socket.emit('buzz', group.members);
+  }
 }
 
 >>>>>>> 1e57d4453086b558bb8a04ff23f32cafb32750b8
 function buzzSelected(groupName) {
-  const group = groups.find(g => g.name === groupName);
+  const group = groups.find(g => g.name === groupName && g.owner === currentUser.phone);
   if (!group) return;
 
+<<<<<<< HEAD
 <<<<<<< HEAD
   const selectedMembers = Array.from(document.querySelectorAll('.select-member:checked'))
     .map(checkbox => group.members[checkbox.dataset.index].name);
@@ -477,7 +484,16 @@ function sendBuzz(toPhones, groupName) {
   .catch(err => {
     console.error('Buzz error:', err);
     alert('Failed to send buzz');
+=======
+  const selectedMembers = [...document.querySelectorAll('.select-member:checked')].map(checkbox => {
+    const index = checkbox.dataset.index;
+    return group.members[index];
+>>>>>>> 2fb01014207b83b4c48b14c95ecd9a767bfcfe8e
   });
+
+  if (selectedMembers.length) {
+    socket.emit('buzz', selectedMembers);
+  }
 }
 
 >>>>>>> 1e57d4453086b558bb8a04ff23f32cafb32750b8
@@ -486,7 +502,11 @@ function saveGroups() {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 // Initialize the app
 =======
 >>>>>>> 1e57d4453086b558bb8a04ff23f32cafb32750b8
 showLogin();
+=======
+showLogin(); // Start with the login view
+>>>>>>> 2fb01014207b83b4c48b14c95ecd9a767bfcfe8e

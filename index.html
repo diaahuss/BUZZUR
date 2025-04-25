@@ -1,17 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>BUZZUR</title>
   <link rel="stylesheet" href="style.css">
+  <!-- Favicon for better branding -->
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
 </head>
+
 <body>
+  <!-- Main app container, dynamically rendered by JavaScript -->
   <main id="app"></main>
 
-  <!-- Buzz Sound -->
+  <!-- Buzz sound element, preload for faster load -->
   <audio id="buzz-audio" src="buzz.mp3" preload="auto"></audio>
 
+  <!-- External JavaScript file -->
   <script src="script.js"></script>
 </body>
+
 </html>
