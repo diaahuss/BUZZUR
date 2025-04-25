@@ -1,10 +1,11 @@
 {
   "name": "buzzur",
   "version": "1.0.0",
-  "description": "Backend server for BUZZUR app",
+  "description": "Real-time backend server for the BUZZUR app using Express and Socket.IO",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "nodemon server.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
@@ -12,7 +13,10 @@
     "express": "^5.1.0",
     "socket.io": "^4.8.1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "keywords": ["buzzur", "socket.io", "express", "real-time", "backend"],
+  "author": "Your Name",
+  "license": "MIT"
 }
