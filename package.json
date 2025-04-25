@@ -1,5 +1,4 @@
 {
-<<<<<<< HEAD
   "name": "buzzur",
   "version": "1.0.0",
   "main": "index.js",
@@ -15,7 +14,7 @@
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "socket.io": "^4.8.1"
-=======
+
   "name": "buzzur-server",
   "version": "1.0.0",
   "description": "Backend server for BUZZUR app",
@@ -27,6 +26,5 @@
     "express": "^5.1.0",
     "socket.io": "^4.8.1",
     "cors": "^2.8.5"
->>>>>>> 1e57d4453086b558bb8a04ff23f32cafb32750b8
   }
 }
