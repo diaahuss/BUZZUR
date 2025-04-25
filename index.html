@@ -1,18 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>BUZZUR</title>
   <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
   <main id="app">
     <!-- Dynamic content will be injected here by script.js -->
   </main>
 
+  <!-- Fix for the audio source, ensuring it points to the correct path -->
   <audio id="buzzSound" src="buzz.mp3" preload="auto"></audio>
-  <script src="/socket.io/socket.io.js"></script>
+
+  <!-- Change to include the socket.io library from CDN if not running a server -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.min.js"></script>
+
+  <!-- Link to your script.js -->
   <script src="script.js"></script>
 </body>
+
 </html>
