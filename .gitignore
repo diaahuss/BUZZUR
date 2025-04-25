@@ -1,0 +1,14 @@
+# Ignore the node_modules directory
+node_modules/
+
+# Ignore the .env file which contains sensitive data
+.env
+
+# Ignore any log files (useful for debugging but not needed in version control)
+*.log
+
+# Ignore the directory for uploaded files (if applicable)
+uploads/
+
+# Ignore the buzz.mp3 file if you don't want it tracked (optional)
+buzz.mp3
