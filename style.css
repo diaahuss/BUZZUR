@@ -6,7 +6,8 @@ body {
 }
 
 .container {
-  width: 400px;
+  width: 90%; /* Takes 90% of the available width */
+  max-width: 400px; /* Ensures it doesn't exceed 400px */
   margin: 20px auto;
   padding: 20px;
   border: 2px solid #ccc;
@@ -15,48 +16,53 @@ body {
 }
 
 .banner {
-  background-color: #87cefa;
+  background-color: #007bb5; /* Darker blue */
   color: white;
   padding: 15px;
   text-align: center;
-  font-size: 24px;
-  font-weight: bold;
+  font-size: 28px; /* Larger font for banner */
+  font-weight: 600; /* Slightly bolder font */
   border-radius: 12px;
   margin-bottom: 20px;
   width: 100%; /* full width of container */
   box-sizing: border-box;
 }
 
-/* inputs and buttons will stay within .container width */
 input, button {
   display: block;
   width: 100%;
   box-sizing: border-box;
   padding: 10px;
   margin-top: 10px;
-  font-size: 16px;
+  font-size: 18px; /* Slightly larger font for inputs and buttons */
   border-radius: 6px;
   border: 1px solid #ccc;
 }
 
-/* Blue shades for buttons */
 button {
   background-color: #5e92f3; /* Light blue */
   color: white;
   border: none;
   cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 button:hover {
-  background-color: #3f80d1; /* Medium blue on hover */
+  background-color: #3f80d1;
+  transform: scale(1.05); /* Slightly enlarges the button on hover */
 }
 
 button:active {
-  background-color: #2d69a7; /* Darker blue when button is clicked */
+  background-color: #2d69a7;
+  transform: scale(0.98); /* Slightly reduces the size on click for a pressed effect */
+}
+
+button:focus {
+  outline: 2px solid #3f80d1;
 }
 
 a {
-  color: #007bff;
+  color: #0056b3; /* Darker blue */
   text-decoration: none;
   font-size: 14px;
 }
@@ -65,8 +71,47 @@ a:hover {
   text-decoration: underline;
 }
 
+a:focus {
+  outline: 2px solid #3f80d1;
+}
+
+a:active {
+  color: #003e8a; /* Darker blue when active */
+}
+
+.link-row {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.link-row p {
+  margin: 0;
+}
+
+.link-row a {
+  margin: 0 10px;
+}
+
+input:focus {
+  border-color: #5e92f3;
+  outline: none;
+}
+
 .group-section {
   margin-top: 15px;
   border-bottom: 1px solid #ddd;
   padding-bottom: 10px;
+}
+
+button:disabled {
+  background-color: #b0bec5; /* Light grey */
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+@media (max-width: 600px) {
+  .container {
+    width: 90%;
+    max-width: 100%;
+  }
 }
