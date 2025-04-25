@@ -4,6 +4,7 @@ const express = require('express');
 const http = require('http');
 const cors = require('cors');
 const { Server } = require('socket.io');
+require('dotenv').config(); // Import dotenv
 
 // Initialize Express and HTTP server
 const app = express();
@@ -23,12 +24,10 @@ const io = new Server(server, {
 
 // WebSocket connection
 io.on('connection', (socket) => {
-  console.log(`User connected: ${socket.id}`);
+  console.log(`A user connected: ${socket.id}`);
 
   socket.on('buzz', (payload) => {
     console.log('Buzz received via socket:', payload);
-
-    // Basic validation
     if (Array.isArray(payload) && payload.length > 0) {
       socket.broadcast.emit('buzz', payload); // Send to others
     } else {
@@ -47,9 +46,8 @@ app.get('/', (req, res) => {
 });
 
 // Buzz API endpoint
-  app.post('/send-buzz', (req, res) => {
-  // Your POST route logic here
-});
+app.post('/send-buzz', (req, res) => {
+  const { to, from, group } = req.body;
 
   // Validate input
   if (!Array.isArray(to) || to.length === 0) {
