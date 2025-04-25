@@ -1,31 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BUZZUR App</title>
-  <style>
-    body { font-family: Arial, sans-serif; }
-    #buzz-container { margin-top: 20px; }
-    #buzz-button { background-color: palegreen; padding: 10px 20px; border: none; cursor: pointer; }
-    #buzz-message { padding: 10px; width: 100%; max-width: 400px; }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BUZZUR</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <main id="app"></main>
 
-  <h1>BUZZUR App</h1>
+  <!-- Buzz Sound -->
+  <audio id="buzz-audio" src="buzz.mp3" preload="auto"></audio>
 
-  <div id="buzz-container">
-    <form id="buzz-form">
-      <label for="buzz-message">Enter buzz message:</label>
-      <input type="text" id="buzz-message" placeholder="Type a buzz message" required />
-      <button type="submit" id="buzz-button">Send Buzz</button>
-    </form>
-  </div>
-
+  <!-- Socket.IO (for real-time buzzes) -->
   <script src="/socket.io/socket.io.js"></script>
-  <script src="script.js"></script>
 
+  <!-- Main App Logic -->
+  <script src="script.js"></script>
 </body>
 </html>
-
