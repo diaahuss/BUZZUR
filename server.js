@@ -47,8 +47,9 @@ app.get('/', (req, res) => {
 });
 
 // Buzz API endpoint
-app.post('/send-buzz', (req, res) => {
-  const { to, from, group } = req.body;
+  app.post('/send-buzz', (req, res) => {
+  // Your POST route logic here
+});
 
   // Validate input
   if (!Array.isArray(to) || to.length === 0) {
