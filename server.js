@@ -1,53 +1,53 @@
-// Importing required modules
+// server.js
 const express = require('express');
-const socketIo = require('socket.io');
 const http = require('http');
-const path = require('path');
 const cors = require('cors');
+const { Server } = require('socket.io');
 
-// Initialize Express app and HTTP server
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server, {
+
+// Enable CORS for all origins
+app.use(cors());
+app.use(express.json());
+
+// Socket.IO setup
+const io = new Server(server, {
   cors: {
-    origin: "*", // Allow all origins (you can restrict this for security)
-    methods: ["GET", "POST"]
+    origin: '*', // Allow all origins
+    methods: ['GET', 'POST']
   }
 });
 
-// Use environment port if available (for deployment)
-const PORT = process.env.PORT || 3000;
-
-// Middleware
-app.use(cors());
-app.use(express.json());
-app.use(express.static(path.join(__dirname))); // Serve static files
-
-// Serve index.html for root
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
-});
-
-// Optional: Support SPA routing by redirecting unknown routes to index.html
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
-});
-
-// Socket.IO logic
+// WebSocket connection
 io.on('connection', (socket) => {
-  console.log('A user connected');
+  console.log('A user connected:', socket.id);
 
-  socket.on('buzz', (message) => {
-    console.log('Buzz received:', message);
-    io.emit('buzz', message); // Broadcast to all clients
+  socket.on('buzz', (payload) => {
+    console.log('Buzz received:', payload);
+    // Broadcast to all clients except the sender
+    socket.broadcast.emit('buzz', payload);
   });
 
   socket.on('disconnect', () => {
-    console.log('A user disconnected');
+    console.log('A user disconnected:', socket.id);
   });
 });
 
+// Test endpoint
+app.get('/', (req, res) => {
+  res.send('Buzzur server is running.');
+});
+
+// Buzz API endpoint
+app.post('/send-buzz', (req, res) => {
+  const { to, from, group } = req.body;
+  console.log(`Buzz sent from ${from} to ${to.join(', ')} in group "${group}"`);
+  res.status(200).json({ success: true });
+});
+
 // Start server
+const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Server listening on port ${PORT}`);
 });
