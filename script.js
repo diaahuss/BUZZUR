@@ -12,11 +12,14 @@ socket.on('buzz', () => {
   buzzAudio?.play().catch(err => console.warn('Audio play failed:', err));
 });
 
-// Show Login
+function renderBanner(title) {
+  return `<div class="banner" style="max-width: 400px; margin: 0 auto;">${title}</div>`;
+}
+
 function showLogin() {
   app.innerHTML = `
     <div class="container">
-      <div class="banner">Login</div>
+      ${renderBanner('Login')}
       <input type="text" id="phone" placeholder="Phone Number">
       <input type="password" id="password" placeholder="Password">
       <button onclick="login()">Login</button>
@@ -28,11 +31,10 @@ function showLogin() {
   `;
 }
 
-// Show Signup
 function showSignup() {
   app.innerHTML = `
     <div class="container">
-      <div class="banner">Signup</div>
+      ${renderBanner('Signup')}
       <input type="text" id="name" placeholder="Name">
       <input type="text" id="phone" placeholder="Phone Number">
       <input type="password" id="password" placeholder="Password">
@@ -54,11 +56,10 @@ function togglePasswordVisibility() {
   passwordField.type = confirmField.type = isVisible ? 'text' : 'password';
 }
 
-// Forgot Password
 function showForgotPassword() {
   app.innerHTML = `
     <div class="container">
-      <div class="banner">Forgot Password</div>
+      ${renderBanner('Forgot Password')}
       <input type="text" id="phone" placeholder="Phone Number">
       <button onclick="resetPassword()">Reset Password</button>
       <p>Remembered your password? <a href="#" onclick="showLogin()">Login</a></p>
@@ -80,7 +81,6 @@ function resetPassword() {
   }
 }
 
-// Login
 function login() {
   const phone = document.getElementById('phone').value.trim();
   const password = document.getElementById('password').value.trim();
@@ -90,7 +90,6 @@ function login() {
   showGroups();
 }
 
-// Signup
 function signup() {
   const name = document.getElementById('name').value.trim();
   const phone = document.getElementById('phone').value.trim();
@@ -117,12 +116,11 @@ function logout() {
   showLogin();
 }
 
-// Show groups
 function showGroups() {
   const userGroups = groups.filter(g => g.owner === currentUser.phone);
   app.innerHTML = `
     <div class="container">
-      <div class="banner">My Groups</div>
+      ${renderBanner('My Groups')}
       ${userGroups.map(g => `
         <div class="group-section">
           <b>${g.name}</b><br>
@@ -137,7 +135,6 @@ function showGroups() {
   `;
 }
 
-// Create group
 function createGroup() {
   const name = prompt('Group name:')?.trim();
   if (!name) return;
@@ -146,7 +143,6 @@ function createGroup() {
   showGroups();
 }
 
-// Edit group
 function editGroup(name) {
   const group = groups.find(g => g.name === name && g.owner === currentUser.phone);
   if (!group) return;
@@ -162,7 +158,7 @@ function editGroup(name) {
 
   app.innerHTML = `
     <div class="container">
-      <div class="banner">Edit Group: ${group.name}</div>
+      ${renderBanner(`Edit Group: ${group.name}`)}
       <input type="text" id="newGroupName" value="${group.name}">
       <button onclick="updateGroupName('${name}')">Update Group Name</button>
       ${membersList}
