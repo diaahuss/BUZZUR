@@ -6,6 +6,11 @@ let users = JSON.parse(localStorage.getItem('buzzerUsers') || '[]');
 // Connect to deployed Socket.IO server
 const socket = io('https://buzzur-server.onrender.com');
 
+// Log socket connection for debugging
+socket.on('connect', () => {
+  console.log('Connected to server via Socket.IO');
+});
+
 // Handle incoming buzz
 const buzzAudio = document.getElementById('buzz-audio');
 socket.on('buzz', () => {
@@ -217,47 +222,28 @@ function removeGroup(name) {
 }
 
 function buzzAll(groupName) {
-  const group = groups.find(g => g.name === groupName);
-  if (!group) return;
-  sendBuzz(group.members.map(m => m.phone), group.name);
+  const group = groups.find(g => g.name === groupName && g.owner === currentUser.phone);
+  if (group) {
+    socket.emit('buzz', group.members);
+  }
 }
 
 function buzzSelected(groupName) {
-  const group = groups.find(g => g.name === groupName);
+  const group = groups.find(g => g.name === groupName && g.owner === currentUser.phone);
   if (!group) return;
 
-  const selected = Array.from(document.querySelectorAll('.select-member:checked'))
-    .map(cb => group.members[cb.dataset.index]?.phone)
-    .filter(Boolean);
-
-  if (selected.length === 0) return alert('No members selected');
-  sendBuzz(selected, group.name);
-}
-
-function sendBuzz(toPhones, groupName) {
-  const payload = {
-    to: toPhones,
-    from: currentUser.phone,
-    group: groupName
-  };
-
-  socket.emit('buzz', payload);
-
-  fetch('https://buzzur-server.onrender.com/send-buzz', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  })
-  .then(res => res.json())
-  .then(() => alert('Buzz was sent!'))
-  .catch(err => {
-    console.error('Buzz error:', err);
-    alert('Failed to send buzz');
+  const selectedMembers = [...document.querySelectorAll('.select-member:checked')].map(checkbox => {
+    const index = checkbox.dataset.index;
+    return group.members[index];
   });
+
+  if (selectedMembers.length) {
+    socket.emit('buzz', selectedMembers);
+  }
 }
 
 function saveGroups() {
   localStorage.setItem('buzzerGroups', JSON.stringify(groups));
 }
 
-showLogin();
+showLogin(); // Start with the login view
