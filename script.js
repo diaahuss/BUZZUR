@@ -3,26 +3,28 @@ let currentUser = null;
 let groups = JSON.parse(localStorage.getItem('buzzerGroups') || '[]');
 let users = JSON.parse(localStorage.getItem('buzzerUsers') || '[]');
 
-// Connect to deployed Socket.IO server
+// Socket.IO connection
 const socket = io('https://buzzur-server.onrender.com');
 
-// Log socket connection for debugging
 socket.on('connect', () => {
   console.log('Connected to server via Socket.IO');
 });
 
-// Handle incoming buzz
 const buzzAudio = document.getElementById('buzz-audio');
 socket.on('buzz', () => {
   buzzAudio?.play().catch(err => console.warn('Audio play failed:', err));
 });
 
-// Render banner helper function
+// Helpers
 function renderBanner(title) {
   return `<div class="banner" style="max-width: 400px; margin: 0 auto;">${title}</div>`;
 }
 
-// Show login screen
+function saveGroups() {
+  localStorage.setItem('buzzerGroups', JSON.stringify(groups));
+}
+
+// Screens
 function showLogin() {
   app.innerHTML = `
     <div class="container">
@@ -38,7 +40,6 @@ function showLogin() {
   `;
 }
 
-// Show signup screen
 function showSignup() {
   app.innerHTML = `
     <div class="container">
@@ -57,16 +58,6 @@ function showSignup() {
   document.getElementById('showPassword').addEventListener('change', togglePasswordVisibility);
 }
 
-// Toggle password visibility
-function togglePasswordVisibility() {
-  const passwordField = document.getElementById('password');
-  const confirmPasswordField = document.getElementById('confirmPassword');
-  const isChecked = document.getElementById('showPassword').checked;
-  passwordField.type = isChecked ? 'text' : 'password';
-  confirmPasswordField.type = isChecked ? 'text' : 'password';
-}
-
-// Show forgot password screen
 function showForgotPassword() {
   app.innerHTML = `
     <div class="container">
@@ -78,60 +69,6 @@ function showForgotPassword() {
   `;
 }
 
-// Reset password
-function resetPassword() {
-  const phone = document.getElementById('phone').value.trim();
-  const user = users.find(u => u.phone === phone);
-  if (!user) return alert('User not found');
-
-  const newPassword = prompt('Enter new password');
-  if (newPassword?.trim()) {
-    user.password = newPassword.trim();
-    localStorage.setItem('buzzerUsers', JSON.stringify(users));
-    alert('Password reset successfully.');
-    showLogin();
-  }
-}
-
-// Login function
-function login() {
-  const phone = document.getElementById('phone').value.trim();
-  const password = document.getElementById('password').value.trim();
-  const user = users.find(u => u.phone === phone && u.password === password);
-  if (!user) return alert('Invalid credentials');
-  currentUser = user;
-  showGroups();
-}
-
-// Signup function
-function signup() {
-  const name = document.getElementById('name').value.trim();
-  const phone = document.getElementById('phone').value.trim();
-  const password = document.getElementById('password').value.trim();
-  const confirmPassword = document.getElementById('confirmPassword').value.trim();
-
-  if (!name || !phone || !password || !confirmPassword)
-    return alert('Please fill all fields.');
-
-  if (password !== confirmPassword)
-    return alert('Passwords do not match.');
-
-  if (users.some(u => u.phone === phone))
-    return alert('User already exists.');
-
-  users.push({ name, phone, password });
-  localStorage.setItem('buzzerUsers', JSON.stringify(users));
-  alert('Signup successful!');
-  showLogin();
-}
-
-// Logout function
-function logout() {
-  currentUser = null;
-  showLogin();
-}
-
-// Show groups screen
 function showGroups() {
   const userGroups = groups.filter(g => g.owner === currentUser.phone);
   app.innerHTML = `
@@ -151,16 +88,6 @@ function showGroups() {
   `;
 }
 
-// Create new group
-function createGroup() {
-  const name = prompt('Group name:')?.trim();
-  if (!name) return;
-  groups.push({ name, members: [], owner: currentUser.phone });
-  saveGroups();
-  showGroups();
-}
-
-// Edit group
 function editGroup(name) {
   const group = groups.find(g => g.name === name && g.owner === currentUser.phone);
   if (!group) return;
@@ -189,7 +116,71 @@ function editGroup(name) {
   `;
 }
 
-// Update group name
+// Auth Functions
+function login() {
+  const phone = document.getElementById('phone').value.trim();
+  const password = document.getElementById('password').value.trim();
+  const user = users.find(u => u.phone === phone && u.password === password);
+  if (!user) return alert('Invalid credentials');
+  currentUser = user;
+  showGroups();
+}
+
+function signup() {
+  const name = document.getElementById('name').value.trim();
+  const phone = document.getElementById('phone').value.trim();
+  const password = document.getElementById('password').value.trim();
+  const confirmPassword = document.getElementById('confirmPassword').value.trim();
+
+  if (!name || !phone || !password || !confirmPassword)
+    return alert('Please fill all fields.');
+
+  if (password !== confirmPassword)
+    return alert('Passwords do not match.');
+
+  if (users.some(u => u.phone === phone))
+    return alert('User already exists.');
+
+  users.push({ name, phone, password });
+  localStorage.setItem('buzzerUsers', JSON.stringify(users));
+  alert('Signup successful!');
+  showLogin();
+}
+
+function resetPassword() {
+  const phone = document.getElementById('phone').value.trim();
+  const user = users.find(u => u.phone === phone);
+  if (!user) return alert('User not found');
+
+  const newPassword = prompt('Enter new password');
+  if (newPassword?.trim()) {
+    user.password = newPassword.trim();
+    localStorage.setItem('buzzerUsers', JSON.stringify(users));
+    alert('Password reset successfully.');
+    showLogin();
+  }
+}
+
+function logout() {
+  currentUser = null;
+  showLogin();
+}
+
+function togglePasswordVisibility() {
+  const isChecked = document.getElementById('showPassword').checked;
+  document.getElementById('password').type = isChecked ? 'text' : 'password';
+  document.getElementById('confirmPassword').type = isChecked ? 'text' : 'password';
+}
+
+// Group Functions
+function createGroup() {
+  const name = prompt('Group name:')?.trim();
+  if (!name) return;
+  groups.push({ name, members: [], owner: currentUser.phone });
+  saveGroups();
+  showGroups();
+}
+
 function updateGroupName(oldName) {
   const newName = document.getElementById('newGroupName').value.trim();
   const group = groups.find(g => g.name === oldName && g.owner === currentUser.phone);
@@ -200,55 +191,59 @@ function updateGroupName(oldName) {
   }
 }
 
-// Add member to group
 function addMember(groupName) {
   const name = prompt('Enter member name:');
   const phone = prompt('Enter member phone:');
   if (!name || !phone) return;
 
   const group = groups.find(g => g.name === groupName && g.owner === currentUser.phone);
-  if (!group) return;
-
-  group.members.push({ name, phone });
-  saveGroups();
-  editGroup(groupName);
+  if (group) {
+    group.members.push({ name, phone });
+    saveGroups();
+    editGroup(groupName);
+  }
 }
 
-// Remove member from group
 function removeMember(groupName, index) {
   const group = groups.find(g => g.name === groupName && g.owner === currentUser.phone);
-  if (!group || !group.members[index]) return;
-
-  group.members.splice(index, 1);
-  saveGroups();
-  editGroup(groupName);
+  if (group && group.members[index]) {
+    group.members.splice(index, 1);
+    saveGroups();
+    editGroup(groupName);
+  }
 }
 
-// Save groups to localStorage
-function saveGroups() {
-  localStorage.setItem('buzzerGroups', JSON.stringify(groups));
+function updateMember(groupName, index, field, value) {
+  const group = groups.find(g => g.name === groupName && g.owner === currentUser.phone);
+  if (group && group.members[index]) {
+    group.members[index][field] = value;
+    saveGroups();
+  }
 }
 
-// Remove group
 function removeGroup(groupName) {
   groups = groups.filter(g => g.name !== groupName || g.owner !== currentUser.phone);
   saveGroups();
   showGroups();
 }
 
-// Buzz all members of a group
+// Buzzing
 function buzzAll(groupName) {
   const group = groups.find(g => g.name === groupName && g.owner === currentUser.phone);
   if (group) socket.emit('buzz', { groupName, allMembers: true });
 }
 
-// Buzz selected members of a group
 function buzzSelected(groupName) {
   const group = groups.find(g => g.name === groupName && g.owner === currentUser.phone);
   if (group) {
-    const selectedMembers = group.members.filter((m, index) => document.querySelector(`.select-member[data-index="${index}"]`).checked);
+    const selectedMembers = group.members.filter((_, index) =>
+      document.querySelector(`.select-member[data-index="${index}"]`)?.checked
+    );
     if (selectedMembers.length > 0) {
       socket.emit('buzz', { groupName, selectedMembers });
     }
   }
 }
+
+// Initial load
+showLogin();
