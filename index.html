@@ -4,16 +4,49 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BUZZUR</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div id="app">
-    <!-- Content will be loaded here by JavaScript -->
+  <div id="login-screen" class="screen">
+    <h2>Login</h2>
+    <form id="login-form">
+      <input type="text" id="login-phone" placeholder="Phone Number" required>
+      <div class="password-container">
+        <input type="password" id="login-password" placeholder="Password" required>
+        <span class="toggle-password" id="toggle-login-password">&#128065;</span>
+      </div>
+      <button type="submit">Login</button>
+    </form>
+    <div>
+      <a href="#" id="to-signup">Sign up</a> | <a href="#" id="to-forgot">Forgot Password?</a>
+    </div>
   </div>
 
-  <audio id="buzzSound" src="buzz.mp3" preload="auto"></audio>
+  <div id="signup-screen" class="screen" style="display: none;">
+    <h2>Sign Up</h2>
+    <form id="signup-form">
+      <input type="text" id="signup-name" placeholder="Full Name" required>
+      <input type="text" id="signup-phone" placeholder="Phone Number" required>
+      <div class="password-container">
+        <input type="password" id="signup-password" placeholder="Password" required>
+        <span class="toggle-password" id="toggle-signup-password">&#128065;</span>
+      </div>
+      <input type="password" id="confirm-password" placeholder="Confirm Password" required>
+      <button type="submit">Sign Up</button>
+    </form>
+    <div>
+      <a href="#" id="to-login">Already have an account? Login</a>
+    </div>
+  </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.0/socket.io.min.js"></script>
+  <div id="groups-screen" class="screen" style="display: none;">
+    <h2>My Groups</h2>
+    <button id="create-group">Create Group</button>
+    <ul id="group-list"></ul>
+    <button id="logout">Logout</button>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
