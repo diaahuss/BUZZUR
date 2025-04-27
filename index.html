@@ -70,6 +70,24 @@
             <button id="cancel-create-group" class="btn secondary">Cancel</button>
         </div>
 
+        <!-- Edit Group Screen -->
+        <div id="edit-group-screen" class="screen" style="display:none;">
+            <h1><i class="fas fa-edit"></i> Edit Group</h1>
+            <div class="form-group">
+                <input type="text" id="edit-group-name" placeholder="Group Name" required>
+                <input type="hidden" id="edit-group-id">
+            </div>
+            <div class="form-group">
+                <h3>Add Member</h3>
+                <input type="text" id="new-member-name" placeholder="Name">
+                <input type="text" id="new-member-phone" placeholder="Phone">
+                <button id="add-member-btn" class="btn primary">Add Member</button>
+            </div>
+            <div id="current-members" class="member-list"></div>
+            <button id="save-group-btn" class="btn primary">Save Changes</button>
+            <button id="cancel-edit-group" class="btn secondary">Cancel</button>
+        </div>
+
         <!-- Buzz Screen -->
         <div id="buzz-screen" class="screen" style="display:none;">
             <h1><i class="fas fa-bell"></i> Buzz Members</h1>
