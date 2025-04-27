@@ -1,13 +1,13 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   const app = document.getElementById('app');
-  const API_BASE_URL = window.location.origin.includes('localhost') 
-    ? 'http://localhost:3000' 
+  const API_BASE_URL = window.location.origin.includes('localhost')
+    ? 'http://localhost:3000'
     : 'https://buzzur-server.onrender.com';
-  
+
   let socket;
   let currentUser = null;
 
-  // Initialize Socket.IO connection
+  // Initialize WebSocket
   function initSocket(token) {
     socket = io(API_BASE_URL, {
       auth: { token },
@@ -15,25 +15,17 @@ document.addEventListener('DOMContentLoaded', function() {
       reconnectionDelay: 1000
     });
 
-    socket.on('connect', () => {
-      console.log('Connected to WebSocket server');
-    });
-
-    socket.on('buzz', (data) => {
-      playBuzzSound();
-    });
-
-    socket.on('disconnect', () => {
-      console.log('Disconnected from WebSocket server');
-    });
+    socket.on('connect', () => console.log('Connected to WebSocket'));
+    socket.on('buzz', playBuzzSound);
+    socket.on('disconnect', () => console.log('Disconnected from WebSocket'));
   }
 
   function playBuzzSound() {
     const audio = new Audio('buzz.mp3');
-    audio.play().catch(e => console.error('Audio error:', e));
+    audio.play().catch(err => console.error('Audio play error:', err));
   }
 
-  // View functions
+  // Views
   function showLogin() {
     app.innerHTML = `
       <div class="banner">BUZZUR</div>
@@ -41,17 +33,15 @@ document.addEventListener('DOMContentLoaded', function() {
         <h2>Login</h2>
         <input type="text" id="loginPhone" placeholder="Phone Number" required>
         <input type="password" id="loginPassword" placeholder="Password" required>
-        <label for="showLoginPassword">
-          <input type="checkbox" id="showLoginPassword"> Show Password
-        </label>
+        <label><input type="checkbox" id="showLoginPassword"> Show Password</label>
         <button id="loginBtn">Login</button>
-        <p>Don't have an account? <a href="#" id="showSignupLink">Sign up</a></p>
+        <p><a href="#" id="showSignupLink">Sign up</a></p>
       </div>
     `;
 
     document.getElementById('loginBtn').addEventListener('click', handleLogin);
     document.getElementById('showSignupLink').addEventListener('click', showSignup);
-    document.getElementById('showLoginPassword').addEventListener('change', togglePasswordVisibility);
+    document.getElementById('showLoginPassword').addEventListener('change', togglePasswordVisibility.bind(null, 'loginPassword', 'showLoginPassword'));
   }
 
   function showSignup() {
@@ -62,31 +52,54 @@ document.addEventListener('DOMContentLoaded', function() {
         <input type="text" id="signupName" placeholder="Name" required>
         <input type="text" id="signupPhone" placeholder="Phone Number" required>
         <input type="password" id="signupPassword" placeholder="Password" required minlength="6">
-        <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
-        <label for="showSignupPassword">
-          <input type="checkbox" id="showSignupPassword"> Show Password
-        </label>
+        <input type="password" id="confirmPassword" placeholder="Confirm Password" required minlength="6">
+        <label><input type="checkbox" id="showSignupPassword"> Show Passwords</label>
         <button id="signupBtn">Sign Up</button>
-        <p>Already have an account? <a href="#" id="showLoginLink">Log in</a></p>
+        <p><a href="#" id="showLoginLink">Log in</a></p>
       </div>
     `;
 
     document.getElementById('signupBtn').addEventListener('click', handleSignup);
     document.getElementById('showLoginLink').addEventListener('click', showLogin);
-    document.getElementById('showSignupPassword').addEventListener('change', togglePasswordVisibility);
-  }
-
-  function togglePasswordVisibility(event) {
-    const passwordFields = document.querySelectorAll('input[type="password"]');
-    passwordFields.forEach(field => {
-      field.type = event.target.checked ? 'text' : 'password';
+    document.getElementById('showSignupPassword').addEventListener('change', () => {
+      togglePasswordVisibility('signupPassword', 'showSignupPassword');
+      togglePasswordVisibility('confirmPassword', 'showSignupPassword');
     });
   }
 
-  // API functions
+  function showDashboard() {
+    app.innerHTML = `
+      <div class="banner">Welcome, ${currentUser.name}</div>
+      <div class="container">
+        <button id="buzzBtn">Send Buzz</button>
+        <button id="logoutBtn">Logout</button>
+      </div>
+    `;
+
+    document.getElementById('buzzBtn').addEventListener('click', () => {
+      socket.emit('buzz', { groupId: 'test-group' });
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      localStorage.removeItem('authToken');
+      if (socket) socket.disconnect();
+      currentUser = null;
+      showLogin();
+    });
+  }
+
+  function togglePasswordVisibility(passwordId, checkboxId) {
+    const passwordField = document.getElementById(passwordId);
+    const checkbox = document.getElementById(checkboxId);
+    if (passwordField && checkbox) {
+      passwordField.type = checkbox.checked ? 'text' : 'password';
+    }
+  }
+
+  // API Helpers
   async function fetchAPI(endpoint, options = {}) {
     try {
-      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      const res = await fetch(`${API_BASE_URL}${endpoint}`, {
         ...options,
         headers: {
           'Content-Type': 'application/json',
@@ -94,18 +107,18 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       });
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Request failed');
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || 'API request failed');
       }
-
-      return await response.json();
-    } catch (error) {
-      console.error('API Error:', error);
-      throw error;
+      return await res.json();
+    } catch (err) {
+      console.error('API Error:', err);
+      throw err;
     }
   }
 
+  // Handlers
   async function handleLogin() {
     const phone = document.getElementById('loginPhone').value.trim();
     const password = document.getElementById('loginPassword').value;
@@ -130,8 +143,8 @@ document.addEventListener('DOMContentLoaded', function() {
       initSocket(token);
       showDashboard();
 
-    } catch (error) {
-      alert(error.message || 'Login failed');
+    } catch (err) {
+      alert(err.message || 'Login failed');
     } finally {
       btn.disabled = false;
       btn.textContent = 'Login';
@@ -157,46 +170,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
     try {
       btn.disabled = true;
-      btn.textContent = 'Creating account...';
+      btn.textContent = 'Signing up...';
 
       await fetchAPI('/api/signup', {
         method: 'POST',
         body: JSON.stringify({ name, phone, password })
       });
 
-      alert('Account created successfully! Please log in.');
+      alert('Account created! Please log in.');
       showLogin();
 
-    } catch (error) {
-      alert(error.message || 'Signup failed');
+    } catch (err) {
+      alert(err.message || 'Signup failed');
     } finally {
       btn.disabled = false;
       btn.textContent = 'Sign Up';
     }
   }
 
-  function showDashboard() {
-    app.innerHTML = `
-      <div class="banner">Welcome, ${currentUser.name}</div>
-      <div class="container">
-        <button id="buzzBtn">Send Buzz</button>
-        <button id="logoutBtn">Logout</button>
-      </div>
-    `;
-
-    document.getElementById('buzzBtn').addEventListener('click', () => {
-      socket.emit('buzz', { groupId: 'test-group' });
-    });
-
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-      localStorage.removeItem('authToken');
-      if (socket) socket.disconnect();
-      currentUser = null;
-      showLogin();
-    });
-  }
-
-  // Initialize app
+  // Initialize
   const token = localStorage.getItem('authToken');
   if (token) {
     fetchAPI('/api/health')
