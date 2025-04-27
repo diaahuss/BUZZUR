@@ -3,14 +3,14 @@ const path = require('path');
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Serve ALL files from the current directory
+// Serve all files from the current folder
 app.use(express.static(__dirname));
 
-// Handle page refreshes by sending index.html
+// Handle all routes by sending index.html
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
+  console.log(`App running at http://localhost:${port}`);
 });
