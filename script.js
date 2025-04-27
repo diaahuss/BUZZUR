@@ -205,7 +205,7 @@ function renderLoginScreen() {
           <i class="fas fa-eye"></i>
         </button>
       </div>
-      <button onclick="handleLogin()">Login</button>
+      <button class="login-btn" onclick="handleLogin()">Login</button>
       <p>
         <a href="#" onclick="renderSignupScreen()">Sign Up</a> | 
         <a href="#" onclick="renderForgotPasswordScreen()">Forgot Password</a>
@@ -233,7 +233,7 @@ function renderSignupScreen() {
           <i class="fas fa-eye"></i>
         </button>
       </div>
-      <button onclick="handleSignup()">Sign Up</button>
+      <button class="signup-btn" onclick="handleSignup()">Sign Up</button>
       <p><a href="#" onclick="renderLoginScreen()">Back to Login</a></p>
     </div>
   `;
@@ -245,7 +245,7 @@ function renderForgotPasswordScreen() {
     <div class="form">
       <h2>Forgot Password</h2>
       <input type="text" id="phone" placeholder="Phone Number" />
-      <button onclick="handleResetPassword()">Reset Password</button>
+      <button class="reset-btn" onclick="handleResetPassword()">Reset Password</button>
       <p><a href="#" onclick="renderLoginScreen()">Back to Login</a></p>
     </div>
   `;
@@ -258,13 +258,13 @@ function renderGroupsScreen() {
     <div class="banner">My Groups</div>
     <div class="groups">
       ${currentUser.groups.map((group, index) => `
-        <button onclick="renderGroupDetailsScreen(${index})">${group.name}</button>
+        <button class="group-btn" onclick="renderGroupDetailsScreen(${index})">${group.name}</button>
       `).join('')}
     </div>
     <div class="form">
       <input type="text" id="newGroupName" placeholder="New Group Name" />
-      <button onclick="handleCreateGroup()">Create Group</button>
-      <button onclick="handleLogout()" class="logout-btn">Logout</button>
+      <button class="create-group-btn" onclick="handleCreateGroup()">Create Group</button>
+      <button class="logout-btn" onclick="handleLogout()">Logout</button>
     </div>
   `;
 }
@@ -277,81 +277,37 @@ function renderGroupDetailsScreen(groupIndex) {
     <div class="banner">${group.name}</div>
     <div class="form">
       <input type="text" id="editGroupName" value="${group.name}" />
-      <button onclick="handleSaveGroupName(${groupIndex})">Save Name</button>
+      <button class="save-btn" onclick="handleSaveGroupName(${groupIndex})">Save Name</button>
       <h3>Members</h3>
-      <div class="members">
-        ${group.members.map((member, memberIndex) => `
-          <div class="member-row ${group.selectedMembers.includes(memberIndex) ? 'selected' : ''}">
-            <button class="select-btn" onclick="toggleMemberSelection(${groupIndex}, ${memberIndex})">
-              <i class="fas ${group.selectedMembers.includes(memberIndex) ? 'fa-check-circle' : 'fa-circle'}"></i>
-            </button>
-            <input type="text" value="${member.name}" 
-              onchange="currentUser.groups[${groupIndex}].members[${memberIndex}].name = this.value; saveCurrentUser()" />
-            <input type="text" value="${member.phone}" 
-              onchange="currentUser.groups[${groupIndex}].members[${memberIndex}].phone = this.value; saveCurrentUser()" />
-            <button onclick="handleRemoveMember(${groupIndex}, ${memberIndex})" class="remove-btn">
-              <i class="fas fa-times"></i>
-            </button>
-          </div>
-        `).join('')}
+      ${group.members.map((member, memberIndex) => `
+        <div class="member">
+          <span>${member.name} (${member.phone})</span>
+          <input type="checkbox" ${group.selectedMembers.includes(memberIndex) ? 'checked' : ''} onclick="toggleMemberSelection(${groupIndex}, ${memberIndex})" />
+          <button class="remove-btn" onclick="handleRemoveMember(${groupIndex}, ${memberIndex})">Remove Member</button>
+        </div>
+      `).join('')}
+      <input type="text" id="newMemberName" placeholder="New Member Name" />
+      <input type="text" id="newMemberPhone" placeholder="New Member Phone" />
+      <button class="add-btn" onclick="handleAddMember(${groupIndex})">Add Member</button>
+      <div class="buzz-buttons">
+        <button class="buzz-all-btn" onclick="handleBuzzAll(${groupIndex})">Buzz All</button>
+        <button class="buzz-selected-btn" onclick="handleBuzzSelected(${groupIndex})">Buzz Selected</button>
       </div>
-      <input type="text" id="newMemberName" placeholder="Member Name" />
-      <input type="text" id="newMemberPhone" placeholder="Member Phone" />
-      <button onclick="handleAddMember(${groupIndex})">Add Member</button>
-      <hr>
-      <div class="buzz-actions">
-        <button onclick="handleBuzzSelected(${groupIndex})">Buzz Selected</button>
-        <button onclick="handleBuzzAll(${groupIndex})">Buzz All</button>
-      </div>
-      <div class="group-actions">
-        <button onclick="handleDeleteGroup(${groupIndex})" class="delete-btn">Delete Group</button>
-        <button onclick="renderGroupsScreen()" class="back-btn">Back</button>
-      </div>
+      <button class="delete-btn" onclick="handleDeleteGroup(${groupIndex})">Delete Group</button>
+      <button class="back-btn" onclick="renderGroupsScreen()">Back</button>
     </div>
   `;
 }
 
-// Socket.IO Events
-socket.on('receive-buzz', playBuzzSound);
-
-// Initialize App
-document.addEventListener('DOMContentLoaded', () => {
-  // Load Font Awesome for icons
-  const fa = document.createElement('link');
-  fa.rel = 'stylesheet';
-  fa.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css';
-  document.head.appendChild(fa);
-
-  try {
-    const userData = localStorage.getItem('currentUser');
-    if (userData) {
-      currentUser = JSON.parse(userData);
-      renderGroupsScreen();
-    } else {
-      renderLoginScreen();
-    }
-  } catch (e) {
-    console.error('Initialization error:', e);
+// Initialize the app
+function init() {
+  const user = localStorage.getItem('currentUser');
+  if (user) {
+    currentUser = JSON.parse(user);
+    renderGroupsScreen();
+  } else {
     renderLoginScreen();
   }
-});
+}
 
-// Expose functions to global scope for HTML onclick attributes
-window.handleLogin = handleLogin;
-window.handleSignup = handleSignup;
-window.handleLogout = handleLogout;
-window.handleResetPassword = handleResetPassword;
-window.handleCreateGroup = handleCreateGroup;
-window.handleSaveGroupName = handleSaveGroupName;
-window.handleDeleteGroup = handleDeleteGroup;
-window.handleAddMember = handleAddMember;
-window.handleRemoveMember = handleRemoveMember;
-window.toggleMemberSelection = toggleMemberSelection;
-window.handleBuzzSelected = handleBuzzSelected;
-window.handleBuzzAll = handleBuzzAll;
-window.renderLoginScreen = renderLoginScreen;
-window.renderSignupScreen = renderSignupScreen;
-window.renderForgotPasswordScreen = renderForgotPasswordScreen;
-window.renderGroupsScreen = renderGroupsScreen;
-window.renderGroupDetailsScreen = renderGroupDetailsScreen;
-window.togglePasswordVisibility = togglePasswordVisibility;
+init();
