@@ -262,34 +262,39 @@ function togglePasswordVisibility() {
  * EVENT LISTENERS
  *********************/
 function initializeEventListeners() {
-  // Safe event listener attachment
-  function safeAddListener(id, event, handler) {
-    const element = document.getElementById(id);
-    if (element) {
-      element.addEventListener(event, handler);
-      console.log(`Added ${event} listener to #${id}`);
-    } else {
-      console.warn(`Element #${id} not found for event listener`);
-    }
-  }
-
   // Authentication
-  safeAddListener('login-btn', 'click', loginUser);
-  safeAddListener('signup-btn', 'click', signUpUser);
-  safeAddListener('logout-btn', 'click', logout);
+  addListener('login-btn', 'click', loginUser);
+  addListener('signup-btn', 'click', signUpUser);
+  addListener('logout-btn', 'click', logout);
   
   // Group Management
-  safeAddListener('create-group-btn', 'click', createGroup);
-  safeAddListener('save-group-btn', 'click', saveGroupEdits);
-  safeAddListener('send-buzz-btn', 'click', sendBuzz);
+  addListener('create-group-btn', 'click', showCreateGroupScreen);
+  addListener('confirm-create-group', 'click', createGroup);
+  addListener('add-member-btn', 'click', addMember);
+  addListener('save-group-btn', 'click', saveGroupEdits);
+  addListener('send-buzz-btn', 'click', sendBuzz);
   
   // Navigation
-  safeAddListener('to-signup', 'click', () => switchScreen('signup-screen'));
-  safeAddListener('to-login', 'click', () => switchScreen('login-screen'));
-  safeAddListener('refresh-groups', 'click', renderGroups);
+  addListener('to-signup', 'click', () => switchScreen('signup-screen'));
+  addListener('to-login', 'click', () => switchScreen('login-screen'));
+  addListener('refresh-groups', 'click', renderGroups);
+  addListener('cancel-create-group', 'click', () => switchScreen('my-groups-screen'));
+  addListener('cancel-edit-group', 'click', () => switchScreen('my-groups-screen'));
+  addListener('cancel-buzz', 'click', () => switchScreen('my-groups-screen'));
   
   // Password toggle
-  safeAddListener('toggle-password', 'click', togglePasswordVisibility);
+  addListener('toggle-password', 'click', togglePasswordVisibility);
+}
+
+// Helper function to safely add listeners
+function addListener(id, event, handler) {
+  const element = document.getElementById(id);
+  if (element) {
+    element.addEventListener(event, handler);
+    console.log(`Added ${event} listener to #${id}`);
+  } else {
+    console.warn(`Element #${id} not found for event listener`);
+  }
 }
 
 /*********************
