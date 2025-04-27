@@ -6,7 +6,7 @@
     <title>Buzz App</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="data:,">
+    <link rel="icon" href="data:,"> <!-- Prevents favicon 404 error -->
 </head>
 <body>
     <div id="app">
@@ -21,6 +21,9 @@
                 <button id="toggle-password" type="button"><i class="fas fa-eye"></i></button>
             </div>
             <button id="login-btn" class="btn primary">Login</button>
+            <button id="enable-notifications" class="btn secondary">
+                <i class="fas fa-bell"></i> Enable Notifications
+            </button>
             <p class="auth-link">Don't have an account? <a id="to-signup" href="#">Sign up</a></p>
         </div>
 
@@ -104,6 +107,22 @@
         <audio id="buzz-sound" src="buzz.mp3"></audio>
     </div>
 
+    <!-- Scripts -->
     <script src="script.js"></script>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging-compat.js"></script>
+    <script type="module">
+        import { requestNotificationPermission } from './firebase-config.js';
+        
+        const notifyBtn = document.getElementById('enable-notifications');
+        if (notifyBtn) {
+            notifyBtn.addEventListener('click', function() {
+                requestNotificationPermission();
+                this.disabled = true;
+                this.innerHTML = '<i class="fas fa-bell-slash"></i> Notifications Enabled';
+            });
+        }
+    </script>
 </body>
 </html>
