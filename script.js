@@ -102,6 +102,77 @@ function createGroup() {
     renderGroups();
 }
 
+function editGroup(groupId) {
+    const group = groups.find(g => g.id === groupId);
+    if (!group) return;
+    
+    getElement('edit-group-name').value = group.name;
+    getElement('edit-group-id').value = group.id;
+    renderMembers(group.members);
+    switchScreen('edit-group-screen');
+}
+
+function renderMembers(members) {
+    const container = getElement('current-members');
+    if (!container) return;
+    
+    container.innerHTML = members.map(member => `
+        <div class="member-item">
+            <span>${member.name} (${member.phone})</span>
+            <button class="btn small" onclick="removeMember('${member.phone}')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    `).join('');
+}
+
+function addMember() {
+    const groupId = getElement('edit-group-id').value;
+    const name = getElement('new-member-name').value.trim();
+    const phone = getElement('new-member-phone').value.trim();
+    
+    if (!name || !phone) {
+        alert('Please enter both name and phone');
+        return;
+    }
+    
+    const group = groups.find(g => g.id === groupId);
+    if (group) {
+        // Check if member already exists
+        if (group.members.some(m => m.phone === phone)) {
+            alert('This member already exists in the group');
+            return;
+        }
+        
+        group.members.push({ name, phone });
+        getElement('new-member-name').value = '';
+        getElement('new-member-phone').value = '';
+        renderMembers(group.members);
+    }
+}
+
+function removeMember(phone) {
+    const groupId = getElement('edit-group-id').value;
+    const group = groups.find(g => g.id === groupId);
+    if (group) {
+        group.members = group.members.filter(m => m.phone !== phone);
+        renderMembers(group.members);
+    }
+}
+
+function saveGroupEdits() {
+    const groupId = getElement('edit-group-id').value;
+    const newName = getElement('edit-group-name').value.trim();
+    
+    const group = groups.find(g => g.id === groupId);
+    if (group) {
+        group.name = newName;
+        alert('Group updated successfully!');
+        switchScreen('my-groups-screen');
+        renderGroups();
+    }
+}
+
 function renderGroups() {
     const container = getElement('group-list');
     if (!container) return;
@@ -110,6 +181,9 @@ function renderGroups() {
         <div class="group-card" data-group-id="${group.id}">
             <h3>${group.name}</h3>
             <div class="group-actions">
+                <button class="btn" onclick="editGroup('${group.id}')">
+                    <i class="fas fa-edit"></i> Edit
+                </button>
                 <button class="btn" onclick="startBuzz('${group.id}')">
                     <i class="fas fa-bell"></i> Buzz
                 </button>
@@ -126,11 +200,11 @@ function startBuzz(groupId) {
     if (!group) return;
     
     getElement('current-buzz-group').value = groupId;
-    renderMemberList(group.members);
+    renderBuzzMembers(group.members);
     switchScreen('buzz-screen');
 }
 
-function renderMemberList(members) {
+function renderBuzzMembers(members) {
     const container = getElement('member-list');
     if (!container) return;
     
@@ -171,6 +245,20 @@ function sendBuzz() {
 }
 
 /*********************
+ * PASSWORD TOGGLE
+ *********************/
+function togglePasswordVisibility() {
+    const input = getElement('login-password');
+    const button = getElement('toggle-password');
+    if (input && button) {
+        input.type = input.type === 'password' ? 'text' : 'password';
+        button.innerHTML = input.type === 'password' 
+            ? '<i class="fas fa-eye"></i>' 
+            : '<i class="fas fa-eye-slash"></i>';
+    }
+}
+
+/*********************
  * EVENT LISTENERS
  *********************/
 function initEventListeners() {
@@ -184,6 +272,11 @@ function initEventListeners() {
     getElement('confirm-create-group').addEventListener('click', createGroup);
     getElement('cancel-create-group').addEventListener('click', () => switchScreen('my-groups-screen'));
     
+    // Edit Group
+    getElement('add-member-btn').addEventListener('click', addMember);
+    getElement('save-group-btn').addEventListener('click', saveGroupEdits);
+    getElement('cancel-edit-group').addEventListener('click', () => switchScreen('my-groups-screen'));
+    
     // Buzz
     getElement('send-buzz-btn').addEventListener('click', sendBuzz);
     getElement('cancel-buzz').addEventListener('click', () => switchScreen('my-groups-screen'));
@@ -195,17 +288,6 @@ function initEventListeners() {
     
     // Password toggle
     getElement('toggle-password').addEventListener('click', togglePasswordVisibility);
-}
-
-function togglePasswordVisibility() {
-    const input = getElement('login-password');
-    const button = getElement('toggle-password');
-    if (input && button) {
-        input.type = input.type === 'password' ? 'text' : 'password';
-        button.innerHTML = input.type === 'password' 
-            ? '<i class="fas fa-eye"></i>' 
-            : '<i class="fas fa-eye-slash"></i>';
-    }
 }
 
 /*********************
