@@ -7,13 +7,13 @@
     "start": "node server.js"
   },
   "dependencies": {
-    "express": "^4.17.1",  // Changed to stable version
+    "express": "^4.17.1",  // Stable version of express
     "socket.io": "^4.8.1",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0"
   },
   "engines": {
-    "node": ">=14.x.x"
+    "node": ">=14.x.x"  // Ensuring compatible Node.js version
   },
-  "license": "MIT"  // Add a license type (optional)
+  "license": "MIT"  // You can change this to another license if needed
 }
