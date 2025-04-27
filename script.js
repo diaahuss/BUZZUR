@@ -1,11 +1,10 @@
 document.addEventListener('DOMContentLoaded', function () {
   const app = document.getElementById('app');
-  const API_BASE_URL = "https://buzzur-server.onrender.com";
-  let socket = null;
+  const API_BASE_URL = "https://buzzur-server.onrender.com"; // your Render backend
+  let socket = io(API_BASE_URL, { autoConnect: false });
   let currentUser = null;
 
   function init() {
-    showLoading("Initializing...");
     const token = localStorage.getItem('authToken');
     if (token) {
       validateSession(token);
@@ -20,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
         ...options,
         headers: {
           'Content-Type': 'application/json',
-          ...(options.headers || {})
+          ...(options.headers || {}),
         }
       });
       const data = await response.json();
@@ -34,17 +33,33 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
+  async function validateSession(token) {
+    try {
+      const data = await fetchData(`${API_BASE_URL}/api/validate`, {
+        method: 'POST',
+        body: JSON.stringify({ token }),
+      });
+      currentUser = data.user;
+      socket.auth = { token };
+      socket.connect();
+      showDashboard();
+    } catch (error) {
+      localStorage.removeItem('authToken');
+      showLogin();
+    }
+  }
+
   async function handleLogin() {
     const phoneNumber = document.getElementById('loginPhone')?.value.trim();
     const password = document.getElementById('loginPassword')?.value;
-    const loginBtn = document.getElementById('loginBtn');
 
     if (!phoneNumber || !password) {
-      showError('Please enter both phone number and password');
+      showError('Please enter both phone and password');
       return;
     }
 
     try {
+      const loginBtn = document.getElementById('loginBtn');
       loginBtn.disabled = true;
       loginBtn.textContent = "Logging in...";
 
@@ -55,20 +70,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
       localStorage.setItem('authToken', data.token);
       currentUser = data.user;
-
-      // Connect socket AFTER setting auth
-      socket = io(API_BASE_URL, {
-        auth: { token: data.token }
-      });
-
+      socket.auth = { token: data.token };
+      socket.connect();
       showDashboard();
     } catch (error) {
-      if (error.message.includes('401')) {
-        showError('Wrong phone number or password');
-      } else {
-        showError(error.message || 'Login failed. Please try again.');
-      }
+      showError(error.message || 'Login failed');
     } finally {
+      const loginBtn = document.getElementById('loginBtn');
       if (loginBtn) {
         loginBtn.disabled = false;
         loginBtn.textContent = "Login";
@@ -80,11 +88,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const name = document.getElementById('signupName')?.value.trim();
     const phone = document.getElementById('signupPhone')?.value.trim();
     const password = document.getElementById('signupPassword')?.value;
-    const confirmPassword = document.getElementById('signupConfirm')?.value;
-    const signupBtn = document.getElementById('signupBtn');
+    const confirmPassword = document.getElementById('signupConfirmPassword')?.value;
 
     if (!name || !phone || !password || !confirmPassword) {
-      showError('Please fill in all fields');
+      showError('Please fill all fields');
       return;
     }
 
@@ -99,24 +106,21 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     try {
+      const signupBtn = document.getElementById('signupBtn');
       signupBtn.disabled = true;
-      signupBtn.textContent = "Creating account...";
+      signupBtn.textContent = "Creating...";
 
-      // FIX: use phoneNumber key
       const data = await fetchData(`${API_BASE_URL}/api/signup`, {
         method: 'POST',
-        body: JSON.stringify({ name, phoneNumber: phone, password }),
+        body: JSON.stringify({ name, phone, password }),
       });
 
       showLogin();
-      showError('Signup successful! Please log in.');
+      showError('Signup successful! Please login.');
     } catch (error) {
-      if (error.message.includes('409')) {
-        showError('Phone number already exists');
-      } else {
-        showError(error.message || 'Signup failed. Please try again.');
-      }
+      showError(error.message || 'Signup failed');
     } finally {
+      const signupBtn = document.getElementById('signupBtn');
       if (signupBtn) {
         signupBtn.disabled = false;
         signupBtn.textContent = "Sign Up";
@@ -124,57 +128,72 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  // Example for showError, showLoading, showLogin
   function showError(message) {
-    alert(message); // Replace this later with nicer UI
+    const errorDiv = document.createElement('div');
+    errorDiv.textContent = message;
+    errorDiv.style.color = 'red';
+    errorDiv.style.textAlign = 'center';
+    app.prepend(errorDiv);
+    setTimeout(() => errorDiv.remove(), 3000);
   }
 
-  function showLoading(message) {
-    app.innerHTML = `<p>${message}</p>`;
+  function showLoading(message = "Loading...") {
+    app.innerHTML = `<div class="banner">BUZZUR</div><p>${message}</p>`;
   }
 
   function showLogin() {
     app.innerHTML = `
+      <div class="banner">BUZZUR</div>
       <h2>Login</h2>
-      <input id="loginPhone" placeholder="Phone Number" />
-      <input id="loginPassword" type="password" placeholder="Password" />
+      <input type="text" id="loginPhone" placeholder="Phone Number"><br>
+      <input type="password" id="loginPassword" placeholder="Password"><br>
+      <label><input type="checkbox" id="showLoginPassword"> Show Password</label><br>
       <button id="loginBtn">Login</button>
-      <p><a href="#" id="showSignupLink">Sign Up</a></p>
+      <p>Don't have an account? <a href="#" id="toSignup">Sign Up</a></p>
     `;
+
     document.getElementById('loginBtn').onclick = handleLogin;
-    document.getElementById('showSignupLink').onclick = showSignup;
+    document.getElementById('toSignup').onclick = showSignup;
+    document.getElementById('showLoginPassword').onchange = function() {
+      document.getElementById('loginPassword').type = this.checked ? 'text' : 'password';
+    };
   }
 
   function showSignup() {
     app.innerHTML = `
+      <div class="banner">BUZZUR</div>
       <h2>Sign Up</h2>
-      <input id="signupName" placeholder="Name" />
-      <input id="signupPhone" placeholder="Phone Number" />
-      <input id="signupPassword" type="password" placeholder="Password" />
-      <input id="signupConfirm" type="password" placeholder="Confirm Password" />
+      <input type="text" id="signupName" placeholder="Name"><br>
+      <input type="text" id="signupPhone" placeholder="Phone Number"><br>
+      <input type="password" id="signupPassword" placeholder="Password"><br>
+      <input type="password" id="signupConfirmPassword" placeholder="Confirm Password"><br>
+      <label><input type="checkbox" id="showSignupPassword"> Show Password</label><br>
       <button id="signupBtn">Sign Up</button>
-      <p><a href="#" id="showLoginLink">Back to Login</a></p>
+      <p>Already have an account? <a href="#" id="toLogin">Login</a></p>
     `;
+
     document.getElementById('signupBtn').onclick = handleSignup;
-    document.getElementById('showLoginLink').onclick = showLogin;
+    document.getElementById('toLogin').onclick = showLogin;
+    document.getElementById('showSignupPassword').onchange = function() {
+      document.getElementById('signupPassword').type = 
+      document.getElementById('signupConfirmPassword').type = this.checked ? 'text' : 'password';
+    };
   }
 
   function showDashboard() {
-    app.innerHTML = `<h2>Welcome, ${currentUser?.name || 'User'}</h2>
-      <button onclick="logout()">Logout</button>`;
+    app.innerHTML = `
+      <div class="banner">BUZZUR</div>
+      <h2>Welcome, ${currentUser?.name || "User"}</h2>
+      <button onclick="logout()">Logout</button>
+    `;
   }
 
   function logout() {
+    socket.disconnect();
     localStorage.removeItem('authToken');
-    if (socket) {
-      socket.disconnect();
-    }
     showLogin();
   }
 
-  window.handleLogin = handleLogin;
-  window.handleSignup = handleSignup;
   window.logout = logout;
-
   init();
 });
