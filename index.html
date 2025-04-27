@@ -4,23 +4,38 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="BUZZUR - A real-time buzzing application">
+  <meta name="author" content="Your Name">
   <title>BUZZUR</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
-  <main id="app">
+  <header>
+    <h1>BUZZUR</h1>
+  </header>
+
+  <main id="app" aria-live="polite">
     <!-- Dynamic content will be injected here by script.js -->
+    <noscript>
+      <p class="error">JavaScript is required to use this application. Please enable JavaScript in your browser settings.</p>
+    </noscript>
   </main>
 
-  <!-- Ensure that buzz.mp3 is in the same folder as your HTML -->
-  <audio id="buzzSound" src="buzz.mp3" preload="auto"></audio>
+  <!-- Audio element with fallback content -->
+  <audio id="buzzSound" src="buzz.mp3" preload="auto">
+    Your browser does not support the audio element.
+  </audio>
 
-  <!-- Socket.IO from CDN (update to latest stable version) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.0/socket.io.min.js"></script>
+  <!-- Socket.IO from CDN with integrity hash (update version as needed) -->
+  <script 
+    src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.0/socket.io.min.js" 
+    integrity="sha384-/m/AsZ0JN0TdgDOTyW07pP4j0vQv/cftZM5WlZQvXK5XibZJwDD0FRIh5uqQKJ0" 
+    crossorigin="anonymous">
+  </script>
 
-  <!-- Ensure that script.js is in the same folder as your HTML -->
-  <script src="script.js"></script>
+  <!-- Main application script -->
+  <script src="script.js" defer></script>
 </body>
 
 </html>
