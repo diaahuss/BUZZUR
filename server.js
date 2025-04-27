@@ -2,110 +2,130 @@ const express = require('express');
 const http = require('http');
 const cors = require('cors');
 const { Server } = require('socket.io');
-require('dotenv').config(); // Import dotenv
+require('dotenv').config();
 
-// Initialize Express and HTTP server
 const app = express();
 const server = http.createServer(app);
 
-// Enable CORS for all origins (for development purposes)
+// Enhanced CORS configuration
 app.use(cors({
-  origin: process.env.FRONTEND_URL || '*', // Use the frontend URL from the .env file or allow all origins
-  methods: ['GET', 'POST'],
-  allowedHeaders: ['Content-Type'], // Allow specific headers
+  origin: process.env.FRONTEND_URL || 'https://buzzur.onrender.com',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
 }));
-app.use(express.json()); // To parse JSON requests
 
-// Set up Socket.IO with CORS
+app.use(express.json());
+
+// Socket.IO with enhanced configuration
 const io = new Server(server, {
   cors: {
-    origin: process.env.FRONTEND_URL || '*', // Use environment variable or fallback to '*'
+    origin: process.env.FRONTEND_URL || 'https://buzzur.onrender.com',
     methods: ['GET', 'POST'],
-    allowedHeaders: ['Content-Type'],
+    credentials: true
   },
+  connectionStateRecovery: {
+    maxDisconnectionDuration: 2 * 60 * 1000, // 2 minutes
+    skipMiddlewares: true
+  }
 });
+
+// Database simulation (replace with real DB)
+const users = [
+  { phone: '1234567890', password: 'password123', name: 'Test User' }
+];
+
+// Authentication middleware
+function authenticateToken(req, res, next) {
+  const token = req.headers['authorization'];
+  if (!token) return res.sendStatus(401);
+  // In a real app, verify JWT here
+  next();
+}
 
 // WebSocket connection
 io.on('connection', (socket) => {
-  console.log(`A user connected: ${socket.id}`);
+  console.log(`User connected: ${socket.id}`);
 
-  // Handle 'buzz' event
   socket.on('buzz', (payload) => {
     try {
-      console.log('Buzz received via socket:', payload);
-
-      if (payload && Array.isArray(payload.to) && payload.to.length > 0) {
-        socket.broadcast.emit('buzz', payload); // Broadcast to other users
-        console.log('Buzz broadcasted to others.');
-      } else {
-        console.warn('Invalid payload received:', payload);
+      console.log('Buzz received:', payload);
+      if (payload?.groupId) {
+        socket.to(payload.groupId).emit('buzz', payload);
       }
     } catch (error) {
-      console.error('Error handling buzz event:', error);
+      console.error('Buzz error:', error);
     }
   });
 
-  // Handle user disconnection
   socket.on('disconnect', () => {
     console.log(`User disconnected: ${socket.id}`);
   });
 });
 
-// Root route to check if the server is running
-app.get('/', (req, res) => {
-  res.send('Buzzur server is running.');
+// API Routes
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date() });
 });
 
-// Login API endpoint (to handle login)
-app.post('/api/login', (req, res) => {
-  const { phoneNumber, password } = req.body;
-
-  // Example login logic (replace this with actual logic later)
-  if (phoneNumber === 'testPhone' && password === 'testPassword') {
-    // Successful login response
-    return res.status(200).json({ success: true, message: 'Login successful' });
-  } else {
-    // Failed login response
-    return res.status(401).json({ success: false, message: 'Invalid phone number or password' });
-  }
-});
-
-// Buzz API endpoint to handle buzz notifications
-app.post('/send-buzz', (req, res) => {
-  const { to, from, group } = req.body;
-
+app.post('/api/login', async (req, res) => {
   try {
-    // Validate input
-    if (!Array.isArray(to) || to.length === 0) {
-      return res.status(400).json({ success: false, message: 'Recipient list is required.' });
-    }
-    if (!from || !group) {
-      return res.status(400).json({ success: false, message: 'Sender and group information are required.' });
+    const { phoneNumber, password } = req.body;
+    const user = users.find(u => u.phone === phoneNumber && u.password === password);
+    
+    if (!user) {
+      return res.status(401).json({ 
+        success: false, 
+        message: 'Invalid phone number or password' 
+      });
     }
 
-    console.log(`Buzz sent from ${from} to ${to.join(', ')} in group "${group}"`);
-
-    // Emit buzz event to each recipient if their socket exists
-    to.forEach((recipient) => {
-      // Ensure recipient is valid
-      if (recipient) {
-        // Emitting 'buzz' to the specific socket ID or user
-        io.emit('buzz', { to: recipient, from, group });
-        console.log(`Buzz sent to ${recipient}`);
+    // In a real app, generate JWT token here
+    const token = 'generated-jwt-token';
+    
+    res.json({ 
+      success: true,
+      token,
+      user: {
+        phone: user.phone,
+        name: user.name
       }
     });
 
-    res.json({ success: true, message: 'Buzz sent successfully!' });
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+app.post('/api/signup', async (req, res) => {
+  try {
+    const { name, phone, password } = req.body;
+    
+    if (users.some(u => u.phone === phone)) {
+      return res.status(409).json({ 
+        success: false, 
+        message: 'Phone number already exists' 
+      });
+    }
+
+    // In real app, hash password before saving
+    users.push({ name, phone, password });
+    
+    res.status(201).json({ 
+      success: true,
+      message: 'User created successfully' 
+    });
 
   } catch (error) {
-    console.error('Error in /send-buzz route:', error);
-    res.status(500).json({ success: false, message: 'Server error while sending buzz.' });
+    console.error('Signup error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
   }
 });
 
 // Start server
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
-  console.log(`Buzzur server listening on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
+  console.log(`CORS configured for: ${process.env.FRONTEND_URL || 'https://buzzur.onrender.com'}`);
 });
