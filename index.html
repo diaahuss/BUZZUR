@@ -4,12 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Buzzur</title>
+  <!-- Load Font Awesome for icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Load your CSS file -->
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div id="app"></div>
+  <!-- Hidden audio for buzz sound -->
   <audio id="buzzSound" src="buzz.mp3" preload="auto"></audio>
+  
+  <!-- Socket.io and your JS file -->
   <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
   <script src="script.js"></script>
 </body>
