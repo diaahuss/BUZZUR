@@ -41,6 +41,9 @@ document.addEventListener('DOMContentLoaded', function() {
         <h2>Login</h2>
         <input type="text" id="loginPhone" placeholder="Phone Number" required>
         <input type="password" id="loginPassword" placeholder="Password" required>
+        <label for="showLoginPassword">
+          <input type="checkbox" id="showLoginPassword"> Show Password
+        </label>
         <button id="loginBtn">Login</button>
         <p>Don't have an account? <a href="#" id="showSignupLink">Sign up</a></p>
       </div>
@@ -48,6 +51,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('loginBtn').addEventListener('click', handleLogin);
     document.getElementById('showSignupLink').addEventListener('click', showSignup);
+    document.getElementById('showLoginPassword').addEventListener('change', togglePasswordVisibility);
   }
 
   function showSignup() {
@@ -58,6 +62,10 @@ document.addEventListener('DOMContentLoaded', function() {
         <input type="text" id="signupName" placeholder="Name" required>
         <input type="text" id="signupPhone" placeholder="Phone Number" required>
         <input type="password" id="signupPassword" placeholder="Password" required minlength="6">
+        <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
+        <label for="showSignupPassword">
+          <input type="checkbox" id="showSignupPassword"> Show Password
+        </label>
         <button id="signupBtn">Sign Up</button>
         <p>Already have an account? <a href="#" id="showLoginLink">Log in</a></p>
       </div>
@@ -65,6 +73,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('signupBtn').addEventListener('click', handleSignup);
     document.getElementById('showLoginLink').addEventListener('click', showLogin);
+    document.getElementById('showSignupPassword').addEventListener('change', togglePasswordVisibility);
+  }
+
+  function togglePasswordVisibility(event) {
+    const passwordFields = document.querySelectorAll('input[type="password"]');
+    passwordFields.forEach(field => {
+      field.type = event.target.checked ? 'text' : 'password';
+    });
   }
 
   // API functions
@@ -126,10 +142,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const name = document.getElementById('signupName').value.trim();
     const phone = document.getElementById('signupPhone').value.trim();
     const password = document.getElementById('signupPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
     const btn = document.getElementById('signupBtn');
 
-    if (!name || !phone || !password) {
+    if (!name || !phone || !password || !confirmPassword) {
       alert('Please fill in all fields');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      alert('Passwords do not match');
       return;
     }
 
@@ -190,3 +212,4 @@ document.addEventListener('DOMContentLoaded', function() {
     showLogin();
   }
 });
+
