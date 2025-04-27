@@ -3,16 +3,14 @@ const path = require('path');
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Serve static files
-app.use(express.static(path.join(__dirname, 'public')));
+// Serve ALL files from the current directory
+app.use(express.static(__dirname));
 
-// API endpoints would go here in a real app
-
-// All other routes return the React app
+// Handle page refreshes by sending index.html
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
+  console.log(`Server running at http://localhost:${port}`);
 });
