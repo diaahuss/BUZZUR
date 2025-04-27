@@ -9,15 +9,19 @@ const app = express();
 const server = http.createServer(app);
 
 // Enable CORS for all origins (for development purposes)
-app.use(cors());
+app.use(cors({
+  origin: process.env.FRONTEND_URL || '*', // Use the frontend URL from the .env file or allow all origins
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type'], // Allow specific headers
+}));
 app.use(express.json()); // To parse JSON requests
 
 // Set up Socket.IO with CORS
 const io = new Server(server, {
   cors: {
-    origin: process.env.FRONTEND_URL || '*', // Use an environment variable for the frontend URL
+    origin: process.env.FRONTEND_URL || '*', // Use environment variable or fallback to '*'
     methods: ['GET', 'POST'],
-    allowedHeaders: ['Content-Type'], // Allow specific headers
+    allowedHeaders: ['Content-Type'],
   },
 });
 
@@ -50,6 +54,20 @@ io.on('connection', (socket) => {
 // Root route to check if the server is running
 app.get('/', (req, res) => {
   res.send('Buzzur server is running.');
+});
+
+// Login API endpoint (to handle login)
+app.post('/api/login', (req, res) => {
+  const { phoneNumber, password } = req.body;
+
+  // Example login logic (replace this with actual logic later)
+  if (phoneNumber === 'testPhone' && password === 'testPassword') {
+    // Successful login response
+    return res.status(200).json({ success: true, message: 'Login successful' });
+  } else {
+    // Failed login response
+    return res.status(401).json({ success: false, message: 'Invalid phone number or password' });
+  }
 });
 
 // Buzz API endpoint to handle buzz notifications
