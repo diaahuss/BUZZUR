@@ -1,307 +1,321 @@
 /*********************
  * APP STATE
  *********************/
-let currentUser = null;
-let groups = [];
-const DEBUG = true;
+const AppState = {
+    currentUser: null,
+    groups: [],
+    DEBUG: true
+};
 
 /*********************
  * CORE UTILITIES
  *********************/
-function debugLog(...args) {
-    if (DEBUG) console.log('[DEBUG]', ...args);
-}
+const Utils = {
+    debugLog(...args) {
+        if (AppState.DEBUG) console.log('[DEBUG]', ...args);
+    },
 
-function getElement(id) {
-    const el = document.getElementById(id);
-    if (!el) console.warn(`Element #${id} not found`);
-    return el;
-}
+    getElement(id) {
+        const el = document.getElementById(id);
+        if (!el) console.warn(`Element #${id} not found`);
+        return el;
+    },
 
-function switchScreen(screenId) {
-    document.querySelectorAll('.screen').forEach(screen => {
-        screen.style.display = 'none';
-    });
-    const target = getElement(screenId);
-    if (target) {
-        target.style.display = 'block';
-        debugLog(`Switched to screen: ${screenId}`);
+    switchScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(screen => {
+            screen.style.display = 'none';
+        });
+        const target = this.getElement(screenId);
+        if (target) {
+            target.style.display = 'block';
+            this.debugLog(`Switched to screen: ${screenId}`);
+        }
+    },
+
+    addListener(id, event, handler) {
+        const element = this.getElement(id);
+        if (element) {
+            element.addEventListener(event, handler);
+            this.debugLog(`Added ${event} listener to #${id}`);
+        } else {
+            console.warn(`Element #${id} not found for event listener`);
+        }
     }
-}
+};
 
 /*********************
- * AUTHENTICATION
+ * AUTHENTICATION SERVICE
  *********************/
-function loginUser() {
-    const phone = getElement('login-phone').value;
-    const password = getElement('login-password').value;
-    
-    if (!phone || !password) {
-        alert('Please enter both phone and password');
-        return;
-    }
-    
-    currentUser = { phone, password };
-    debugLog('User logged in:', phone);
-    switchScreen('my-groups-screen');
-    renderGroups();
-}
-
-function signUpUser() {
-    const name = getElement('signup-name').value.trim();
-    const phone = getElement('signup-phone').value.trim();
-    const password = getElement('signup-password').value;
-    const confirmPassword = getElement('signup-confirm-password').value;
-    
-    if (!name || !phone || !password || !confirmPassword) {
-        alert('Please fill all fields');
-        return;
-    }
-    
-    if (password !== confirmPassword) {
-        alert('Passwords do not match');
-        return;
-    }
-    
-    currentUser = { name, phone, password };
-    alert('Registration successful!');
-    switchScreen('login-screen');
-}
-
-function logout() {
-    currentUser = null;
-    switchScreen('login-screen');
-}
-
-/*********************
- * GROUP MANAGEMENT
- *********************/
-function showCreateGroupScreen() {
-    getElement('new-group-name').value = '';
-    switchScreen('create-group-screen');
-}
-
-function createGroup() {
-    const groupName = getElement('new-group-name').value.trim();
-    
-    if (!groupName) {
-        alert('Please enter a group name');
-        return;
-    }
-    
-    const newGroup = {
-        id: Date.now().toString(),
-        name: groupName,
-        members: []
-    };
-    
-    groups.push(newGroup);
-    debugLog('Group created:', groupName);
-    alert(`Group "${groupName}" created successfully!`);
-    switchScreen('my-groups-screen');
-    renderGroups();
-}
-
-function editGroup(groupId) {
-    const group = groups.find(g => g.id === groupId);
-    if (!group) return;
-    
-    getElement('edit-group-name').value = group.name;
-    getElement('edit-group-id').value = group.id;
-    renderMembers(group.members);
-    switchScreen('edit-group-screen');
-}
-
-function renderMembers(members) {
-    const container = getElement('current-members');
-    if (!container) return;
-    
-    container.innerHTML = members.map(member => `
-        <div class="member-item">
-            <span>${member.name} (${member.phone})</span>
-            <button class="btn small" onclick="removeMember('${member.phone}')">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-    `).join('');
-}
-
-function addMember() {
-    const groupId = getElement('edit-group-id').value;
-    const name = getElement('new-member-name').value.trim();
-    const phone = getElement('new-member-phone').value.trim();
-    
-    if (!name || !phone) {
-        alert('Please enter both name and phone');
-        return;
-    }
-    
-    const group = groups.find(g => g.id === groupId);
-    if (group) {
-        // Check if member already exists
-        if (group.members.some(m => m.phone === phone)) {
-            alert('This member already exists in the group');
+const AuthService = {
+    login() {
+        const phone = Utils.getElement('login-phone')?.value;
+        const password = Utils.getElement('login-password')?.value;
+        
+        if (!phone || !password) {
+            alert('Please enter both phone and password');
             return;
         }
         
-        group.members.push({ name, phone });
-        getElement('new-member-name').value = '';
-        getElement('new-member-phone').value = '';
-        renderMembers(group.members);
-    }
-}
+        AppState.currentUser = { phone, password };
+        Utils.debugLog('User logged in:', phone);
+        Utils.switchScreen('my-groups-screen');
+        GroupService.renderGroups();
+    },
 
-function removeMember(phone) {
-    const groupId = getElement('edit-group-id').value;
-    const group = groups.find(g => g.id === groupId);
-    if (group) {
-        group.members = group.members.filter(m => m.phone !== phone);
-        renderMembers(group.members);
-    }
-}
+    signUp() {
+        const name = Utils.getElement('signup-name')?.value.trim();
+        const phone = Utils.getElement('signup-phone')?.value.trim();
+        const password = Utils.getElement('signup-password')?.value;
+        const confirmPassword = Utils.getElement('signup-confirm-password')?.value;
+        
+        if (!name || !phone || !password || !confirmPassword) {
+            alert('Please fill all fields');
+            return;
+        }
+        
+        if (password !== confirmPassword) {
+            alert('Passwords do not match');
+            return;
+        }
+        
+        AppState.currentUser = { name, phone, password };
+        alert('Registration successful!');
+        Utils.switchScreen('login-screen');
+    },
 
-function saveGroupEdits() {
-    const groupId = getElement('edit-group-id').value;
-    const newName = getElement('edit-group-name').value.trim();
-    
-    const group = groups.find(g => g.id === groupId);
-    if (group) {
-        group.name = newName;
-        alert('Group updated successfully!');
-        switchScreen('my-groups-screen');
-        renderGroups();
-    }
-}
+    logout() {
+        AppState.currentUser = null;
+        Utils.switchScreen('login-screen');
+    },
 
-function renderGroups() {
-    const container = getElement('group-list');
-    if (!container) return;
-    
-    container.innerHTML = groups.map(group => `
-        <div class="group-card" data-group-id="${group.id}">
-            <h3>${group.name}</h3>
-            <div class="group-actions">
-                <button class="btn" onclick="editGroup('${group.id}')">
-                    <i class="fas fa-edit"></i> Edit
-                </button>
-                <button class="btn" onclick="startBuzz('${group.id}')">
-                    <i class="fas fa-bell"></i> Buzz
+    togglePasswordVisibility() {
+        const input = Utils.getElement('login-password');
+        const button = Utils.getElement('toggle-password');
+        if (input && button) {
+            input.type = input.type === 'password' ? 'text' : 'password';
+            button.innerHTML = input.type === 'password' 
+                ? '<i class="fas fa-eye"></i>' 
+                : '<i class="fas fa-eye-slash"></i>';
+        }
+    }
+};
+
+/*********************
+ * GROUP SERVICE
+ *********************/
+const GroupService = {
+    showCreateGroupScreen() {
+        const nameInput = Utils.getElement('new-group-name');
+        if (nameInput) nameInput.value = '';
+        Utils.switchScreen('create-group-screen');
+    },
+
+    createGroup() {
+        const nameInput = Utils.getElement('new-group-name');
+        if (!nameInput) return;
+        
+        const groupName = nameInput.value.trim();
+        if (!groupName) {
+            alert('Please enter a group name');
+            return;
+        }
+        
+        const newGroup = {
+            id: Date.now().toString(),
+            name: groupName,
+            members: []
+        };
+        
+        AppState.groups.push(newGroup);
+        Utils.debugLog('Group created:', groupName);
+        alert(`Group "${groupName}" created successfully!`);
+        Utils.switchScreen('my-groups-screen');
+        this.renderGroups();
+    },
+
+    editGroup(groupId) {
+        const group = AppState.groups.find(g => g.id === groupId);
+        if (!group) return;
+        
+        const nameInput = Utils.getElement('edit-group-name');
+        const idInput = Utils.getElement('edit-group-id');
+        if (nameInput && idInput) {
+            nameInput.value = group.name;
+            idInput.value = group.id;
+        }
+        this.renderMembers(group.members);
+        Utils.switchScreen('edit-group-screen');
+    },
+
+    renderMembers(members) {
+        const container = Utils.getElement('current-members');
+        if (!container) return;
+        
+        container.innerHTML = members.map(member => `
+            <div class="member-item">
+                <span>${member.name} (${member.phone})</span>
+                <button class="btn small" onclick="GroupService.removeMember('${member.phone}')">
+                    <i class="fas fa-times"></i>
                 </button>
             </div>
-        </div>
-    `).join('');
-}
+        `).join('');
+    },
+
+    addMember() {
+        const groupId = Utils.getElement('edit-group-id')?.value;
+        const name = Utils.getElement('new-member-name')?.value.trim();
+        const phone = Utils.getElement('new-member-phone')?.value.trim();
+        
+        if (!name || !phone) {
+            alert('Please enter both name and phone');
+            return;
+        }
+        
+        const group = AppState.groups.find(g => g.id === groupId);
+        if (group) {
+            if (group.members.some(m => m.phone === phone)) {
+                alert('This member already exists in the group');
+                return;
+            }
+            
+            group.members.push({ name, phone });
+            Utils.getElement('new-member-name').value = '';
+            Utils.getElement('new-member-phone').value = '';
+            this.renderMembers(group.members);
+        }
+    },
+
+    removeMember(phone) {
+        const groupId = Utils.getElement('edit-group-id')?.value;
+        const group = AppState.groups.find(g => g.id === groupId);
+        if (group) {
+            group.members = group.members.filter(m => m.phone !== phone);
+            this.renderMembers(group.members);
+        }
+    },
+
+    saveGroupEdits() {
+        const groupId = Utils.getElement('edit-group-id')?.value;
+        const newName = Utils.getElement('edit-group-name')?.value.trim();
+        
+        const group = AppState.groups.find(g => g.id === groupId);
+        if (group) {
+            group.name = newName;
+            alert('Group updated successfully!');
+            Utils.switchScreen('my-groups-screen');
+            this.renderGroups();
+        }
+    },
+
+    renderGroups() {
+        const container = Utils.getElement('group-list');
+        if (!container) return;
+        
+        container.innerHTML = AppState.groups.map(group => `
+            <div class="group-card" data-group-id="${group.id}">
+                <h3>${group.name}</h3>
+                <div class="group-actions">
+                    <button class="btn" onclick="GroupService.editGroup('${group.id}')">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                    <button class="btn" onclick="BuzzService.startBuzz('${group.id}')">
+                        <i class="fas fa-bell"></i> Buzz
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
+};
 
 /*********************
- * BUZZ FUNCTIONALITY
+ * BUZZ SERVICE
  *********************/
-function startBuzz(groupId) {
-    const group = groups.find(g => g.id === groupId);
-    if (!group) return;
-    
-    getElement('current-buzz-group').value = groupId;
-    renderBuzzMembers(group.members);
-    switchScreen('buzz-screen');
-}
+const BuzzService = {
+    startBuzz(groupId) {
+        const group = AppState.groups.find(g => g.id === groupId);
+        if (!group) return;
+        
+        const groupInput = Utils.getElement('current-buzz-group');
+        if (groupInput) groupInput.value = groupId;
+        this.renderBuzzMembers(group.members);
+        Utils.switchScreen('buzz-screen');
+    },
 
-function renderBuzzMembers(members) {
-    const container = getElement('member-list');
-    if (!container) return;
-    
-    container.innerHTML = members.map(member => `
-        <div class="member-card">
-            <label>
-                <input type="checkbox" value="${member.phone}">
-                ${member.name} (${member.phone})
-            </label>
-        </div>
-    `).join('');
-}
+    renderBuzzMembers(members) {
+        const container = Utils.getElement('member-list');
+        if (!container) return;
+        
+        container.innerHTML = members.map(member => `
+            <div class="member-card">
+                <label>
+                    <input type="checkbox" value="${member.phone}">
+                    ${member.name} (${member.phone})
+                </label>
+            </div>
+        `).join('');
+    },
 
-function sendBuzz() {
-    const groupId = getElement('current-buzz-group').value;
-    const group = groups.find(g => g.id === groupId);
-    
-    if (!group || group.members.length === 0) {
-        alert('No members in this group');
-        return;
+    sendBuzz() {
+        const groupId = Utils.getElement('current-buzz-group')?.value;
+        const group = AppState.groups.find(g => g.id === groupId);
+        
+        if (!group || group.members.length === 0) {
+            alert('No members in this group');
+            return;
+        }
+        
+        const selected = Array.from(
+            document.querySelectorAll('#member-list input:checked')
+        ).map(el => el.value);
+        
+        if (selected.length === 0) {
+            alert('Please select at least one member');
+            return;
+        }
+        
+        const sound = Utils.getElement('buzz-sound');
+        if (sound) sound.play();
+        
+        alert(`Buzz sent to ${selected.length} members!`);
+        Utils.debugLog('Buzz sent to:', selected);
     }
-    
-    const selected = Array.from(
-        document.querySelectorAll('#member-list input:checked')
-    ).map(el => el.value);
-    
-    if (selected.length === 0) {
-        alert('Please select at least one member');
-        return;
-    }
-    
-    // Play buzz sound
-    const sound = getElement('buzz-sound');
-    if (sound) sound.play();
-    
-    alert(`Buzz sent to ${selected.length} members!`);
-    debugLog('Buzz sent to:', selected);
-}
+};
 
 /*********************
- * PASSWORD TOGGLE
+ * NAVIGATION SERVICE
  *********************/
-function togglePasswordVisibility() {
-    const input = getElement('login-password');
-    const button = getElement('toggle-password');
-    if (input && button) {
-        input.type = input.type === 'password' ? 'text' : 'password';
-        button.innerHTML = input.type === 'password' 
-            ? '<i class="fas fa-eye"></i>' 
-            : '<i class="fas fa-eye-slash"></i>';
+const NavigationService = {
+    initNavigation() {
+        Utils.addListener('to-signup', 'click', () => Utils.switchScreen('signup-screen'));
+        Utils.addListener('to-login', 'click', () => Utils.switchScreen('login-screen'));
+        Utils.addListener('refresh-groups', 'click', GroupService.renderGroups);
+        Utils.addListener('cancel-create-group', 'click', () => Utils.switchScreen('my-groups-screen'));
+        Utils.addListener('cancel-edit-group', 'click', () => Utils.switchScreen('my-groups-screen'));
+        Utils.addListener('cancel-buzz', 'click', () => Utils.switchScreen('my-groups-screen'));
     }
-}
-
-/*********************
- * EVENT LISTENERS
- *********************/
-function initializeEventListeners() {
-  // Authentication
-  addListener('login-btn', 'click', loginUser);
-  addListener('signup-btn', 'click', signUpUser);
-  addListener('logout-btn', 'click', logout);
-  
-  // Group Management
-  addListener('create-group-btn', 'click', showCreateGroupScreen);
-  addListener('confirm-create-group', 'click', createGroup);
-  addListener('add-member-btn', 'click', addMember);
-  addListener('save-group-btn', 'click', saveGroupEdits);
-  addListener('send-buzz-btn', 'click', sendBuzz);
-  
-  // Navigation
-  addListener('to-signup', 'click', () => switchScreen('signup-screen'));
-  addListener('to-login', 'click', () => switchScreen('login-screen'));
-  addListener('refresh-groups', 'click', renderGroups);
-  addListener('cancel-create-group', 'click', () => switchScreen('my-groups-screen'));
-  addListener('cancel-edit-group', 'click', () => switchScreen('my-groups-screen'));
-  addListener('cancel-buzz', 'click', () => switchScreen('my-groups-screen'));
-  
-  // Password toggle
-  addListener('toggle-password', 'click', togglePasswordVisibility);
-}
-
-// Helper function to safely add listeners
-function addListener(id, event, handler) {
-  const element = document.getElementById(id);
-  if (element) {
-    element.addEventListener(event, handler);
-    console.log(`Added ${event} listener to #${id}`);
-  } else {
-    console.warn(`Element #${id} not found for event listener`);
-  }
-}
+};
 
 /*********************
  * INITIALIZATION
  *********************/
-document.addEventListener('DOMContentLoaded', () => {
-    initEventListeners();
-    switchScreen('login-screen');
-    debugLog('App initialized');
-});
+function initializeApp() {
+    // Initialize event listeners
+    Utils.addListener('login-btn', 'click', AuthService.login);
+    Utils.addListener('signup-btn', 'click', AuthService.signUp);
+    Utils.addListener('logout-btn', 'click', AuthService.logout);
+    Utils.addListener('create-group-btn', 'click', GroupService.showCreateGroupScreen);
+    Utils.addListener('confirm-create-group', 'click', GroupService.createGroup);
+    Utils.addListener('add-member-btn', 'click', GroupService.addMember);
+    Utils.addListener('save-group-btn', 'click', GroupService.saveGroupEdits);
+    Utils.addListener('send-buzz-btn', 'click', BuzzService.sendBuzz);
+    Utils.addListener('toggle-password', 'click', AuthService.togglePasswordVisibility);
+    
+    // Initialize navigation
+    NavigationService.initNavigation();
+    
+    // Start on login screen
+    Utils.switchScreen('login-screen');
+    Utils.debugLog('App initialized');
+}
+
+document.addEventListener('DOMContentLoaded', initializeApp);
