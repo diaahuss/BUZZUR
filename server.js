@@ -19,31 +19,31 @@ const io = new Server(server, {
   cors: {
     origin: '*', // Allow all origins (you might restrict this in production)
     methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type'], // Allow specific headers
   },
 });
-
-// Serve static files (like your mp3 for sound)
-app.use(express.static('public'));
 
 // WebSocket connection
 io.on('connection', (socket) => {
   console.log(`A user connected: ${socket.id}`);
 
-  // Listen for 'buzz' events from the frontend
+  // Handle 'buzz' event
   socket.on('buzz', (payload) => {
-    console.log('Buzz received via socket:', payload);
+    try {
+      console.log('Buzz received via socket:', payload);
 
-    // Check if the payload is valid (you can add more validation here)
-    if (payload && Array.isArray(payload.to) && payload.to.length > 0) {
-      // Emit the 'buzz' event to other connected clients
-      socket.broadcast.emit('buzz', payload); 
-      console.log('Buzz broadcasted to others.');
-    } else {
-      console.warn('Invalid payload received:', payload);
+      if (payload && Array.isArray(payload.to) && payload.to.length > 0) {
+        socket.broadcast.emit('buzz', payload); // Broadcast to other users
+        console.log('Buzz broadcasted to others.');
+      } else {
+        console.warn('Invalid payload received:', payload);
+      }
+    } catch (error) {
+      console.error('Error handling buzz event:', error);
     }
   });
 
-  // Handle disconnection
+  // Handle user disconnection
   socket.on('disconnect', () => {
     console.log(`User disconnected: ${socket.id}`);
   });
@@ -54,24 +54,29 @@ app.get('/', (req, res) => {
   res.send('Buzzur server is running.');
 });
 
-// Buzz API endpoint to send a buzz notification (from frontend to server)
+// Buzz API endpoint to handle buzz notifications
 app.post('/send-buzz', (req, res) => {
   const { to, from, group } = req.body;
 
-  // Validate input
-  if (!Array.isArray(to) || to.length === 0) {
-    return res.status(400).json({ success: false, message: 'Recipient list is required.' });
+  try {
+    // Validate input
+    if (!Array.isArray(to) || to.length === 0) {
+      return res.status(400).json({ success: false, message: 'Recipient list is required.' });
+    }
+    if (!from || !group) {
+      return res.status(400).json({ success: false, message: 'Sender and group information are required.' });
+    }
+
+    console.log(`Buzz sent from ${from} to ${to.join(', ')} in group "${group}"`);
+
+    // Emit buzz event via socket to others
+    io.emit('buzz', { to, from, group });
+    res.json({ success: true, message: 'Buzz sent successfully!' });
+
+  } catch (error) {
+    console.error('Error in /send-buzz route:', error);
+    res.status(500).json({ success: false, message: 'Server error while sending buzz.' });
   }
-  if (!from || !group) {
-    return res.status(400).json({ success: false, message: 'Sender and group information are required.' });
-  }
-
-  console.log(`Buzz sent from ${from} to ${to.join(', ')} in group "${group}"`);
-
-  // Emit buzz event via socket to other users
-  io.emit('buzz', { to, from, group });
-
-  res.json({ success: true, message: 'Buzz sent successfully!' });
 });
 
 // Start server
