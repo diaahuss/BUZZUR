@@ -10,7 +10,7 @@ require('dotenv').config(); // Import dotenv
 const app = express();
 const server = http.createServer(app);
 
-// Enable CORS for all origins and parse JSON
+// Enable CORS for all origins (for development purposes)
 app.use(cors());
 app.use(express.json()); // To parse JSON requests
 
@@ -22,30 +22,39 @@ const io = new Server(server, {
   },
 });
 
+// Serve static files (like your mp3 for sound)
+app.use(express.static('public'));
+
 // WebSocket connection
 io.on('connection', (socket) => {
   console.log(`A user connected: ${socket.id}`);
 
+  // Listen for 'buzz' events from the frontend
   socket.on('buzz', (payload) => {
     console.log('Buzz received via socket:', payload);
-    if (Array.isArray(payload) && payload.length > 0) {
-      socket.broadcast.emit('buzz', payload); // Send to others
+
+    // Check if the payload is valid (you can add more validation here)
+    if (payload && Array.isArray(payload.to) && payload.to.length > 0) {
+      // Emit the 'buzz' event to other connected clients
+      socket.broadcast.emit('buzz', payload); 
+      console.log('Buzz broadcasted to others.');
     } else {
-      console.warn('Invalid socket buzz payload:', payload);
+      console.warn('Invalid payload received:', payload);
     }
   });
 
+  // Handle disconnection
   socket.on('disconnect', () => {
     console.log(`User disconnected: ${socket.id}`);
   });
 });
 
-// Root route
+// Root route to check if the server is running
 app.get('/', (req, res) => {
   res.send('Buzzur server is running.');
 });
 
-// Buzz API endpoint
+// Buzz API endpoint to send a buzz notification (from frontend to server)
 app.post('/send-buzz', (req, res) => {
   const { to, from, group } = req.body;
 
@@ -59,10 +68,10 @@ app.post('/send-buzz', (req, res) => {
 
   console.log(`Buzz sent from ${from} to ${to.join(', ')} in group "${group}"`);
 
-  // Emit buzz event via socket
+  // Emit buzz event via socket to other users
   io.emit('buzz', { to, from, group });
 
-  res.json({ success: true });
+  res.json({ success: true, message: 'Buzz sent successfully!' });
 });
 
 // Start server
