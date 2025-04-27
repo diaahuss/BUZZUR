@@ -67,7 +67,7 @@ async function handleLogin() {
   const phone = document.getElementById("loginPhone").value.trim();
   const password = document.getElementById("loginPassword").value;
 
-const res = await fetch("http://localhost:3000/api/login", { ... });
+const res = await fetch("https://buzzur-server.onrender.com/api/login", { ... });
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ phone, password }),
