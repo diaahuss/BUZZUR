@@ -1,199 +1,274 @@
-document.addEventListener('DOMContentLoaded', function () {
-  const app = document.getElementById('app');
-  const API_BASE_URL = "https://buzzur-server.onrender.com"; // your Render backend
-  let socket = io(API_BASE_URL, { autoConnect: false });
-  let currentUser = null;
+const app = document.getElementById('app');
+const socket = io(); // Make sure your server is ready for socket.io
 
-  function init() {
-    const token = localStorage.getItem('authToken');
-    if (token) {
-      validateSession(token);
+const API_URL = 'https://buzzur-server.onrender.com'; // Your deployed backend URL
+
+function renderBanner() {
+  const banner = document.createElement('div');
+  banner.className = 'banner';
+  banner.textContent = 'BUZZUR';
+  return banner;
+}
+
+function renderLoginScreen() {
+  app.innerHTML = '';
+  const container = document.createElement('div');
+  container.className = 'container';
+
+  const banner = renderBanner();
+
+  const phoneInput = document.createElement('input');
+  phoneInput.type = 'text';
+  phoneInput.placeholder = 'Phone Number';
+  phoneInput.id = 'phone';
+
+  const passwordInput = document.createElement('input');
+  passwordInput.type = 'password';
+  passwordInput.placeholder = 'Password';
+  passwordInput.id = 'password';
+
+  const showPasswordCheckbox = document.createElement('input');
+  showPasswordCheckbox.type = 'checkbox';
+  showPasswordCheckbox.id = 'showPassword';
+  showPasswordCheckbox.style.marginTop = '10px';
+
+  const showPasswordLabel = document.createElement('label');
+  showPasswordLabel.htmlFor = 'showPassword';
+  showPasswordLabel.textContent = ' Show Password';
+
+  showPasswordCheckbox.addEventListener('change', () => {
+    passwordInput.type = showPasswordCheckbox.checked ? 'text' : 'password';
+  });
+
+  const loginButton = document.createElement('button');
+  loginButton.textContent = 'Login';
+  loginButton.onclick = handleLogin;
+
+  const linkRow = document.createElement('div');
+  linkRow.className = 'link-row';
+  linkRow.innerHTML = `
+    <a href="#" id="signupLink">Sign Up</a> |
+    <a href="#" id="forgotLink">Forgot Password</a>
+  `;
+
+  container.appendChild(banner);
+  container.appendChild(phoneInput);
+  container.appendChild(passwordInput);
+  container.appendChild(showPasswordCheckbox);
+  container.appendChild(showPasswordLabel);
+  container.appendChild(loginButton);
+  container.appendChild(linkRow);
+
+  app.appendChild(container);
+
+  document.getElementById('signupLink').onclick = renderSignupScreen;
+  document.getElementById('forgotLink').onclick = renderForgotPasswordScreen;
+}
+
+function renderSignupScreen() {
+  app.innerHTML = '';
+  const container = document.createElement('div');
+  container.className = 'container';
+
+  const banner = renderBanner();
+
+  const nameInput = document.createElement('input');
+  nameInput.type = 'text';
+  nameInput.placeholder = 'Full Name';
+  nameInput.id = 'name';
+
+  const phoneInput = document.createElement('input');
+  phoneInput.type = 'text';
+  phoneInput.placeholder = 'Phone Number';
+  phoneInput.id = 'phone';
+
+  const passwordInput = document.createElement('input');
+  passwordInput.type = 'password';
+  passwordInput.placeholder = 'Password';
+  passwordInput.id = 'password';
+
+  const confirmPasswordInput = document.createElement('input');
+  confirmPasswordInput.type = 'password';
+  confirmPasswordInput.placeholder = 'Confirm Password';
+  confirmPasswordInput.id = 'confirmPassword';
+
+  const showPasswordCheckbox = document.createElement('input');
+  showPasswordCheckbox.type = 'checkbox';
+  showPasswordCheckbox.id = 'showPassword';
+  showPasswordCheckbox.style.marginTop = '10px';
+
+  const showPasswordLabel = document.createElement('label');
+  showPasswordLabel.htmlFor = 'showPassword';
+  showPasswordLabel.textContent = ' Show Password';
+
+  showPasswordCheckbox.addEventListener('change', () => {
+    passwordInput.type = showPasswordCheckbox.checked ? 'text' : 'password';
+    confirmPasswordInput.type = showPasswordCheckbox.checked ? 'text' : 'password';
+  });
+
+  const signupButton = document.createElement('button');
+  signupButton.textContent = 'Sign Up';
+  signupButton.onclick = handleSignup;
+
+  const linkRow = document.createElement('div');
+  linkRow.className = 'link-row';
+  linkRow.innerHTML = `
+    <a href="#" id="loginLink">Back to Login</a>
+  `;
+
+  container.appendChild(banner);
+  container.appendChild(nameInput);
+  container.appendChild(phoneInput);
+  container.appendChild(passwordInput);
+  container.appendChild(confirmPasswordInput);
+  container.appendChild(showPasswordCheckbox);
+  container.appendChild(showPasswordLabel);
+  container.appendChild(signupButton);
+  container.appendChild(linkRow);
+
+  app.appendChild(container);
+
+  document.getElementById('loginLink').onclick = renderLoginScreen;
+}
+
+function renderForgotPasswordScreen() {
+  app.innerHTML = '';
+  const container = document.createElement('div');
+  container.className = 'container';
+
+  const banner = renderBanner();
+
+  const phoneInput = document.createElement('input');
+  phoneInput.type = 'text';
+  phoneInput.placeholder = 'Enter your phone number';
+  phoneInput.id = 'phone';
+
+  const resetButton = document.createElement('button');
+  resetButton.textContent = 'Reset Password';
+  resetButton.onclick = handleResetPassword;
+
+  const linkRow = document.createElement('div');
+  linkRow.className = 'link-row';
+  linkRow.innerHTML = `
+    <a href="#" id="loginLink">Back to Login</a>
+  `;
+
+  container.appendChild(banner);
+  container.appendChild(phoneInput);
+  container.appendChild(resetButton);
+  container.appendChild(linkRow);
+
+  app.appendChild(container);
+
+  document.getElementById('loginLink').onclick = renderLoginScreen;
+}
+
+async function handleLogin() {
+  const phone = document.getElementById('phone').value.trim();
+  const password = document.getElementById('password').value.trim();
+
+  if (!phone || !password) {
+    alert('Please fill in all fields.');
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_URL}/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone, password })
+    });
+
+    const data = await response.json();
+    if (response.ok) {
+      alert('Login successful!');
+      renderDashboard();
     } else {
-      showLogin();
+      alert(data.error || 'Login failed.');
     }
+  } catch (error) {
+    console.error(error);
+    alert('Network error during login.');
+  }
+}
+
+async function handleSignup() {
+  const name = document.getElementById('name').value.trim();
+  const phone = document.getElementById('phone').value.trim();
+  const password = document.getElementById('password').value.trim();
+  const confirmPassword = document.getElementById('confirmPassword').value.trim();
+
+  if (!name || !phone || !password || !confirmPassword) {
+    alert('Please fill in all fields.');
+    return;
   }
 
-  async function fetchData(url, options = {}) {
-    try {
-      const response = await fetch(url, {
-        ...options,
-        headers: {
-          'Content-Type': 'application/json',
-          ...(options.headers || {}),
-        }
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.message || `HTTP error! status: ${response.status}`);
-      }
-      return data;
-    } catch (error) {
-      console.error('Fetch error:', error);
-      throw error;
+  if (password !== confirmPassword) {
+    alert('Passwords do not match.');
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_URL}/signup`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, phone, password })
+    });
+
+    const data = await response.json();
+    if (response.ok) {
+      alert('Signup successful! Please login.');
+      renderLoginScreen();
+    } else {
+      alert(data.error || 'Signup failed.');
     }
+  } catch (error) {
+    console.error(error);
+    alert('Network error during signup.');
+  }
+}
+
+async function handleResetPassword() {
+  const phone = document.getElementById('phone').value.trim();
+
+  if (!phone) {
+    alert('Please enter your phone number.');
+    return;
   }
 
-  async function validateSession(token) {
-    try {
-      const data = await fetchData(`${API_BASE_URL}/api/validate`, {
-        method: 'POST',
-        body: JSON.stringify({ token }),
-      });
-      currentUser = data.user;
-      socket.auth = { token };
-      socket.connect();
-      showDashboard();
-    } catch (error) {
-      localStorage.removeItem('authToken');
-      showLogin();
+  try {
+    const response = await fetch(`${API_URL}/reset-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone })
+    });
+
+    const data = await response.json();
+    if (response.ok) {
+      alert('Password reset link sent!');
+      renderLoginScreen();
+    } else {
+      alert(data.error || 'Reset failed.');
     }
+  } catch (error) {
+    console.error(error);
+    alert('Network error during reset.');
   }
+}
 
-  async function handleLogin() {
-    const phoneNumber = document.getElementById('loginPhone')?.value.trim();
-    const password = document.getElementById('loginPassword')?.value;
+function renderDashboard() {
+  app.innerHTML = '';
+  const container = document.createElement('div');
+  container.className = 'container';
 
-    if (!phoneNumber || !password) {
-      showError('Please enter both phone and password');
-      return;
-    }
+  const banner = renderBanner();
+  const welcome = document.createElement('h2');
+  welcome.textContent = 'Welcome to BUZZUR!';
 
-    try {
-      const loginBtn = document.getElementById('loginBtn');
-      loginBtn.disabled = true;
-      loginBtn.textContent = "Logging in...";
+  container.appendChild(banner);
+  container.appendChild(welcome);
+  app.appendChild(container);
+}
 
-      const data = await fetchData(`${API_BASE_URL}/api/login`, {
-        method: 'POST',
-        body: JSON.stringify({ phoneNumber, password }),
-      });
-
-      localStorage.setItem('authToken', data.token);
-      currentUser = data.user;
-      socket.auth = { token: data.token };
-      socket.connect();
-      showDashboard();
-    } catch (error) {
-      showError(error.message || 'Login failed');
-    } finally {
-      const loginBtn = document.getElementById('loginBtn');
-      if (loginBtn) {
-        loginBtn.disabled = false;
-        loginBtn.textContent = "Login";
-      }
-    }
-  }
-
-  async function handleSignup() {
-    const name = document.getElementById('signupName')?.value.trim();
-    const phone = document.getElementById('signupPhone')?.value.trim();
-    const password = document.getElementById('signupPassword')?.value;
-    const confirmPassword = document.getElementById('signupConfirmPassword')?.value;
-
-    if (!name || !phone || !password || !confirmPassword) {
-      showError('Please fill all fields');
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      showError('Passwords do not match');
-      return;
-    }
-
-    if (password.length < 6) {
-      showError('Password must be at least 6 characters');
-      return;
-    }
-
-    try {
-      const signupBtn = document.getElementById('signupBtn');
-      signupBtn.disabled = true;
-      signupBtn.textContent = "Creating...";
-
-      const data = await fetchData(`${API_BASE_URL}/api/signup`, {
-        method: 'POST',
-        body: JSON.stringify({ name, phone, password }),
-      });
-
-      showLogin();
-      showError('Signup successful! Please login.');
-    } catch (error) {
-      showError(error.message || 'Signup failed');
-    } finally {
-      const signupBtn = document.getElementById('signupBtn');
-      if (signupBtn) {
-        signupBtn.disabled = false;
-        signupBtn.textContent = "Sign Up";
-      }
-    }
-  }
-
-  function showError(message) {
-    const errorDiv = document.createElement('div');
-    errorDiv.textContent = message;
-    errorDiv.style.color = 'red';
-    errorDiv.style.textAlign = 'center';
-    app.prepend(errorDiv);
-    setTimeout(() => errorDiv.remove(), 3000);
-  }
-
-  function showLoading(message = "Loading...") {
-    app.innerHTML = `<div class="banner">BUZZUR</div><p>${message}</p>`;
-  }
-
-  function showLogin() {
-    app.innerHTML = `
-      <div class="banner">BUZZUR</div>
-      <h2>Login</h2>
-      <input type="text" id="loginPhone" placeholder="Phone Number"><br>
-      <input type="password" id="loginPassword" placeholder="Password"><br>
-      <label><input type="checkbox" id="showLoginPassword"> Show Password</label><br>
-      <button id="loginBtn">Login</button>
-      <p>Don't have an account? <a href="#" id="toSignup">Sign Up</a></p>
-    `;
-
-    document.getElementById('loginBtn').onclick = handleLogin;
-    document.getElementById('toSignup').onclick = showSignup;
-    document.getElementById('showLoginPassword').onchange = function() {
-      document.getElementById('loginPassword').type = this.checked ? 'text' : 'password';
-    };
-  }
-
-  function showSignup() {
-    app.innerHTML = `
-      <div class="banner">BUZZUR</div>
-      <h2>Sign Up</h2>
-      <input type="text" id="signupName" placeholder="Name"><br>
-      <input type="text" id="signupPhone" placeholder="Phone Number"><br>
-      <input type="password" id="signupPassword" placeholder="Password"><br>
-      <input type="password" id="signupConfirmPassword" placeholder="Confirm Password"><br>
-      <label><input type="checkbox" id="showSignupPassword"> Show Password</label><br>
-      <button id="signupBtn">Sign Up</button>
-      <p>Already have an account? <a href="#" id="toLogin">Login</a></p>
-    `;
-
-    document.getElementById('signupBtn').onclick = handleSignup;
-    document.getElementById('toLogin').onclick = showLogin;
-    document.getElementById('showSignupPassword').onchange = function() {
-      document.getElementById('signupPassword').type = 
-      document.getElementById('signupConfirmPassword').type = this.checked ? 'text' : 'password';
-    };
-  }
-
-  function showDashboard() {
-    app.innerHTML = `
-      <div class="banner">BUZZUR</div>
-      <h2>Welcome, ${currentUser?.name || "User"}</h2>
-      <button onclick="logout()">Logout</button>
-    `;
-  }
-
-  function logout() {
-    socket.disconnect();
-    localStorage.removeItem('authToken');
-    showLogin();
-  }
-
-  window.logout = logout;
-  init();
-});
+// Start with login screen
+renderLoginScreen();
