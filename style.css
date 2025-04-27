@@ -1,124 +1,137 @@
-:root {
-  --primary: #4361ee;
-  --secondary: #3f37c9;
-  --accent: #f72585;
-  --light: #f8f9fa;
-  --dark: #212529;
-  --gray: #6c757d;
-  --success: #4cc9f0;
+/* Base Styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
-  font-family: 'Segoe UI', sans-serif;
-  margin: 0;
-  padding: 0;
-  background: #f5f7fa;
-  color: var(--dark);
+    background-color: #f5f5f5;
+    color: #333;
+    line-height: 1.6;
+    padding: 20px;
+    max-width: 100vw;
+    min-height: 100vh;
 }
 
-/* Buttons */
+#app {
+    max-width: 500px;
+    margin: 0 auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #2c3e50;
+}
+
+/* Form Styles */
+.form-group {
+    margin-bottom: 15px;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.password-container {
+    position: relative;
+}
+
+.password-container button {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #7f8c8d;
+}
+
+/* Button Styles */
 .btn {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.3s;
+    width: 100%;
+    padding: 10px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
 }
 
-.btn-primary {
-  background: var(--primary);
-  color: white;
+.btn:hover {
+    background-color: #2980b9;
 }
 
-.btn-primary:hover {
-  background: var(--secondary);
+.btn.secondary {
+    background-color: #95a5a6;
 }
 
-.btn-accent {
-  background: var(--accent);
-  color: white;
+.btn.secondary:hover {
+    background-color: #7f8c8d;
 }
 
-.btn-small {
-  padding: 5px 10px;
-  font-size: 0.9rem;
+.logout-btn {
+    background-color: #e74c3c;
 }
 
-/* Auth Screens */
-.auth-screen {
-  max-width: 400px;
-  margin: 50px auto;
-  padding: 20px;
-  text-align: center;
+.logout-btn:hover {
+    background-color: #c0392b;
 }
 
-.auth-form {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
+/* List Styles */
+.list-container {
+    margin: 20px 0;
 }
 
-.input-group {
-  display: flex;
-  align-items: center;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  overflow: hidden;
-}
-
-.input-group input {
-  flex: 1;
-  padding: 10px;
-  border: none;
-  outline: none;
-}
-
-.toggle-password {
-  background: none;
-  border: none;
-  padding: 10px;
-  cursor: pointer;
-  color: var(--gray);
-}
-
-/* Group Screens */
-.group-list, .member-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin: 20px 0;
-}
-
-.group-card, .member-card {
-  background: white;
-  padding: 15px;
-  border-radius: 5px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  cursor: pointer;
-}
-
-.member-card {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.member-card.selected {
-  background: rgba(67, 97, 238, 0.1);
-  border-left: 3px solid var(--primary);
-}
-
-.select-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--primary);
-}
-
-/* Responsive */
-@media (max-width: 600px) {
-  .auth-screen, .groups-screen, .group-screen {
+.list-item {
+    background: #f9f9f9;
     padding: 15px;
-  }
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: 1px solid #eee;
+}
+
+.list-item h3 {
+    margin-bottom: 5px;
+}
+
+.list-item p {
+    color: #7f8c8d;
+    font-size: 14px;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.actions button {
+    flex: 1;
+    padding: 5px;
+    font-size: 14px;
+}
+
+/* Responsive Design */
+@media (max-width: 500px) {
+    body {
+        padding: 10px;
+    }
+    
+    #app {
+        padding: 15px;
+    }
 }
