@@ -1,11 +1,11 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function () {
   const app = document.getElementById('app');
   const API_BASE_URL = "https://buzzur-server.onrender.com";
-  const socket = io(API_BASE_URL, { autoConnect: false }); // Don't connect immediately
+  let socket = null;
   let currentUser = null;
 
   function init() {
-    showLoading("Loading...");
+    showLoading("Initializing...");
     const token = localStorage.getItem('authToken');
     if (token) {
       validateSession(token);
@@ -23,9 +23,10 @@ document.addEventListener('DOMContentLoaded', () => {
           ...(options.headers || {})
         }
       });
-
       const data = await response.json();
-      if (!response.ok) throw new Error(data.message || `HTTP error! status: ${response.status}`);
+      if (!response.ok) {
+        throw new Error(data.message || `HTTP error! status: ${response.status}`);
+      }
       return data;
     } catch (error) {
       console.error('Fetch error:', error);
@@ -34,42 +35,43 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function handleLogin() {
-    const phone = document.getElementById('loginPhone')?.value.trim();
+    const phoneNumber = document.getElementById('loginPhone')?.value.trim();
     const password = document.getElementById('loginPassword')?.value;
     const loginBtn = document.getElementById('loginBtn');
 
-    if (!phone || !password) {
-      showError('Please enter phone number and password');
+    if (!phoneNumber || !password) {
+      showError('Please enter both phone number and password');
       return;
     }
 
     try {
       loginBtn.disabled = true;
-      loginBtn.textContent = 'Logging in...';
+      loginBtn.textContent = "Logging in...";
 
       const data = await fetchData(`${API_BASE_URL}/api/login`, {
         method: 'POST',
-        body: JSON.stringify({ phoneNumber: phone, password })
+        body: JSON.stringify({ phoneNumber, password }),
       });
 
       localStorage.setItem('authToken', data.token);
       currentUser = data.user;
-      socket.auth = { token: data.token };
-      socket.connect();
+
+      // Connect socket AFTER setting auth
+      socket = io(API_BASE_URL, {
+        auth: { token: data.token }
+      });
 
       showDashboard();
     } catch (error) {
       if (error.message.includes('401')) {
-        showError('Incorrect phone number or password.');
-      } else if (error.message.includes('Network')) {
-        showError('Network error. Please try again.');
+        showError('Wrong phone number or password');
       } else {
-        showError(error.message || 'Login failed.');
+        showError(error.message || 'Login failed. Please try again.');
       }
     } finally {
       if (loginBtn) {
         loginBtn.disabled = false;
-        loginBtn.textContent = 'Login';
+        loginBtn.textContent = "Login";
       }
     }
   }
@@ -98,89 +100,80 @@ document.addEventListener('DOMContentLoaded', () => {
 
     try {
       signupBtn.disabled = true;
-      signupBtn.textContent = 'Signing up...';
+      signupBtn.textContent = "Creating account...";
 
-      await fetchData(`${API_BASE_URL}/api/signup`, {
+      // FIX: use phoneNumber key
+      const data = await fetchData(`${API_BASE_URL}/api/signup`, {
         method: 'POST',
-        body: JSON.stringify({ name, phone, password })
+        body: JSON.stringify({ name, phoneNumber: phone, password }),
       });
 
       showLogin();
-      showError('Signup successful! Please log in.', 'success');
+      showError('Signup successful! Please log in.');
     } catch (error) {
       if (error.message.includes('409')) {
-        showError('Phone number already registered.');
+        showError('Phone number already exists');
       } else {
-        showError(error.message || 'Signup failed.');
+        showError(error.message || 'Signup failed. Please try again.');
       }
     } finally {
       if (signupBtn) {
         signupBtn.disabled = false;
-        signupBtn.textContent = 'Sign Up';
+        signupBtn.textContent = "Sign Up";
       }
     }
   }
 
-  // Example placeholder UI functions
-  function showLoading(message = "Loading...") {
-    app.innerHTML = `<div class="loading">${message}</div>`;
+  // Example for showError, showLoading, showLogin
+  function showError(message) {
+    alert(message); // Replace this later with nicer UI
   }
 
-  function showError(message, type = "error") {
-    const errorBox = document.createElement('div');
-    errorBox.className = type === 'success' ? 'success' : 'error';
-    errorBox.textContent = message;
-    app.prepend(errorBox);
-    setTimeout(() => errorBox.remove(), 3000);
-  }
-
-  function validateSession(token) {
-    // Basic session validation (you can make it more complex)
-    socket.auth = { token };
-    socket.connect();
-    showDashboard();
+  function showLoading(message) {
+    app.innerHTML = `<p>${message}</p>`;
   }
 
   function showLogin() {
     app.innerHTML = `
       <h2>Login</h2>
-      <input id="loginPhone" placeholder="Phone Number" type="text" />
-      <input id="loginPassword" placeholder="Password" type="password" />
-      <button id="loginBtn" onclick="handleLogin()">Login</button>
-      <p>Don't have an account? <a href="#" onclick="showSignup()">Sign up</a></p>
+      <input id="loginPhone" placeholder="Phone Number" />
+      <input id="loginPassword" type="password" placeholder="Password" />
+      <button id="loginBtn">Login</button>
+      <p><a href="#" id="showSignupLink">Sign Up</a></p>
     `;
+    document.getElementById('loginBtn').onclick = handleLogin;
+    document.getElementById('showSignupLink').onclick = showSignup;
   }
 
   function showSignup() {
     app.innerHTML = `
       <h2>Sign Up</h2>
-      <input id="signupName" placeholder="Name" type="text" />
-      <input id="signupPhone" placeholder="Phone Number" type="text" />
-      <input id="signupPassword" placeholder="Password" type="password" />
-      <input id="signupConfirm" placeholder="Confirm Password" type="password" />
-      <button id="signupBtn" onclick="handleSignup()">Sign Up</button>
-      <p>Already have an account? <a href="#" onclick="showLogin()">Login</a></p>
+      <input id="signupName" placeholder="Name" />
+      <input id="signupPhone" placeholder="Phone Number" />
+      <input id="signupPassword" type="password" placeholder="Password" />
+      <input id="signupConfirm" type="password" placeholder="Confirm Password" />
+      <button id="signupBtn">Sign Up</button>
+      <p><a href="#" id="showLoginLink">Back to Login</a></p>
     `;
+    document.getElementById('signupBtn').onclick = handleSignup;
+    document.getElementById('showLoginLink').onclick = showLogin;
   }
 
   function showDashboard() {
-    app.innerHTML = `
-      <h2>Welcome ${currentUser?.name || 'User'}</h2>
-      <button onclick="logout()">Logout</button>
-      <!-- Add group management, buzz buttons, etc. here -->
-    `;
+    app.innerHTML = `<h2>Welcome, ${currentUser?.name || 'User'}</h2>
+      <button onclick="logout()">Logout</button>`;
   }
 
   function logout() {
     localStorage.removeItem('authToken');
-    socket.disconnect();
+    if (socket) {
+      socket.disconnect();
+    }
     showLogin();
   }
 
   window.handleLogin = handleLogin;
   window.handleSignup = handleSignup;
-  window.showLogin = showLogin;
-  window.showSignup = showSignup;
   window.logout = logout;
 
   init();
