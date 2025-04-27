@@ -261,33 +261,35 @@ function togglePasswordVisibility() {
 /*********************
  * EVENT LISTENERS
  *********************/
-function initEventListeners() {
-    // Auth
-    getElement('login-btn').addEventListener('click', loginUser);
-    getElement('signup-btn').addEventListener('click', signUpUser);
-    getElement('logout-btn').addEventListener('click', logout);
-    
-    // Groups
-    getElement('create-group-btn').addEventListener('click', showCreateGroupScreen);
-    getElement('confirm-create-group').addEventListener('click', createGroup);
-    getElement('cancel-create-group').addEventListener('click', () => switchScreen('my-groups-screen'));
-    
-    // Edit Group
-    getElement('add-member-btn').addEventListener('click', addMember);
-    getElement('save-group-btn').addEventListener('click', saveGroupEdits);
-    getElement('cancel-edit-group').addEventListener('click', () => switchScreen('my-groups-screen'));
-    
-    // Buzz
-    getElement('send-buzz-btn').addEventListener('click', sendBuzz);
-    getElement('cancel-buzz').addEventListener('click', () => switchScreen('my-groups-screen'));
-    
-    // Navigation
-    getElement('to-signup').addEventListener('click', () => switchScreen('signup-screen'));
-    getElement('to-login').addEventListener('click', () => switchScreen('login-screen'));
-    getElement('refresh-groups').addEventListener('click', renderGroups);
-    
-    // Password toggle
-    getElement('toggle-password').addEventListener('click', togglePasswordVisibility);
+function initializeEventListeners() {
+  // Safe event listener attachment
+  function safeAddListener(id, event, handler) {
+    const element = document.getElementById(id);
+    if (element) {
+      element.addEventListener(event, handler);
+      console.log(`Added ${event} listener to #${id}`);
+    } else {
+      console.warn(`Element #${id} not found for event listener`);
+    }
+  }
+
+  // Authentication
+  safeAddListener('login-btn', 'click', loginUser);
+  safeAddListener('signup-btn', 'click', signUpUser);
+  safeAddListener('logout-btn', 'click', logout);
+  
+  // Group Management
+  safeAddListener('create-group-btn', 'click', createGroup);
+  safeAddListener('save-group-btn', 'click', saveGroupEdits);
+  safeAddListener('send-buzz-btn', 'click', sendBuzz);
+  
+  // Navigation
+  safeAddListener('to-signup', 'click', () => switchScreen('signup-screen'));
+  safeAddListener('to-login', 'click', () => switchScreen('login-screen'));
+  safeAddListener('refresh-groups', 'click', renderGroups);
+  
+  // Password toggle
+  safeAddListener('toggle-password', 'click', togglePasswordVisibility);
 }
 
 /*********************
