@@ -1,16 +1,19 @@
 const express = require('express');
 const path = require('path');
 const app = express();
-const port = process.env.PORT || 3000;
+const port = 3000; // Hardcoded for testing
 
-// Serve all files from the current folder
-app.use(express.static(__dirname));
+// Middleware to serve static files
+app.use(express.static(__dirname, {
+  extensions: ['html', 'htm'] // Allow serving .html files
+}));
 
-// Handle all routes by sending index.html
-app.get('*', (req, res) => {
+// Explicit route for root
+app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+// Start server
 app.listen(port, () => {
-  console.log(`App running at http://localhost:${port}`);
+  console.log(`Server running at http://localhost:${port}`);
 });
