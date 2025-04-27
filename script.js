@@ -1,5 +1,5 @@
 const app = document.getElementById("app");
-const socket = io("http://localhost:3000"); // Use localhost during development
+const socket = io("https://buzzur-server.onrender.com"); // Updated to use Render backend URL
 let currentUser = null;
 
 function showLogin() {
@@ -63,16 +63,20 @@ function showReset() {
   });
 }
 
-const res = await fetch("https://buzzur-server.onrender.com/api/login", {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify({
-    phoneNumber: phoneNumber,
-    password: password,
-  }),
-});
+async function handleLogin() {
+  const phoneNumber = document.getElementById("loginPhone").value.trim();
+  const password = document.getElementById("loginPassword").value;
+
+  const res = await fetch("https://buzzur-server.onrender.com/api/login", {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      phoneNumber: phoneNumber,
+      password: password,
+    }),
+  });
 
   const data = await res.json();
   if (res.ok) {
