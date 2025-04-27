@@ -1,25 +1,76 @@
 document.addEventListener('DOMContentLoaded', function() {
-  // DOM Elements
   const app = document.getElementById('app');
-  const API_BASE_URL = "https://buzzur-server.onrender.com";
-  let socket = io(API_BASE_URL);
+  const API_BASE_URL = window.location.origin.includes('localhost') 
+    ? 'http://localhost:3000' 
+    : 'https://buzzur-server.onrender.com';
+  
+  let socket;
   let currentUser = null;
 
-  // Initialize the application
-  function init() {
-    showLoading("Initializing...");
-    const token = localStorage.getItem('authToken');
-    if (token) {
-      validateSession(token);
-    } else {
-      showLogin();
-    }
+  // Initialize Socket.IO connection
+  function initSocket(token) {
+    socket = io(API_BASE_URL, {
+      auth: { token },
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000
+    });
+
+    socket.on('connect', () => {
+      console.log('Connected to WebSocket server');
+    });
+
+    socket.on('buzz', (data) => {
+      playBuzzSound();
+    });
+
+    socket.on('disconnect', () => {
+      console.log('Disconnected from WebSocket server');
+    });
   }
 
-  // Improved fetch helper with error handling
-  async function fetchData(url, options = {}) {
+  function playBuzzSound() {
+    const audio = new Audio('buzz.mp3');
+    audio.play().catch(e => console.error('Audio error:', e));
+  }
+
+  // View functions
+  function showLogin() {
+    app.innerHTML = `
+      <div class="banner">BUZZUR</div>
+      <div class="container">
+        <h2>Login</h2>
+        <input type="text" id="loginPhone" placeholder="Phone Number" required>
+        <input type="password" id="loginPassword" placeholder="Password" required>
+        <button id="loginBtn">Login</button>
+        <p>Don't have an account? <a href="#" id="showSignupLink">Sign up</a></p>
+      </div>
+    `;
+
+    document.getElementById('loginBtn').addEventListener('click', handleLogin);
+    document.getElementById('showSignupLink').addEventListener('click', showSignup);
+  }
+
+  function showSignup() {
+    app.innerHTML = `
+      <div class="banner">BUZZUR</div>
+      <div class="container">
+        <h2>Sign Up</h2>
+        <input type="text" id="signupName" placeholder="Name" required>
+        <input type="text" id="signupPhone" placeholder="Phone Number" required>
+        <input type="password" id="signupPassword" placeholder="Password" required minlength="6">
+        <button id="signupBtn">Sign Up</button>
+        <p>Already have an account? <a href="#" id="showLoginLink">Log in</a></p>
+      </div>
+    `;
+
+    document.getElementById('signupBtn').addEventListener('click', handleSignup);
+    document.getElementById('showLoginLink').addEventListener('click', showLogin);
+  }
+
+  // API functions
+  async function fetchAPI(endpoint, options = {}) {
     try {
-      const response = await fetch(url, {
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
         ...options,
         headers: {
           'Content-Type': 'application/json',
@@ -27,121 +78,115 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       });
 
-      const data = await response.json();
-
       if (!response.ok) {
-        throw new Error(data.message || `HTTP error! status: ${response.status}`);
+        const error = await response.json();
+        throw new Error(error.message || 'Request failed');
       }
 
-      return data;
+      return await response.json();
     } catch (error) {
-      console.error('Fetch error:', error);
-      throw error; // Re-throw for specific handling
+      console.error('API Error:', error);
+      throw error;
     }
   }
 
-  // Authentication Handlers with proper error messages
   async function handleLogin() {
-    const phoneNumber = document.getElementById('loginPhone')?.value.trim();
-    const password = document.getElementById('loginPassword')?.value;
-    const loginBtn = document.getElementById('loginBtn');
+    const phone = document.getElementById('loginPhone').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const btn = document.getElementById('loginBtn');
 
-    if (!phoneNumber || !password) {
-      showError('Please enter both phone number and password');
+    if (!phone || !password) {
+      alert('Please fill in all fields');
       return;
     }
 
     try {
-      loginBtn.disabled = true;
-      loginBtn.textContent = "Logging in...";
+      btn.disabled = true;
+      btn.textContent = 'Logging in...';
 
-      const data = await fetchData(`${API_BASE_URL}/api/login`, {
+      const { token, user } = await fetchAPI('/api/login', {
         method: 'POST',
-        body: JSON.stringify({
-          phoneNumber: phoneNumber,
-          password: password,
-        }),
+        body: JSON.stringify({ phoneNumber: phone, password })
       });
 
-      localStorage.setItem('authToken', data.token);
-      currentUser = data.user;
-      socket.auth = { token: data.token };
-      socket.connect();
+      currentUser = user;
+      localStorage.setItem('authToken', token);
+      initSocket(token);
       showDashboard();
+
     } catch (error) {
-      // Specific error messages for common cases
-      if (error.message.includes('401')) {
-        showError('Wrong phone number or password');
-      } else if (error.message.includes('network')) {
-        showError('Network error - please check your connection');
-      } else {
-        showError(error.message || 'Login failed. Please try again.');
-      }
+      alert(error.message || 'Login failed');
     } finally {
-      if (loginBtn) {
-        loginBtn.disabled = false;
-        loginBtn.textContent = "Login";
-      }
+      btn.disabled = false;
+      btn.textContent = 'Login';
     }
   }
 
   async function handleSignup() {
-    const name = document.getElementById('signupName')?.value.trim();
-    const phone = document.getElementById('signupPhone')?.value.trim();
-    const password = document.getElementById('signupPassword')?.value;
-    const confirmPassword = document.getElementById('signupConfirm')?.value;
-    const signupBtn = document.getElementById('signupBtn');
+    const name = document.getElementById('signupName').value.trim();
+    const phone = document.getElementById('signupPhone').value.trim();
+    const password = document.getElementById('signupPassword').value;
+    const btn = document.getElementById('signupBtn');
 
-    // Client-side validation
-    if (!name || !phone || !password || !confirmPassword) {
-      showError('Please fill in all fields');
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      showError('Passwords do not match');
-      return;
-    }
-
-    if (password.length < 6) {
-      showError('Password must be at least 6 characters');
+    if (!name || !phone || !password) {
+      alert('Please fill in all fields');
       return;
     }
 
     try {
-      signupBtn.disabled = true;
-      signupBtn.textContent = "Creating account...";
+      btn.disabled = true;
+      btn.textContent = 'Creating account...';
 
-      const data = await fetchData(`${API_BASE_URL}/api/signup`, {
+      await fetchAPI('/api/signup', {
         method: 'POST',
-        body: JSON.stringify({ name, phone, password }),
+        body: JSON.stringify({ name, phone, password })
       });
 
+      alert('Account created successfully! Please log in.');
       showLogin();
-      showError('Signup successful! Please log in.');
+
     } catch (error) {
-      if (error.message.includes('409')) {
-        showError('Phone number already exists');
-      } else {
-        showError(error.message || 'Signup failed. Please try again.');
-      }
+      alert(error.message || 'Signup failed');
     } finally {
-      if (signupBtn) {
-        signupBtn.disabled = false;
-        signupBtn.textContent = "Sign Up";
-      }
+      btn.disabled = false;
+      btn.textContent = 'Sign Up';
     }
   }
 
-  // Rest of your functions (showLogin, showSignup, showDashboard, etc.)
-  // ... [keep all the other functions from previous version]
+  function showDashboard() {
+    app.innerHTML = `
+      <div class="banner">Welcome, ${currentUser.name}</div>
+      <div class="container">
+        <button id="buzzBtn">Send Buzz</button>
+        <button id="logoutBtn">Logout</button>
+      </div>
+    `;
 
-  // Make sure to expose all needed functions to global scope
-  window.handleLogin = handleLogin;
-  window.handleSignup = handleSignup;
-  window.logout = logout;
-  // ... [other function exposures]
+    document.getElementById('buzzBtn').addEventListener('click', () => {
+      socket.emit('buzz', { groupId: 'test-group' });
+    });
 
-  // Initialize the app
-  init();
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      localStorage.removeItem('authToken');
+      if (socket) socket.disconnect();
+      currentUser = null;
+      showLogin();
+    });
+  }
+
+  // Initialize app
+  const token = localStorage.getItem('authToken');
+  if (token) {
+    fetchAPI('/api/health')
+      .then(() => {
+        initSocket(token);
+        showDashboard();
+      })
+      .catch(() => {
+        localStorage.removeItem('authToken');
+        showLogin();
+      });
+  } else {
+    showLogin();
+  }
 });
