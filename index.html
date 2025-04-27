@@ -1,52 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BUZZUR</title>
-  <link rel="stylesheet" href="styles.css">
+    <title>Buzzur</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+        .banner { background: #4CAF50; color: white; padding: 20px; text-align: center; font-size: 24px; }
+        .form { max-width: 400px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
+        input, button { width: 100%; padding: 10px; margin: 8px 0; box-sizing: border-box; }
+        button { background: #4CAF50; color: white; border: none; cursor: pointer; }
+        button:hover { opacity: 0.8; }
+        .groups { max-width: 400px; margin: 20px auto; }
+        .members { margin: 10px 0; }
+    </style>
 </head>
 <body>
-  <div id="login-screen" class="screen">
-    <h2>Login</h2>
-    <form id="login-form">
-      <input type="text" id="login-phone" placeholder="Phone Number" required>
-      <div class="password-container">
-        <input type="password" id="login-password" placeholder="Password" required>
-        <span class="toggle-password" id="toggle-login-password">&#128065;</span>
-      </div>
-      <button type="submit">Login</button>
-    </form>
-    <div>
-      <a href="#" id="to-signup">Sign up</a> | <a href="#" id="to-forgot">Forgot Password?</a>
-    </div>
-  </div>
-
-  <div id="signup-screen" class="screen" style="display: none;">
-    <h2>Sign Up</h2>
-    <form id="signup-form">
-      <input type="text" id="signup-name" placeholder="Full Name" required>
-      <input type="text" id="signup-phone" placeholder="Phone Number" required>
-      <div class="password-container">
-        <input type="password" id="signup-password" placeholder="Password" required>
-        <span class="toggle-password" id="toggle-signup-password">&#128065;</span>
-      </div>
-      <input type="password" id="confirm-password" placeholder="Confirm Password" required>
-      <button type="submit">Sign Up</button>
-    </form>
-    <div>
-      <a href="#" id="to-login">Already have an account? Login</a>
-    </div>
-  </div>
-
-  <div id="groups-screen" class="screen" style="display: none;">
-    <h2>My Groups</h2>
-    <button id="create-group">Create Group</button>
-    <ul id="group-list"></ul>
-    <button id="logout">Logout</button>
-  </div>
-
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="script.js"></script>
+    <div id="app"></div>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script src="your-script.js"></script>
 </body>
 </html>
