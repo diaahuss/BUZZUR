@@ -1,282 +1,268 @@
+const serverUrl = 'https://buzzur-server.onrender.com'; // Your deployed backend
+const socket = io(serverUrl);
+
 const app = document.getElementById('app');
-const buzzAudio = document.getElementById('buzz-audio');
 
-const SERVER_URL = 'https://buzzur-server.onrender.com'; // <<<<<< Updated to your Render URL
-const socket = io(SERVER_URL); // <<<<<< Connect to your server via socket.io
-
-let users = JSON.parse(localStorage.getItem('users')) || [];
-let currentUser = JSON.parse(localStorage.getItem('currentUser'));
-let groups = JSON.parse(localStorage.getItem('groups')) || [];
-
-function saveData() {
-  localStorage.setItem('users', JSON.stringify(users));
-  localStorage.setItem('currentUser', JSON.stringify(currentUser));
-  localStorage.setItem('groups', JSON.stringify(groups));
+function renderLogin() {
+    app.innerHTML = `
+        <div class="banner">BUZZUR</div>
+        <div class="form">
+            <h2>Login</h2>
+            <input type="text" id="loginPhone" placeholder="Phone Number">
+            <input type="password" id="loginPassword" placeholder="Password">
+            <label><input type="checkbox" id="showLoginPassword"> Show Password</label>
+            <button onclick="login()">Login</button>
+            <p>
+                <a href="#" onclick="renderForgotPassword()">Forgot Password?</a> |
+                <a href="#" onclick="renderSignup()">Sign Up</a>
+            </p>
+        </div>
+    `;
+    setupShowPassword('loginPassword', 'showLoginPassword');
 }
 
-function playBuzzSound() {
-  if (buzzAudio) buzzAudio.play();
+function renderSignup() {
+    app.innerHTML = `
+        <div class="banner">BUZZUR</div>
+        <div class="form">
+            <h2>Sign Up</h2>
+            <input type="text" id="signupName" placeholder="Name">
+            <input type="text" id="signupPhone" placeholder="Phone Number">
+            <input type="password" id="signupPassword" placeholder="Password">
+            <input type="password" id="signupConfirmPassword" placeholder="Confirm Password">
+            <label><input type="checkbox" id="showSignupPassword"> Show Password</label>
+            <button onclick="signup()">Sign Up</button>
+            <p><a href="#" onclick="renderLogin()">Back to Login</a></p>
+        </div>
+    `;
+    setupShowPassword('signupPassword', 'showSignupPassword');
+    setupShowPassword('signupConfirmPassword', 'showSignupPassword');
 }
 
-// Listen for buzz events from server
-socket.on('buzz', () => {
-  console.log('Buzz received!');
-  playBuzzSound();
-});
-
-function showLogin() {
-  app.innerHTML = `
-    <div class="banner">BUZZALL</div>
-    <div class="container">
-      <h2>Login</h2>
-      <input type="text" id="login-phone" placeholder="Phone Number" />
-      <input type="password" id="login-password" placeholder="Password" />
-      <button onclick="login()">Login</button>
-      <p>
-        <a href="#" onclick="showSignup()">Sign Up</a> |
-        <a href="#" onclick="showForgotPassword()">Forgot Password?</a>
-      </p>
-    </div>
-  `;
+function renderForgotPassword() {
+    app.innerHTML = `
+        <div class="banner">BUZZUR</div>
+        <div class="form">
+            <h2>Reset Password</h2>
+            <input type="text" id="resetPhone" placeholder="Phone Number">
+            <input type="password" id="resetNewPassword" placeholder="New Password">
+            <label><input type="checkbox" id="showResetPassword"> Show Password</label>
+            <button onclick="resetPassword()">Reset Password</button>
+            <p><a href="#" onclick="renderLogin()">Back to Login</a></p>
+        </div>
+    `;
+    setupShowPassword('resetNewPassword', 'showResetPassword');
 }
 
-function showSignup() {
-  app.innerHTML = `
-    <div class="banner">BUZZALL</div>
-    <div class="container">
-      <h2>Sign Up</h2>
-      <input type="text" id="signup-name" placeholder="Name" />
-      <input type="text" id="signup-phone" placeholder="Phone Number" />
-      <input type="password" id="signup-password" placeholder="Password" />
-      <input type="password" id="signup-confirm" placeholder="Confirm Password" />
-      <button onclick="signup()">Sign Up</button>
-      <p><a href="#" onclick="showLogin()">Back to Login</a></p>
-    </div>
-  `;
+function renderDashboard() {
+    app.innerHTML = `
+        <div class="banner">My Groups</div>
+        <div class="groups" id="groups"></div>
+        <button onclick="createGroup()">Create Group</button>
+        <button onclick="logout()" style="background-color: palegreen; margin-top: 10px;">Logout</button>
+    `;
+    loadGroups();
 }
 
-function showForgotPassword() {
-  app.innerHTML = `
-    <div class="banner">BUZZALL</div>
-    <div class="container">
-      <h2>Reset Password</h2>
-      <input type="text" id="reset-phone" placeholder="Phone Number" />
-      <input type="password" id="reset-password" placeholder="New Password" />
-      <button onclick="resetPassword()">Reset Password</button>
-      <p><a href="#" onclick="showLogin()">Back to Login</a></p>
-    </div>
-  `;
-}
+// Utility Functions
 
-function showGroups() {
-  const userGroups = groups.filter(g => g.owner === currentUser.phone);
-  app.innerHTML = `
-    <div class="banner">BUZZALL</div>
-    <div class="container">
-      <h2>My Groups</h2>
-      <button onclick="createGroup()">+ New Group</button>
-      <div id="group-list">
-        ${userGroups.map(group => `
-          <div class="group">
-            <strong>${group.name}</strong>
-            <button onclick="editGroup('${group.name}')">Edit</button>
-            <button onclick="removeGroup('${group.name}')">Remove</button>
-            <button onclick="buzzAll('${group.name}')">Buzz All</button>
-            <div class="member-list">
-              ${group.members.map((m, idx) => `
-                <div class="member">
-                  <input type="checkbox" class="select-member" data-index="${idx}" />
-                  <input type="text" value="${m.name}" disabled />
-                  <input type="text" value="${m.phone}" disabled />
-                </div>
-              `).join('')}
-            </div>
-            <button onclick="buzzSelected('${group.name}')">Buzz Selected</button>
-          </div>
-        `).join('')}
-      </div>
-      <button onclick="logout()" class="logout">Logout</button>
-    </div>
-  `;
-}
-
-function createGroup() {
-  const groupName = prompt('Enter group name:');
-  if (groupName) {
-    groups.push({ name: groupName, owner: currentUser.phone, members: [] });
-    saveData();
-    showGroups();
-  }
-}
-
-function editGroup(name) {
-  const group = groups.find(g => g.name === name && g.owner === currentUser.phone);
-  if (!group) return;
-
-  app.innerHTML = `
-    <div class="banner">BUZZALL</div>
-    <div class="container">
-      <h2>Edit Group: ${group.name}</h2>
-      <button onclick="renameGroup('${group.name}')">Rename Group</button>
-      <h3>Members</h3>
-      <div class="member-list">
-        ${group.members.map((m, i) => `
-          <div>
-            <input value="${m.name}" onchange="updateMember('${group.name}', ${i}, 'name', this.value)" />
-            <input value="${m.phone}" onchange="updateMember('${group.name}', ${i}, 'phone', this.value)" />
-            <button onclick="removeMember('${group.name}', ${i})">Remove</button>
-          </div>
-        `).join('')}
-      </div>
-      <button onclick="addMember('${group.name}')">+ Add Member</button>
-      <button onclick="showGroups()">Back</button>
-    </div>
-  `;
-}
-
-function renameGroup(name) {
-  const newName = prompt('New group name:');
-  if (!newName) return;
-  const group = groups.find(g => g.name === name && g.owner === currentUser.phone);
-  group.name = newName;
-  saveData();
-  showGroups();
-}
-
-function addMember(groupName) {
-  const name = prompt('Member name:');
-  const phone = prompt('Member phone:');
-  if (!name || !phone) return;
-  const group = groups.find(g => g.name === groupName && g.owner === currentUser.phone);
-  group.members.push({ name, phone });
-  saveData();
-  editGroup(groupName);
-}
-
-function removeGroup(name) {
-  groups = groups.filter(g => g.name !== name || g.owner !== currentUser.phone);
-  saveData();
-  showGroups();
-}
-
-function updateMember(groupName, index, field, value) {
-  const group = groups.find(g => g.name === groupName && g.owner === currentUser.phone);
-  if (!group) return;
-  group.members[index][field] = value;
-  saveData();
-}
-
-function removeMember(groupName, index) {
-  const group = groups.find(g => g.name === groupName && g.owner === currentUser.phone);
-  group.members.splice(index, 1);
-  saveData();
-  editGroup(groupName);
-}
-
-async function buzzAll(groupName) {
-  const group = groups.find(g => g.name === groupName);
-  if (!group) return;
-
-  try {
-    await fetch(`${SERVER_URL}/send-buzz`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ phones: group.members.map(m => m.phone) })
+function setupShowPassword(passwordId, checkboxId) {
+    const checkbox = document.getElementById(checkboxId);
+    checkbox.addEventListener('change', () => {
+        const passwordField = document.getElementById(passwordId);
+        passwordField.type = checkbox.checked ? 'text' : 'password';
     });
-
-    playBuzzSound();
-    alert(`Buzz sent to: ${group.members.map(m => m.name).join(', ')}`);
-  } catch (error) {
-    console.error('Error sending buzz:', error);
-    alert('Failed to send buzz. Please try again.');
-  }
 }
 
-async function buzzSelected(groupName) {
-  const group = groups.find(g => g.name === groupName);
-  if (!group) return;
+function saveUser(user) {
+    localStorage.setItem('currentUser', JSON.stringify(user));
+}
 
-  const selectedIndexes = Array.from(document.querySelectorAll('.select-member:checked')).map(cb => parseInt(cb.dataset.index));
-  const selectedMembers = selectedIndexes.map(i => group.members[i]);
+function getCurrentUser() {
+    return JSON.parse(localStorage.getItem('currentUser'));
+}
 
-  if (!selectedMembers.length) {
-    alert('No members selected');
-    return;
-  }
+function saveGroups(groups) {
+    localStorage.setItem('groups', JSON.stringify(groups));
+}
 
-  try {
-    await fetch(`${SERVER_URL}/send-buzz`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ phones: selectedMembers.map(m => m.phone) })
+function loadGroups() {
+    const groups = JSON.parse(localStorage.getItem('groups')) || [];
+    const groupsContainer = document.getElementById('groups');
+    groupsContainer.innerHTML = '';
+    groups.forEach((group, index) => {
+        const div = document.createElement('div');
+        div.className = 'group';
+        div.innerHTML = `
+            <input type="text" value="${group.name}" onchange="editGroupName(${index}, this.value)">
+            <div id="members-${index}"></div>
+            <button onclick="addMember(${index})">Add Member</button>
+            <button onclick="buzzAll(${index})">Buzz All</button>
+            <button onclick="buzzSelected(${index})">Buzz Selected</button>
+            <button onclick="removeGroup(${index})">Remove Group</button>
+        `;
+        groupsContainer.appendChild(div);
+        loadMembers(index);
     });
-
-    playBuzzSound();
-    alert(`Buzz sent to: ${selectedMembers.map(m => m.name).join(', ')}`);
-  } catch (error) {
-    console.error('Error sending buzz:', error);
-    alert('Failed to send buzz. Please try again.');
-  }
 }
+
+function loadMembers(groupIndex) {
+    const groups = JSON.parse(localStorage.getItem('groups')) || [];
+    const membersDiv = document.getElementById(`members-${groupIndex}`);
+    membersDiv.innerHTML = '';
+    groups[groupIndex].members.forEach((member, memberIndex) => {
+        const memberDiv = document.createElement('div');
+        memberDiv.className = 'member';
+        memberDiv.innerHTML = `
+            <input type="text" value="${member.name}" onchange="editMemberName(${groupIndex}, ${memberIndex}, this.value)">
+            <input type="text" value="${member.phone}" onchange="editMemberPhone(${groupIndex}, ${memberIndex}, this.value)">
+            <input type="checkbox" id="select-${groupIndex}-${memberIndex}">
+            <button onclick="removeMember(${groupIndex}, ${memberIndex})">Remove</button>
+        `;
+        membersDiv.appendChild(memberDiv);
+    });
+}
+
+// Auth Functions
 
 function login() {
-  const phone = document.getElementById('login-phone').value.trim();
-  const password = document.getElementById('login-password').value;
-  const user = users.find(u => u.phone === phone && u.password === password);
-  if (user) {
-    currentUser = user;
-    saveData();
-    showGroups();
-  } else {
-    alert('Invalid credentials');
-  }
+    const phone = document.getElementById('loginPhone').value;
+    const password = document.getElementById('loginPassword').value;
+    const user = JSON.parse(localStorage.getItem(`user-${phone}`));
+    if (user && user.password === password) {
+        saveUser(user);
+        renderDashboard();
+    } else {
+        alert('Invalid phone number or password');
+    }
 }
 
 function signup() {
-  const name = document.getElementById('signup-name').value.trim();
-  const phone = document.getElementById('signup-phone').value.trim();
-  const password = document.getElementById('signup-password').value;
-  const confirm = document.getElementById('signup-confirm').value;
+    const name = document.getElementById('signupName').value;
+    const phone = document.getElementById('signupPhone').value;
+    const password = document.getElementById('signupPassword').value;
+    const confirmPassword = document.getElementById('signupConfirmPassword').value;
 
-  if (password !== confirm) {
-    alert('Passwords do not match');
-    return;
-  }
-  if (users.find(u => u.phone === phone)) {
-    alert('User already exists');
-    return;
-  }
+    if (password !== confirmPassword) {
+        alert('Passwords do not match');
+        return;
+    }
 
-  const user = { name, phone, password };
-  users.push(user);
-  currentUser = user;
-  saveData();
-  showGroups();
+    const user = { name, phone, password };
+    localStorage.setItem(`user-${phone}`, JSON.stringify(user));
+    alert('Sign up successful! Please log in.');
+    renderLogin();
 }
 
 function resetPassword() {
-  const phone = document.getElementById('reset-phone').value.trim();
-  const password = document.getElementById('reset-password').value;
-  const user = users.find(u => u.phone === phone);
-  if (user) {
-    user.password = password;
-    saveData();
-    alert('Password reset successful');
-    showLogin();
-  } else {
-    alert('User not found');
-  }
+    const phone = document.getElementById('resetPhone').value;
+    const newPassword = document.getElementById('resetNewPassword').value;
+
+    const user = JSON.parse(localStorage.getItem(`user-${phone}`));
+    if (user) {
+        user.password = newPassword;
+        localStorage.setItem(`user-${phone}`, JSON.stringify(user));
+        alert('Password reset successful! Please log in.');
+        renderLogin();
+    } else {
+        alert('User not found.');
+    }
 }
 
 function logout() {
-  currentUser = null;
-  saveData();
-  showLogin();
+    localStorage.removeItem('currentUser');
+    renderLogin();
 }
 
-// Initial load
-if (currentUser) {
-  showGroups();
-} else {
-  showLogin();
+// Group & Member Management
+
+function createGroup() {
+    const groupName = prompt('Enter group name:');
+    if (!groupName) return;
+    const groups = JSON.parse(localStorage.getItem('groups')) || [];
+    groups.push({ name: groupName, members: [] });
+    saveGroups(groups);
+    loadGroups();
 }
+
+function editGroupName(index, newName) {
+    const groups = JSON.parse(localStorage.getItem('groups')) || [];
+    groups[index].name = newName;
+    saveGroups(groups);
+}
+
+function removeGroup(index) {
+    const groups = JSON.parse(localStorage.getItem('groups')) || [];
+    groups.splice(index, 1);
+    saveGroups(groups);
+    loadGroups();
+}
+
+function addMember(groupIndex) {
+    const name = prompt('Member name:');
+    const phone = prompt('Member phone number:');
+    if (!name || !phone) return;
+    const groups = JSON.parse(localStorage.getItem('groups')) || [];
+    groups[groupIndex].members.push({ name, phone });
+    saveGroups(groups);
+    loadMembers(groupIndex);
+}
+
+function removeMember(groupIndex, memberIndex) {
+    const groups = JSON.parse(localStorage.getItem('groups')) || [];
+    groups[groupIndex].members.splice(memberIndex, 1);
+    saveGroups(groups);
+    loadMembers(groupIndex);
+}
+
+function editMemberName(groupIndex, memberIndex, newName) {
+    const groups = JSON.parse(localStorage.getItem('groups')) || [];
+    groups[groupIndex].members[memberIndex].name = newName;
+    saveGroups(groups);
+}
+
+function editMemberPhone(groupIndex, memberIndex, newPhone) {
+    const groups = JSON.parse(localStorage.getItem('groups')) || [];
+    groups[groupIndex].members[memberIndex].phone = newPhone;
+    saveGroups(groups);
+}
+
+// Buzz Functions
+
+function buzzSelected(groupIndex) {
+    const groups = JSON.parse(localStorage.getItem('groups')) || [];
+    const selectedPhones = groups[groupIndex].members
+        .map((member, memberIndex) => {
+            const checkbox = document.getElementById(`select-${groupIndex}-${memberIndex}`);
+            return checkbox.checked ? member.phone : null;
+        })
+        .filter(phone => phone);
+
+    sendBuzz(selectedPhones);
+}
+
+function buzzAll(groupIndex) {
+    const groups = JSON.parse(localStorage.getItem('groups')) || [];
+    const allPhones = groups[groupIndex].members.map(member => member.phone);
+    sendBuzz(allPhones);
+}
+
+function sendBuzz(phones) {
+    const message = 'Buzz from BUZZUR!';
+    fetch(`${serverUrl}/send-buzz`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phones, message })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Buzz sent:', data);
+        socket.emit('buzz', { phones });
+    })
+    .catch(error => {
+        console.error('Error sending buzz:', error);
+    });
+}
+
+// Initial Load
+renderLogin();
