@@ -88,7 +88,6 @@ function loginUser() {
         logDebug('User logged in:', phone);
         switchScreen('my-groups-screen');
         renderGroups();
-        
     } catch (error) {
         console.error('Login failed:', error);
         alert('Login error - please try again');
@@ -96,12 +95,36 @@ function loginUser() {
 }
 
 function signUpUser() {
-    // Similar robust implementation
+    try {
+        const name = safeQuerySelector('#signup-name')?.value.trim();
+        const phone = safeQuerySelector('#signup-phone')?.value.trim();
+        const password = safeQuerySelector('#signup-password')?.value;
+        const confirmPassword = safeQuerySelector('#signup-confirm-password')?.value;
+        
+        if (!name || !phone || !password || !confirmPassword) {
+            alert('Please fill all fields');
+            return;
+        }
+        
+        if (password !== confirmPassword) {
+            alert('Passwords do not match');
+            return;
+        }
+        
+        currentUser = { name, phone, password };
+        logDebug('New user signed up:', phone);
+        alert('Registration successful!');
+        switchScreen('login-screen');
+    } catch (error) {
+        console.error('Signup failed:', error);
+        alert('Registration error - please try again');
+    }
 }
 
 function logout() {
     currentUser = null;
     switchScreen('login-screen');
+    logDebug('User logged out');
 }
 
 /*********************
@@ -125,10 +148,62 @@ function createGroup() {
         logDebug('Group created:', groupName);
         switchScreen('my-groups-screen');
         renderGroups();
-        
     } catch (error) {
         console.error('Group creation failed:', error);
         alert('Error creating group');
+    }
+}
+
+function saveGroupEdits() {
+    try {
+        const groupId = safeQuerySelector('#edit-group-id')?.value;
+        const newName = safeQuerySelector('#edit-group-name')?.value.trim();
+        
+        if (!groupId || !newName) {
+            alert('Please provide valid group information');
+            return;
+        }
+        
+        const group = groups.find(g => g.id === groupId);
+        if (group) {
+            group.name = newName;
+            logDebug('Group updated:', newName);
+            switchScreen('my-groups-screen');
+            renderGroups();
+        } else {
+            alert('Group not found');
+        }
+    } catch (error) {
+        console.error('Failed to save group edits:', error);
+        alert('Error saving group changes');
+    }
+}
+
+function editGroup(groupId) {
+    const group = groups.find(g => g.id === groupId);
+    if (group) {
+        document.getElementById('edit-group-name').value = group.name;
+        document.getElementById('edit-group-id').value = group.id;
+        switchScreen('edit-group-screen');
+        logDebug('Editing group:', group.name);
+    }
+}
+
+function deleteGroup(groupId) {
+    if (confirm('Are you sure you want to delete this group?')) {
+        groups = groups.filter(g => g.id !== groupId);
+        renderGroups();
+        logDebug('Group deleted:', groupId);
+    }
+}
+
+function selectGroup(groupId) {
+    const group = groups.find(g => g.id === groupId);
+    if (group) {
+        document.getElementById('buzz-group-id').value = groupId;
+        renderMemberList(group.members);
+        switchScreen('buzz-screen');
+        logDebug('Selected group:', group.name);
     }
 }
 
@@ -146,17 +221,50 @@ function renderGroups() {
     `).join('');
 }
 
+function renderMemberList(members) {
+    const memberList = safeQuerySelector('#member-list');
+    if (memberList) {
+        memberList.innerHTML = members.map(member => `
+            <div class="member">
+                <label>
+                    <input type="checkbox" value="${member.phone}">
+                    ${member.name} (${member.phone})
+                </label>
+            </div>
+        `).join('');
+    }
+}
+
 /*********************
  * BUZZ FUNCTIONALITY
  *********************/
 function sendBuzz() {
     try {
+        const groupId = safeQuerySelector('#buzz-group-id')?.value;
+        const group = groups.find(g => g.id === groupId);
+        
+        if (!group || group.members.length === 0) {
+            alert('No members in this group');
+            return;
+        }
+        
+        const selectedMembers = Array.from(
+            document.querySelectorAll('#member-list input[type="checkbox"]:checked')
+        ).map(checkbox => checkbox.value);
+        
+        if (selectedMembers.length === 0) {
+            alert('Please select at least one member');
+            return;
+        }
+        
         const buzzAudio = safeQuerySelector('#buzz-audio');
         if (buzzAudio) {
             buzzAudio.play();
             logDebug('Buzz sound played');
         }
-        alert('Buzz sent to selected members!');
+        
+        alert(`Buzz sent to ${selectedMembers.length} members!`);
+        logDebug('Buzz recipients:', selectedMembers);
     } catch (error) {
         console.error('Buzz failed:', error);
         alert('Error sending buzz');
@@ -164,16 +272,7 @@ function sendBuzz() {
 }
 
 /*********************
- * INITIALIZATION
- *********************/
-document.addEventListener('DOMContentLoaded', () => {
-    initializeEventListeners();
-    switchScreen('login-screen');
-    logDebug('App initialized');
-});
-
-/*********************
- * HELPER FUNCTIONS
+ * UI HELPERS
  *********************/
 function togglePasswordVisibility() {
     const passwordInput = safeQuerySelector('#login-password');
@@ -186,3 +285,12 @@ function togglePasswordVisibility() {
             : '<i class="fas fa-eye-slash"></i>';
     }
 }
+
+/*********************
+ * INITIALIZATION
+ *********************/
+document.addEventListener('DOMContentLoaded', () => {
+    initializeEventListeners();
+    switchScreen('login-screen');
+    logDebug('App initialized');
+});
