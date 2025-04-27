@@ -160,56 +160,8 @@ function renderGroup(group) {
   `;
 }
 
-async function createGroup() {
-  const res = await fetch("https://buzzur-server.onrender.com/api/groups", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ user: currentUser.phone, name: "New Group", members: [] }),
-  });
-  if (res.ok) showDashboard();
-}
-
-async function renameGroup(groupId, name) {
-  await fetch(`https://buzzur-server.onrender.com/api/groups/${groupId}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name }),
-  });
-}
-
-async function deleteGroup(groupId) {
-  await fetch(`https://buzzur-server.onrender.com/api/groups/${groupId}`, {
-    method: "DELETE",
-  });
-  showDashboard();
-}
-
-async function addMember(groupId) {
-  await fetch(`https://buzzur-server.onrender.com/api/groups/${groupId}/members`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name: "", phone: "" }),
-  });
-  showDashboard();
-}
-
-async function updateMember(groupId, index, field, value) {
-  await fetch(`https://buzzur-server.onrender.com/api/groups/${groupId}/members/${index}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ field, value }),
-  });
-}
-
-async function removeMember(groupId, index) {
-  await fetch(`https://buzzur-server.onrender.com/api/groups/${groupId}/members/${index}`, {
-    method: "DELETE",
-  });
-  showDashboard();
-}
-
 function buzzSelected(groupId) {
-  // TODO: later we can check checkboxes; for now buzz all
+  // For now buzz all members
   buzzAll(groupId);
 }
 
