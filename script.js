@@ -63,15 +63,16 @@ function showReset() {
   });
 }
 
-async function handleLogin() {
-  const phone = document.getElementById("loginPhone").value.trim();
-  const password = document.getElementById("loginPassword").value;
-
-const res = await fetch("https://buzzur-server.onrender.com/api/login", { ... });
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ phone, password }),
-  });
+const res = await fetch("https://buzzur-server.onrender.com/api/login", {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    phoneNumber: phoneNumber,
+    password: password,
+  }),
+});
 
   const data = await res.json();
   if (res.ok) {
