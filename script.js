@@ -1,274 +1,282 @@
 const app = document.getElementById('app');
-const socket = io(); // Make sure your server is ready for socket.io
+const buzzAudio = document.getElementById('buzz-audio');
 
-const API_URL = 'https://buzzur-server.onrender.com'; // Your deployed backend URL
+const SERVER_URL = 'https://buzzur-server.onrender.com'; // <<<<<< Updated to your Render URL
+const socket = io(SERVER_URL); // <<<<<< Connect to your server via socket.io
 
-function renderBanner() {
-  const banner = document.createElement('div');
-  banner.className = 'banner';
-  banner.textContent = 'BUZZUR';
-  return banner;
+let users = JSON.parse(localStorage.getItem('users')) || [];
+let currentUser = JSON.parse(localStorage.getItem('currentUser'));
+let groups = JSON.parse(localStorage.getItem('groups')) || [];
+
+function saveData() {
+  localStorage.setItem('users', JSON.stringify(users));
+  localStorage.setItem('currentUser', JSON.stringify(currentUser));
+  localStorage.setItem('groups', JSON.stringify(groups));
 }
 
-function renderLoginScreen() {
-  app.innerHTML = '';
-  const container = document.createElement('div');
-  container.className = 'container';
+function playBuzzSound() {
+  if (buzzAudio) buzzAudio.play();
+}
 
-  const banner = renderBanner();
+// Listen for buzz events from server
+socket.on('buzz', () => {
+  console.log('Buzz received!');
+  playBuzzSound();
+});
 
-  const phoneInput = document.createElement('input');
-  phoneInput.type = 'text';
-  phoneInput.placeholder = 'Phone Number';
-  phoneInput.id = 'phone';
-
-  const passwordInput = document.createElement('input');
-  passwordInput.type = 'password';
-  passwordInput.placeholder = 'Password';
-  passwordInput.id = 'password';
-
-  const showPasswordCheckbox = document.createElement('input');
-  showPasswordCheckbox.type = 'checkbox';
-  showPasswordCheckbox.id = 'showPassword';
-  showPasswordCheckbox.style.marginTop = '10px';
-
-  const showPasswordLabel = document.createElement('label');
-  showPasswordLabel.htmlFor = 'showPassword';
-  showPasswordLabel.textContent = ' Show Password';
-
-  showPasswordCheckbox.addEventListener('change', () => {
-    passwordInput.type = showPasswordCheckbox.checked ? 'text' : 'password';
-  });
-
-  const loginButton = document.createElement('button');
-  loginButton.textContent = 'Login';
-  loginButton.onclick = handleLogin;
-
-  const linkRow = document.createElement('div');
-  linkRow.className = 'link-row';
-  linkRow.innerHTML = `
-    <a href="#" id="signupLink">Sign Up</a> |
-    <a href="#" id="forgotLink">Forgot Password</a>
+function showLogin() {
+  app.innerHTML = `
+    <div class="banner">BUZZALL</div>
+    <div class="container">
+      <h2>Login</h2>
+      <input type="text" id="login-phone" placeholder="Phone Number" />
+      <input type="password" id="login-password" placeholder="Password" />
+      <button onclick="login()">Login</button>
+      <p>
+        <a href="#" onclick="showSignup()">Sign Up</a> |
+        <a href="#" onclick="showForgotPassword()">Forgot Password?</a>
+      </p>
+    </div>
   `;
-
-  container.appendChild(banner);
-  container.appendChild(phoneInput);
-  container.appendChild(passwordInput);
-  container.appendChild(showPasswordCheckbox);
-  container.appendChild(showPasswordLabel);
-  container.appendChild(loginButton);
-  container.appendChild(linkRow);
-
-  app.appendChild(container);
-
-  document.getElementById('signupLink').onclick = renderSignupScreen;
-  document.getElementById('forgotLink').onclick = renderForgotPasswordScreen;
 }
 
-function renderSignupScreen() {
-  app.innerHTML = '';
-  const container = document.createElement('div');
-  container.className = 'container';
-
-  const banner = renderBanner();
-
-  const nameInput = document.createElement('input');
-  nameInput.type = 'text';
-  nameInput.placeholder = 'Full Name';
-  nameInput.id = 'name';
-
-  const phoneInput = document.createElement('input');
-  phoneInput.type = 'text';
-  phoneInput.placeholder = 'Phone Number';
-  phoneInput.id = 'phone';
-
-  const passwordInput = document.createElement('input');
-  passwordInput.type = 'password';
-  passwordInput.placeholder = 'Password';
-  passwordInput.id = 'password';
-
-  const confirmPasswordInput = document.createElement('input');
-  confirmPasswordInput.type = 'password';
-  confirmPasswordInput.placeholder = 'Confirm Password';
-  confirmPasswordInput.id = 'confirmPassword';
-
-  const showPasswordCheckbox = document.createElement('input');
-  showPasswordCheckbox.type = 'checkbox';
-  showPasswordCheckbox.id = 'showPassword';
-  showPasswordCheckbox.style.marginTop = '10px';
-
-  const showPasswordLabel = document.createElement('label');
-  showPasswordLabel.htmlFor = 'showPassword';
-  showPasswordLabel.textContent = ' Show Password';
-
-  showPasswordCheckbox.addEventListener('change', () => {
-    passwordInput.type = showPasswordCheckbox.checked ? 'text' : 'password';
-    confirmPasswordInput.type = showPasswordCheckbox.checked ? 'text' : 'password';
-  });
-
-  const signupButton = document.createElement('button');
-  signupButton.textContent = 'Sign Up';
-  signupButton.onclick = handleSignup;
-
-  const linkRow = document.createElement('div');
-  linkRow.className = 'link-row';
-  linkRow.innerHTML = `
-    <a href="#" id="loginLink">Back to Login</a>
+function showSignup() {
+  app.innerHTML = `
+    <div class="banner">BUZZALL</div>
+    <div class="container">
+      <h2>Sign Up</h2>
+      <input type="text" id="signup-name" placeholder="Name" />
+      <input type="text" id="signup-phone" placeholder="Phone Number" />
+      <input type="password" id="signup-password" placeholder="Password" />
+      <input type="password" id="signup-confirm" placeholder="Confirm Password" />
+      <button onclick="signup()">Sign Up</button>
+      <p><a href="#" onclick="showLogin()">Back to Login</a></p>
+    </div>
   `;
-
-  container.appendChild(banner);
-  container.appendChild(nameInput);
-  container.appendChild(phoneInput);
-  container.appendChild(passwordInput);
-  container.appendChild(confirmPasswordInput);
-  container.appendChild(showPasswordCheckbox);
-  container.appendChild(showPasswordLabel);
-  container.appendChild(signupButton);
-  container.appendChild(linkRow);
-
-  app.appendChild(container);
-
-  document.getElementById('loginLink').onclick = renderLoginScreen;
 }
 
-function renderForgotPasswordScreen() {
-  app.innerHTML = '';
-  const container = document.createElement('div');
-  container.className = 'container';
-
-  const banner = renderBanner();
-
-  const phoneInput = document.createElement('input');
-  phoneInput.type = 'text';
-  phoneInput.placeholder = 'Enter your phone number';
-  phoneInput.id = 'phone';
-
-  const resetButton = document.createElement('button');
-  resetButton.textContent = 'Reset Password';
-  resetButton.onclick = handleResetPassword;
-
-  const linkRow = document.createElement('div');
-  linkRow.className = 'link-row';
-  linkRow.innerHTML = `
-    <a href="#" id="loginLink">Back to Login</a>
+function showForgotPassword() {
+  app.innerHTML = `
+    <div class="banner">BUZZALL</div>
+    <div class="container">
+      <h2>Reset Password</h2>
+      <input type="text" id="reset-phone" placeholder="Phone Number" />
+      <input type="password" id="reset-password" placeholder="New Password" />
+      <button onclick="resetPassword()">Reset Password</button>
+      <p><a href="#" onclick="showLogin()">Back to Login</a></p>
+    </div>
   `;
-
-  container.appendChild(banner);
-  container.appendChild(phoneInput);
-  container.appendChild(resetButton);
-  container.appendChild(linkRow);
-
-  app.appendChild(container);
-
-  document.getElementById('loginLink').onclick = renderLoginScreen;
 }
 
-async function handleLogin() {
-  const phone = document.getElementById('phone').value.trim();
-  const password = document.getElementById('password').value.trim();
+function showGroups() {
+  const userGroups = groups.filter(g => g.owner === currentUser.phone);
+  app.innerHTML = `
+    <div class="banner">BUZZALL</div>
+    <div class="container">
+      <h2>My Groups</h2>
+      <button onclick="createGroup()">+ New Group</button>
+      <div id="group-list">
+        ${userGroups.map(group => `
+          <div class="group">
+            <strong>${group.name}</strong>
+            <button onclick="editGroup('${group.name}')">Edit</button>
+            <button onclick="removeGroup('${group.name}')">Remove</button>
+            <button onclick="buzzAll('${group.name}')">Buzz All</button>
+            <div class="member-list">
+              ${group.members.map((m, idx) => `
+                <div class="member">
+                  <input type="checkbox" class="select-member" data-index="${idx}" />
+                  <input type="text" value="${m.name}" disabled />
+                  <input type="text" value="${m.phone}" disabled />
+                </div>
+              `).join('')}
+            </div>
+            <button onclick="buzzSelected('${group.name}')">Buzz Selected</button>
+          </div>
+        `).join('')}
+      </div>
+      <button onclick="logout()" class="logout">Logout</button>
+    </div>
+  `;
+}
 
-  if (!phone || !password) {
-    alert('Please fill in all fields.');
+function createGroup() {
+  const groupName = prompt('Enter group name:');
+  if (groupName) {
+    groups.push({ name: groupName, owner: currentUser.phone, members: [] });
+    saveData();
+    showGroups();
+  }
+}
+
+function editGroup(name) {
+  const group = groups.find(g => g.name === name && g.owner === currentUser.phone);
+  if (!group) return;
+
+  app.innerHTML = `
+    <div class="banner">BUZZALL</div>
+    <div class="container">
+      <h2>Edit Group: ${group.name}</h2>
+      <button onclick="renameGroup('${group.name}')">Rename Group</button>
+      <h3>Members</h3>
+      <div class="member-list">
+        ${group.members.map((m, i) => `
+          <div>
+            <input value="${m.name}" onchange="updateMember('${group.name}', ${i}, 'name', this.value)" />
+            <input value="${m.phone}" onchange="updateMember('${group.name}', ${i}, 'phone', this.value)" />
+            <button onclick="removeMember('${group.name}', ${i})">Remove</button>
+          </div>
+        `).join('')}
+      </div>
+      <button onclick="addMember('${group.name}')">+ Add Member</button>
+      <button onclick="showGroups()">Back</button>
+    </div>
+  `;
+}
+
+function renameGroup(name) {
+  const newName = prompt('New group name:');
+  if (!newName) return;
+  const group = groups.find(g => g.name === name && g.owner === currentUser.phone);
+  group.name = newName;
+  saveData();
+  showGroups();
+}
+
+function addMember(groupName) {
+  const name = prompt('Member name:');
+  const phone = prompt('Member phone:');
+  if (!name || !phone) return;
+  const group = groups.find(g => g.name === groupName && g.owner === currentUser.phone);
+  group.members.push({ name, phone });
+  saveData();
+  editGroup(groupName);
+}
+
+function removeGroup(name) {
+  groups = groups.filter(g => g.name !== name || g.owner !== currentUser.phone);
+  saveData();
+  showGroups();
+}
+
+function updateMember(groupName, index, field, value) {
+  const group = groups.find(g => g.name === groupName && g.owner === currentUser.phone);
+  if (!group) return;
+  group.members[index][field] = value;
+  saveData();
+}
+
+function removeMember(groupName, index) {
+  const group = groups.find(g => g.name === groupName && g.owner === currentUser.phone);
+  group.members.splice(index, 1);
+  saveData();
+  editGroup(groupName);
+}
+
+async function buzzAll(groupName) {
+  const group = groups.find(g => g.name === groupName);
+  if (!group) return;
+
+  try {
+    await fetch(`${SERVER_URL}/send-buzz`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phones: group.members.map(m => m.phone) })
+    });
+
+    playBuzzSound();
+    alert(`Buzz sent to: ${group.members.map(m => m.name).join(', ')}`);
+  } catch (error) {
+    console.error('Error sending buzz:', error);
+    alert('Failed to send buzz. Please try again.');
+  }
+}
+
+async function buzzSelected(groupName) {
+  const group = groups.find(g => g.name === groupName);
+  if (!group) return;
+
+  const selectedIndexes = Array.from(document.querySelectorAll('.select-member:checked')).map(cb => parseInt(cb.dataset.index));
+  const selectedMembers = selectedIndexes.map(i => group.members[i]);
+
+  if (!selectedMembers.length) {
+    alert('No members selected');
     return;
   }
 
   try {
-    const response = await fetch(`${API_URL}/login`, {
+    await fetch(`${SERVER_URL}/send-buzz`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ phone, password })
+      body: JSON.stringify({ phones: selectedMembers.map(m => m.phone) })
     });
 
-    const data = await response.json();
-    if (response.ok) {
-      alert('Login successful!');
-      renderDashboard();
-    } else {
-      alert(data.error || 'Login failed.');
-    }
+    playBuzzSound();
+    alert(`Buzz sent to: ${selectedMembers.map(m => m.name).join(', ')}`);
   } catch (error) {
-    console.error(error);
-    alert('Network error during login.');
+    console.error('Error sending buzz:', error);
+    alert('Failed to send buzz. Please try again.');
   }
 }
 
-async function handleSignup() {
-  const name = document.getElementById('name').value.trim();
-  const phone = document.getElementById('phone').value.trim();
-  const password = document.getElementById('password').value.trim();
-  const confirmPassword = document.getElementById('confirmPassword').value.trim();
+function login() {
+  const phone = document.getElementById('login-phone').value.trim();
+  const password = document.getElementById('login-password').value;
+  const user = users.find(u => u.phone === phone && u.password === password);
+  if (user) {
+    currentUser = user;
+    saveData();
+    showGroups();
+  } else {
+    alert('Invalid credentials');
+  }
+}
 
-  if (!name || !phone || !password || !confirmPassword) {
-    alert('Please fill in all fields.');
+function signup() {
+  const name = document.getElementById('signup-name').value.trim();
+  const phone = document.getElementById('signup-phone').value.trim();
+  const password = document.getElementById('signup-password').value;
+  const confirm = document.getElementById('signup-confirm').value;
+
+  if (password !== confirm) {
+    alert('Passwords do not match');
+    return;
+  }
+  if (users.find(u => u.phone === phone)) {
+    alert('User already exists');
     return;
   }
 
-  if (password !== confirmPassword) {
-    alert('Passwords do not match.');
-    return;
-  }
+  const user = { name, phone, password };
+  users.push(user);
+  currentUser = user;
+  saveData();
+  showGroups();
+}
 
-  try {
-    const response = await fetch(`${API_URL}/signup`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, phone, password })
-    });
-
-    const data = await response.json();
-    if (response.ok) {
-      alert('Signup successful! Please login.');
-      renderLoginScreen();
-    } else {
-      alert(data.error || 'Signup failed.');
-    }
-  } catch (error) {
-    console.error(error);
-    alert('Network error during signup.');
+function resetPassword() {
+  const phone = document.getElementById('reset-phone').value.trim();
+  const password = document.getElementById('reset-password').value;
+  const user = users.find(u => u.phone === phone);
+  if (user) {
+    user.password = password;
+    saveData();
+    alert('Password reset successful');
+    showLogin();
+  } else {
+    alert('User not found');
   }
 }
 
-async function handleResetPassword() {
-  const phone = document.getElementById('phone').value.trim();
-
-  if (!phone) {
-    alert('Please enter your phone number.');
-    return;
-  }
-
-  try {
-    const response = await fetch(`${API_URL}/reset-password`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ phone })
-    });
-
-    const data = await response.json();
-    if (response.ok) {
-      alert('Password reset link sent!');
-      renderLoginScreen();
-    } else {
-      alert(data.error || 'Reset failed.');
-    }
-  } catch (error) {
-    console.error(error);
-    alert('Network error during reset.');
-  }
+function logout() {
+  currentUser = null;
+  saveData();
+  showLogin();
 }
 
-function renderDashboard() {
-  app.innerHTML = '';
-  const container = document.createElement('div');
-  container.className = 'container';
-
-  const banner = renderBanner();
-  const welcome = document.createElement('h2');
-  welcome.textContent = 'Welcome to BUZZUR!';
-
-  container.appendChild(banner);
-  container.appendChild(welcome);
-  app.appendChild(container);
+// Initial load
+if (currentUser) {
+  showGroups();
+} else {
+  showLogin();
 }
-
-// Start with login screen
-renderLoginScreen();
