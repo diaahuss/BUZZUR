@@ -1,309 +1,141 @@
-// App State
-let currentUser = null;
-let currentGroupIndex = null;
-const socket = io('https://buzzur-server.onrender.com', {
-  reconnectionAttempts: 3,
-  timeout: 2000
-});
+document.addEventListener("DOMContentLoaded", function () {
+  const socket = io(); // Set up Socket.io connection
+  let userData = {}; // Store logged-in user data
+  let currentGroupId = null;
+  let groups = [];
 
-// DOM Elements
-const app = document.getElementById('app');
-const buzzSound = document.getElementById('buzzSound');
+  // Utility to toggle password visibility
+  const togglePasswordVisibility = (inputId, buttonId) => {
+    const passwordField = document.getElementById(inputId);
+    const button = document.getElementById(buttonId);
+    button.addEventListener('click', function () {
+      if (passwordField.type === 'password') {
+        passwordField.type = 'text';
+        button.innerHTML = "&#128065;"; // Eye icon for showing
+      } else {
+        passwordField.type = 'password';
+        button.innerHTML = "&#128068;"; // Eye icon for hiding
+      }
+    });
+  };
 
-// Utility Functions
-function showError(message) {
-  alert(`Error: ${message}`);
-}
+  togglePasswordVisibility('login-password', 'toggle-login-password');
+  togglePasswordVisibility('signup-password', 'toggle-signup-password');
 
-function playBuzzSound() {
-  buzzSound.currentTime = 0;
-  buzzSound.play().catch(e => console.error('Error playing sound:', e));
-}
+  // Show different screens
+  const showScreen = (screenId) => {
+    const screens = document.querySelectorAll('.screen');
+    screens.forEach(screen => screen.style.display = 'none');
+    document.getElementById(screenId).style.display = 'block';
+  };
 
-function togglePasswordVisibility(inputId) {
-  const input = document.getElementById(inputId);
-  const icon = document.querySelector(`[data-input="${inputId}"] i`);
-  if (input.type === 'password') {
-    input.type = 'text';
-    icon.classList.replace('fa-eye', 'fa-eye-slash');
-  } else {
-    input.type = 'password';
-    icon.classList.replace('fa-eye-slash', 'fa-eye');
-  }
-}
+  // Show the login screen initially
+  showScreen('login-screen');
 
-// Authentication Functions
-function handleSignup(e) {
-  e.preventDefault();
-  const name = document.getElementById('signup-name')?.value.trim();
-  const phone = document.getElementById('signup-phone')?.value.trim();
-  const password = document.getElementById('signup-password')?.value;
-  const confirmPassword = document.getElementById('confirm-password')?.value;
+  // Handle login form
+  document.getElementById('login-form').addEventListener('submit', function (event) {
+    event.preventDefault();
+    const phone = document.getElementById('login-phone').value;
+    const password = document.getElementById('login-password').value;
 
-  if (!name || !phone || !password || !confirmPassword) {
-    return showError('Please fill all fields');
-  }
-
-  if (password !== confirmPassword) {
-    return showError('Passwords do not match');
-  }
-
-  const user = { name, phone, password, groups: [] };
-  localStorage.setItem(`user_${phone}`, JSON.stringify(user));
-  alert('Sign Up Successful!');
-  renderLoginScreen();
-}
-
-function handleLogin(e) {
-  e.preventDefault();
-  const phone = document.getElementById('login-phone')?.value.trim();
-  const password = document.getElementById('login-password')?.value;
-
-  const userData = localStorage.getItem(`user_${phone}`);
-  if (!userData) return showError('User not found');
-
-  try {
-    const user = JSON.parse(userData);
-    if (user.password !== password) return showError('Invalid password');
-
-    currentUser = user;
-    localStorage.setItem('currentUser', JSON.stringify(user));
-    renderGroupsScreen();
-  } catch (e) {
-    showError('Failed to login');
-    console.error(e);
-  }
-}
-
-function handleLogout() {
-  currentUser = null;
-  localStorage.removeItem('currentUser');
-  renderLoginScreen();
-}
-
-// Group Management Functions
-function handleCreateGroup() {
-  const groupName = prompt('Enter group name:');
-  if (!groupName) return;
-
-  currentUser.groups.push({ 
-    name: groupName, 
-    members: [],
-    selectedMembers: [] 
-  });
-  saveCurrentUser();
-  renderGroupsScreen();
-}
-
-function toggleMemberSelection(memberIndex) {
-  const selectedMembers = currentUser.groups[currentGroupIndex].selectedMembers;
-  const index = selectedMembers.indexOf(memberIndex);
-  
-  if (index > -1) {
-    selectedMembers.splice(index, 1);
-  } else {
-    selectedMembers.push(memberIndex);
-  }
-  saveCurrentUser();
-  renderGroupScreen();
-}
-
-function handleBuzzSelected() {
-  const group = currentUser.groups[currentGroupIndex];
-  if (group.selectedMembers.length === 0) {
-    return showError('No members selected');
-  }
-
-  group.selectedMembers.forEach(index => {
-    const member = group.members[index];
-    if (member.phone) {
-      socket.emit('buzz', { to: member.phone });
-    }
-  });
-  playBuzzSound();
-}
-
-function handleBuzzAll() {
-  const group = currentUser.groups[currentGroupIndex];
-  group.members.forEach(member => {
-    if (member.phone) {
-      socket.emit('buzz', { to: member.phone });
-    }
-  });
-  playBuzzSound();
-}
-
-function saveCurrentUser() {
-  localStorage.setItem('currentUser', JSON.stringify(currentUser));
-}
-
-// Render Functions
-function renderLoginScreen() {
-  app.innerHTML = `
-    <div class="screen">
-      <div class="banner">BUZZUR</div>
-      <div class="form">
-        <h2>Login</h2>
-        <form id="login-form">
-          <input type="text" id="login-phone" placeholder="Phone Number" required>
-          <div class="password-container">
-            <input type="password" id="login-password" placeholder="Password" required>
-            <button type="button" class="toggle-password" data-input="login-password" onclick="togglePasswordVisibility('login-password')">
-              <i class="fas fa-eye"></i>
-            </button>
-          </div>
-          <button type="submit" class="btn-green">Login</button>
-        </form>
-        <div class="links">
-          <a href="#" onclick="renderSignupScreen()">Sign up</a> | 
-          <a href="#" onclick="renderForgotPasswordScreen()">Forgot Password?</a>
-        </div>
-      </div>
-    </div>
-  `;
-  document.getElementById('login-form')?.addEventListener('submit', handleLogin);
-}
-
-function renderSignupScreen() {
-  app.innerHTML = `
-    <div class="screen">
-      <div class="banner">BUZZUR</div>
-      <div class="form">
-        <h2>Sign Up</h2>
-        <form id="signup-form">
-          <input type="text" id="signup-name" placeholder="Full Name" required>
-          <input type="text" id="signup-phone" placeholder="Phone Number" required>
-          <div class="password-container">
-            <input type="password" id="signup-password" placeholder="Password" required>
-            <button type="button" class="toggle-password" data-input="signup-password" onclick="togglePasswordVisibility('signup-password')">
-              <i class="fas fa-eye"></i>
-            </button>
-          </div>
-          <div class="password-container">
-            <input type="password" id="confirm-password" placeholder="Confirm Password" required>
-            <button type="button" class="toggle-password" data-input="confirm-password" onclick="togglePasswordVisibility('confirm-password')">
-              <i class="fas fa-eye"></i>
-            </button>
-          </div>
-          <button type="submit" class="btn-green">Sign Up</button>
-        </form>
-        <div class="links">
-          <a href="#" onclick="renderLoginScreen()">Already have an account? Login</a>
-        </div>
-      </div>
-    </div>
-  `;
-  document.getElementById('signup-form')?.addEventListener('submit', handleSignup);
-}
-
-function renderGroupsScreen() {
-  if (!currentUser) return renderLoginScreen();
-
-  app.innerHTML = `
-    <div class="screen">
-      <div class="banner">My Groups</div>
-      <div class="form">
-        <button onclick="handleCreateGroup()" class="btn-green">Create Group</button>
-        <div class="group-list">
-          ${currentUser.groups.map((group, index) => `
-            <div class="group-item" onclick="openGroup(${index})">
-              ${group.name}
-              <span class="member-count">${group.members.length} members</span>
-            </div>
-          `).join('')}
-        </div>
-        <button onclick="handleLogout()" class="btn-green">Logout</button>
-      </div>
-    </div>
-  `;
-}
-
-function renderGroupScreen() {
-  if (!currentUser) return renderLoginScreen();
-  const group = currentUser.groups[currentGroupIndex];
-
-  app.innerHTML = `
-    <div class="screen">
-      <div class="banner">${group.name}</div>
-      <div class="form">
-        <h3>Members</h3>
-        <div class="member-list">
-          ${group.members.map((member, index) => `
-            <div class="member-item ${group.selectedMembers.includes(index) ? 'selected' : ''}">
-              <button class="select-btn" onclick="event.stopPropagation(); toggleMemberSelection(${index})">
-                <i class="fas ${group.selectedMembers.includes(index) ? 'fa-check-circle' : 'fa-circle'}"></i>
-              </button>
-              <div class="member-info">
-                <div class="member-name">${member.name}</div>
-                <div class="member-phone">${member.phone}</div>
-              </div>
-            </div>
-          `).join('')}
-        </div>
-        
-        <div class="form-actions">
-          <input type="text" id="new-member-name" placeholder="Member Name">
-          <input type="text" id="new-member-phone" placeholder="Phone Number">
-          <button onclick="addMember()" class="btn-green">Add Member</button>
-        </div>
-        
-        <div class="buzz-actions">
-          <button onclick="handleBuzzSelected()" class="btn-green">Buzz Selected</button>
-          <button onclick="handleBuzzAll()" class="btn-green">Buzz All</button>
-        </div>
-        
-        <div class="navigation-actions">
-          <button onclick="renderGroupsScreen()" class="btn-green">Back to Groups</button>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-function openGroup(index) {
-  currentGroupIndex = index;
-  renderGroupScreen();
-}
-
-function addMember() {
-  const name = document.getElementById('new-member-name')?.value.trim();
-  const phone = document.getElementById('new-member-phone')?.value.trim();
-  if (!name || !phone) return showError('Please enter name and phone number');
-
-  currentUser.groups[currentGroupIndex].members.push({ name, phone });
-  saveCurrentUser();
-  renderGroupScreen();
-}
-
-// Initialize App
-document.addEventListener('DOMContentLoaded', () => {
-  try {
-    const userData = localStorage.getItem('currentUser');
-    if (userData) {
-      currentUser = JSON.parse(userData);
-      renderGroupsScreen();
+    const storedUser = JSON.parse(localStorage.getItem('user'));
+    if (storedUser && storedUser.phone === phone && storedUser.password === password) {
+      userData = storedUser;
+      showScreen('groups-screen');
     } else {
-      renderLoginScreen();
+      alert('Invalid credentials');
     }
-  } catch (e) {
-    console.error('Initialization error:', e);
-    renderLoginScreen();
-  }
+  });
+
+  // Handle sign-up form
+  document.getElementById('signup-form').addEventListener('submit', function (event) {
+    event.preventDefault();
+    const name = document.getElementById('signup-name').value;
+    const phone = document.getElementById('signup-phone').value;
+    const password = document.getElementById('signup-password').value;
+    const confirmPassword = document.getElementById('confirm-password').value;
+
+    if (password !== confirmPassword) {
+      alert("Passwords don't match!");
+      return;
+    }
+
+    const newUser = { name, phone, password };
+    localStorage.setItem('user', JSON.stringify(newUser));
+    alert("Sign-up successful!");
+    showScreen('login-screen');
+  });
+
+  // Handle group creation
+  document.getElementById('create-group').addEventListener('click', function () {
+    const groupName = prompt("Enter Group Name:");
+    if (groupName) {
+      const newGroup = { id: Date.now(), name: groupName, members: [] };
+      groups.push(newGroup);
+      renderGroups();
+      showScreen('groups-screen');
+    }
+  });
+
+  // Render groups on the dashboard
+  const renderGroups = () => {
+    const groupList = document.getElementById('group-list');
+    groupList.innerHTML = '';
+    groups.forEach(group => {
+      const groupItem = document.createElement('li');
+      groupItem.textContent = group.name;
+      
+      // Remove Group Button
+      const removeButton = document.createElement('button');
+      removeButton.textContent = "Remove";
+      removeButton.addEventListener('click', function () {
+        groups = groups.filter(g => g.id !== group.id);
+        renderGroups();
+      });
+
+      // Edit Group Button
+      const editButton = document.createElement('button');
+      editButton.textContent = "Edit Group";
+      editButton.addEventListener('click', function () {
+        currentGroupId = group.id;
+        showScreen('edit-group-screen');
+        document.getElementById('edit-group-name').value = group.name;
+      });
+
+      groupItem.appendChild(removeButton);
+      groupItem.appendChild(editButton);
+      groupList.appendChild(groupItem);
+    });
+  };
+
+  // Handle group editing
+  document.getElementById('edit-group-form').addEventListener('submit', function (event) {
+    event.preventDefault();
+    const updatedName = document.getElementById('edit-group-name').value;
+    const group = groups.find(g => g.id === currentGroupId);
+    if (group) {
+      group.name = updatedName;
+      renderGroups();
+      showScreen('groups-screen');
+    }
+  });
+
+  // Handle buzz member selection
+  document.getElementById('buzz-members-button').addEventListener('click', function () {
+    const memberSelect = document.getElementById('member-select');
+    const selectedMember = memberSelect.value;
+
+    if (selectedMember) {
+      socket.emit('send-buzz', { memberPhone: selectedMember });
+      document.getElementById('buzzSound').play();
+    } else {
+      alert('Please select a member to buzz.');
+    }
+  });
+
+  // Handle logout
+  document.getElementById('logout').addEventListener('click', function () {
+    localStorage.removeItem('user');
+    showScreen('login-screen');
+  });
 });
-
-// Socket.IO Events
-socket.on('receive-buzz', playBuzzSound);
-
-// Expose functions to global scope
-window.togglePasswordVisibility = togglePasswordVisibility;
-window.renderLoginScreen = renderLoginScreen;
-window.renderSignupScreen = renderSignupScreen;
-window.renderForgotPasswordScreen = renderForgotPasswordScreen;
-window.renderGroupsScreen = renderGroupsScreen;
-window.openGroup = openGroup;
-window.handleLogout = handleLogout;
-window.handleCreateGroup = handleCreateGroup;
-window.toggleMemberSelection = toggleMemberSelection;
-window.handleBuzzSelected = handleBuzzSelected;
-window.handleBuzzAll = handleBuzzAll;
-window.addMember = addMember;
