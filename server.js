@@ -85,8 +85,16 @@ app.post('/send-buzz', (req, res) => {
 
     console.log(`Buzz sent from ${from} to ${to.join(', ')} in group "${group}"`);
 
-    // Emit buzz event via socket to others
-    io.emit('buzz', { to, from, group });
+    // Emit buzz event to each recipient if their socket exists
+    to.forEach((recipient) => {
+      // Ensure recipient is valid
+      if (recipient) {
+        // Emitting 'buzz' to the specific socket ID or user
+        io.emit('buzz', { to: recipient, from, group });
+        console.log(`Buzz sent to ${recipient}`);
+      }
+    });
+
     res.json({ success: true, message: 'Buzz sent successfully!' });
 
   } catch (error) {
