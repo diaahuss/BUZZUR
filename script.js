@@ -19,10 +19,16 @@ function playBuzzSound() {
   buzzSound.play().catch(e => console.error('Error playing sound:', e));
 }
 
-function togglePasswordVisibility(inputId, checkboxId) {
-  const passwordInput = document.getElementById(inputId);
-  const checkbox = document.getElementById(checkboxId);
-  passwordInput.type = checkbox.checked ? 'text' : 'password';
+function togglePasswordVisibility(inputId) {
+  const input = document.getElementById(inputId);
+  const icon = document.querySelector(`[data-input="${inputId}"] i`);
+  if (input.type === 'password') {
+    input.type = 'text';
+    icon.classList.replace('fa-eye', 'fa-eye-slash');
+  } else {
+    input.type = 'password';
+    icon.classList.replace('fa-eye-slash', 'fa-eye');
+  }
 }
 
 // Authentication Functions
@@ -30,9 +36,14 @@ function handleSignup() {
   const name = document.getElementById('name')?.value.trim();
   const phone = document.getElementById('phone')?.value.trim();
   const password = document.getElementById('password')?.value;
+  const confirmPassword = document.getElementById('confirmPassword')?.value;
 
   if (!name || !phone || !password) {
     return showError('Please fill all fields');
+  }
+
+  if (password !== confirmPassword) {
+    return showError('Passwords do not match');
   }
 
   const user = { name, phone, password, groups: [] };
@@ -92,7 +103,11 @@ function handleCreateGroup() {
   const groupName = document.getElementById('newGroupName')?.value.trim();
   if (!groupName) return showError('Enter group name');
 
-  currentUser.groups.push({ name: groupName, members: [] });
+  currentUser.groups.push({ 
+    name: groupName, 
+    members: [],
+    selectedMembers: [] 
+  });
   saveCurrentUser();
   renderGroupsScreen();
 }
@@ -126,11 +141,44 @@ function handleAddMember(groupIndex) {
 
 function handleRemoveMember(groupIndex, memberIndex) {
   currentUser.groups[groupIndex].members.splice(memberIndex, 1);
+  // Remove from selected members if present
+  const selectedIndex = currentUser.groups[groupIndex].selectedMembers.indexOf(memberIndex);
+  if (selectedIndex > -1) {
+    currentUser.groups[groupIndex].selectedMembers.splice(selectedIndex, 1);
+  }
   saveCurrentUser();
   renderGroupDetailsScreen(groupIndex);
 }
 
-function handleBuzzGroup(groupIndex) {
+function toggleMemberSelection(groupIndex, memberIndex) {
+  const selectedMembers = currentUser.groups[groupIndex].selectedMembers;
+  const index = selectedMembers.indexOf(memberIndex);
+  
+  if (index > -1) {
+    selectedMembers.splice(index, 1);
+  } else {
+    selectedMembers.push(memberIndex);
+  }
+  saveCurrentUser();
+  renderGroupDetailsScreen(groupIndex);
+}
+
+function handleBuzzSelected(groupIndex) {
+  const group = currentUser.groups[groupIndex];
+  if (group.selectedMembers.length === 0) {
+    return showError('No members selected');
+  }
+
+  group.selectedMembers.forEach(index => {
+    const member = group.members[index];
+    if (member.phone) {
+      socket.emit('buzz', { to: member.phone });
+    }
+  });
+  playBuzzSound();
+}
+
+function handleBuzzAll(groupIndex) {
   const group = currentUser.groups[groupIndex];
   group.members.forEach(member => {
     if (member.phone) {
@@ -151,8 +199,12 @@ function renderLoginScreen() {
     <div class="form">
       <h2>Login</h2>
       <input type="text" id="phone" placeholder="Phone Number" />
-      <input type="password" id="password" placeholder="Password" />
-      <label><input type="checkbox" id="showPassword"> Show Password</label>
+      <div class="password-container">
+        <input type="password" id="password" placeholder="Password" />
+        <button class="show-password" data-input="password" onclick="togglePasswordVisibility('password')">
+          <i class="fas fa-eye"></i>
+        </button>
+      </div>
       <button onclick="handleLogin()">Login</button>
       <p>
         <a href="#" onclick="renderSignupScreen()">Sign Up</a> | 
@@ -160,8 +212,6 @@ function renderLoginScreen() {
       </p>
     </div>
   `;
-  document.getElementById('showPassword')?.addEventListener('change', () => 
-    togglePasswordVisibility('password', 'showPassword'));
 }
 
 function renderSignupScreen() {
@@ -171,14 +221,22 @@ function renderSignupScreen() {
       <h2>Sign Up</h2>
       <input type="text" id="name" placeholder="Name" />
       <input type="text" id="phone" placeholder="Phone Number" />
-      <input type="password" id="password" placeholder="Password" />
-      <label><input type="checkbox" id="showPasswordSignup"> Show Password</label>
+      <div class="password-container">
+        <input type="password" id="password" placeholder="Password" />
+        <button class="show-password" data-input="password" onclick="togglePasswordVisibility('password')">
+          <i class="fas fa-eye"></i>
+        </button>
+      </div>
+      <div class="password-container">
+        <input type="password" id="confirmPassword" placeholder="Confirm Password" />
+        <button class="show-password" data-input="confirmPassword" onclick="togglePasswordVisibility('confirmPassword')">
+          <i class="fas fa-eye"></i>
+        </button>
+      </div>
       <button onclick="handleSignup()">Sign Up</button>
       <p><a href="#" onclick="renderLoginScreen()">Back to Login</a></p>
     </div>
   `;
-  document.getElementById('showPasswordSignup')?.addEventListener('change', () => 
-    togglePasswordVisibility('password', 'showPasswordSignup'));
 }
 
 function renderForgotPasswordScreen() {
@@ -223,12 +281,17 @@ function renderGroupDetailsScreen(groupIndex) {
       <h3>Members</h3>
       <div class="members">
         ${group.members.map((member, memberIndex) => `
-          <div class="member-row">
+          <div class="member-row ${group.selectedMembers.includes(memberIndex) ? 'selected' : ''}">
+            <button class="select-btn" onclick="toggleMemberSelection(${groupIndex}, ${memberIndex})">
+              <i class="fas ${group.selectedMembers.includes(memberIndex) ? 'fa-check-circle' : 'fa-circle'}"></i>
+            </button>
             <input type="text" value="${member.name}" 
               onchange="currentUser.groups[${groupIndex}].members[${memberIndex}].name = this.value; saveCurrentUser()" />
             <input type="text" value="${member.phone}" 
               onchange="currentUser.groups[${groupIndex}].members[${memberIndex}].phone = this.value; saveCurrentUser()" />
-            <button onclick="handleRemoveMember(${groupIndex}, ${memberIndex})">Remove</button>
+            <button onclick="handleRemoveMember(${groupIndex}, ${memberIndex})" class="remove-btn">
+              <i class="fas fa-times"></i>
+            </button>
           </div>
         `).join('')}
       </div>
@@ -236,9 +299,14 @@ function renderGroupDetailsScreen(groupIndex) {
       <input type="text" id="newMemberPhone" placeholder="Member Phone" />
       <button onclick="handleAddMember(${groupIndex})">Add Member</button>
       <hr>
-      <button onclick="handleBuzzGroup(${groupIndex})" class="buzz-btn">Buzz All</button>
-      <button onclick="handleDeleteGroup(${groupIndex})" class="delete-btn">Delete Group</button>
-      <button onclick="renderGroupsScreen()" class="back-btn">Back</button>
+      <div class="buzz-actions">
+        <button onclick="handleBuzzSelected(${groupIndex})">Buzz Selected</button>
+        <button onclick="handleBuzzAll(${groupIndex})">Buzz All</button>
+      </div>
+      <div class="group-actions">
+        <button onclick="handleDeleteGroup(${groupIndex})" class="delete-btn">Delete Group</button>
+        <button onclick="renderGroupsScreen()" class="back-btn">Back</button>
+      </div>
     </div>
   `;
 }
@@ -248,6 +316,12 @@ socket.on('receive-buzz', playBuzzSound);
 
 // Initialize App
 document.addEventListener('DOMContentLoaded', () => {
+  // Load Font Awesome for icons
+  const fa = document.createElement('link');
+  fa.rel = 'stylesheet';
+  fa.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css';
+  document.head.appendChild(fa);
+
   try {
     const userData = localStorage.getItem('currentUser');
     if (userData) {
@@ -272,9 +346,12 @@ window.handleSaveGroupName = handleSaveGroupName;
 window.handleDeleteGroup = handleDeleteGroup;
 window.handleAddMember = handleAddMember;
 window.handleRemoveMember = handleRemoveMember;
-window.handleBuzzGroup = handleBuzzGroup;
+window.toggleMemberSelection = toggleMemberSelection;
+window.handleBuzzSelected = handleBuzzSelected;
+window.handleBuzzAll = handleBuzzAll;
 window.renderLoginScreen = renderLoginScreen;
 window.renderSignupScreen = renderSignupScreen;
 window.renderForgotPasswordScreen = renderForgotPasswordScreen;
 window.renderGroupsScreen = renderGroupsScreen;
 window.renderGroupDetailsScreen = renderGroupDetailsScreen;
+window.togglePasswordVisibility = togglePasswordVisibility;
