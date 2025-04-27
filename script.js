@@ -1,141 +1,119 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const socket = io(); // Set up Socket.io connection
-  let userData = {}; // Store logged-in user data
-  let currentGroupId = null;
-  let groups = [];
+  // Dynamically create screens
+  const appContainer = document.getElementById("app");
 
-  // Utility to toggle password visibility
+  const loginScreen = `
+    <div id="login-screen" class="screen">
+      <h2>Login</h2>
+      <form id="login-form">
+        <input type="text" id="login-phone" placeholder="Phone" required>
+        <div class="password-container">
+          <input type="password" id="login-password" placeholder="Password" required>
+          <button type="button" id="toggle-login-password" class="show-password-btn">👁</button>
+        </div>
+        <button type="submit">Login</button>
+      </form>
+      <button onclick="showScreen('signup-screen')">Go to Sign Up</button>
+    </div>
+  `;
+
+  const signupScreen = `
+    <div id="signup-screen" class="screen">
+      <h2>Sign Up</h2>
+      <form id="signup-form">
+        <input type="text" id="signup-name" placeholder="Full Name" required>
+        <input type="text" id="signup-phone" placeholder="Phone" required>
+        <div class="password-container">
+          <input type="password" id="signup-password" placeholder="Password" required>
+          <button type="button" id="toggle-signup-password" class="show-password-btn">👁</button>
+        </div>
+        <input type="password" id="confirm-password" placeholder="Confirm Password" required>
+        <button type="submit">Sign Up</button>
+      </form>
+      <button onclick="showScreen('login-screen')">Already have an account? Login</button>
+    </div>
+  `;
+
+  const myGroupsScreen = `
+    <div id="my-groups-screen" class="screen">
+      <h2>My Groups</h2>
+      <button onclick="createGroup()">Create a Group</button>
+      <div id="groups-list"></div>
+    </div>
+  `;
+
+  appContainer.innerHTML = loginScreen; // Initially load the login screen
+
+  // Switch screen function
+  window.showScreen = function(screenId) {
+    const screens = document.querySelectorAll('.screen');
+    screens.forEach(screen => screen.style.display = 'none');
+    document.getElementById(screenId).style.display = 'block';
+  };
+
+  // Function to toggle password visibility
   const togglePasswordVisibility = (inputId, buttonId) => {
     const passwordField = document.getElementById(inputId);
     const button = document.getElementById(buttonId);
     button.addEventListener('click', function () {
       if (passwordField.type === 'password') {
         passwordField.type = 'text';
-        button.innerHTML = "&#128065;"; // Eye icon for showing
+        button.innerHTML = "🙈"; // Hide password icon
       } else {
         passwordField.type = 'password';
-        button.innerHTML = "&#128068;"; // Eye icon for hiding
+        button.innerHTML = "👁"; // Show password icon
       }
     });
   };
 
   togglePasswordVisibility('login-password', 'toggle-login-password');
   togglePasswordVisibility('signup-password', 'toggle-signup-password');
-
-  // Show different screens
-  const showScreen = (screenId) => {
-    const screens = document.querySelectorAll('.screen');
-    screens.forEach(screen => screen.style.display = 'none');
-    document.getElementById(screenId).style.display = 'block';
-  };
-
-  // Show the login screen initially
-  showScreen('login-screen');
-
-  // Handle login form
-  document.getElementById('login-form').addEventListener('submit', function (event) {
-    event.preventDefault();
-    const phone = document.getElementById('login-phone').value;
-    const password = document.getElementById('login-password').value;
-
-    const storedUser = JSON.parse(localStorage.getItem('user'));
-    if (storedUser && storedUser.phone === phone && storedUser.password === password) {
-      userData = storedUser;
-      showScreen('groups-screen');
-    } else {
-      alert('Invalid credentials');
-    }
-  });
-
-  // Handle sign-up form
-  document.getElementById('signup-form').addEventListener('submit', function (event) {
-    event.preventDefault();
-    const name = document.getElementById('signup-name').value;
-    const phone = document.getElementById('signup-phone').value;
-    const password = document.getElementById('signup-password').value;
-    const confirmPassword = document.getElementById('confirm-password').value;
-
-    if (password !== confirmPassword) {
-      alert("Passwords don't match!");
-      return;
-    }
-
-    const newUser = { name, phone, password };
-    localStorage.setItem('user', JSON.stringify(newUser));
-    alert("Sign-up successful!");
-    showScreen('login-screen');
-  });
-
-  // Handle group creation
-  document.getElementById('create-group').addEventListener('click', function () {
-    const groupName = prompt("Enter Group Name:");
-    if (groupName) {
-      const newGroup = { id: Date.now(), name: groupName, members: [] };
-      groups.push(newGroup);
-      renderGroups();
-      showScreen('groups-screen');
-    }
-  });
-
-  // Render groups on the dashboard
-  const renderGroups = () => {
-    const groupList = document.getElementById('group-list');
-    groupList.innerHTML = '';
-    groups.forEach(group => {
-      const groupItem = document.createElement('li');
-      groupItem.textContent = group.name;
-      
-      // Remove Group Button
-      const removeButton = document.createElement('button');
-      removeButton.textContent = "Remove";
-      removeButton.addEventListener('click', function () {
-        groups = groups.filter(g => g.id !== group.id);
-        renderGroups();
-      });
-
-      // Edit Group Button
-      const editButton = document.createElement('button');
-      editButton.textContent = "Edit Group";
-      editButton.addEventListener('click', function () {
-        currentGroupId = group.id;
-        showScreen('edit-group-screen');
-        document.getElementById('edit-group-name').value = group.name;
-      });
-
-      groupItem.appendChild(removeButton);
-      groupItem.appendChild(editButton);
-      groupList.appendChild(groupItem);
-    });
-  };
-
-  // Handle group editing
-  document.getElementById('edit-group-form').addEventListener('submit', function (event) {
-    event.preventDefault();
-    const updatedName = document.getElementById('edit-group-name').value;
-    const group = groups.find(g => g.id === currentGroupId);
-    if (group) {
-      group.name = updatedName;
-      renderGroups();
-      showScreen('groups-screen');
-    }
-  });
-
-  // Handle buzz member selection
-  document.getElementById('buzz-members-button').addEventListener('click', function () {
-    const memberSelect = document.getElementById('member-select');
-    const selectedMember = memberSelect.value;
-
-    if (selectedMember) {
-      socket.emit('send-buzz', { memberPhone: selectedMember });
-      document.getElementById('buzzSound').play();
-    } else {
-      alert('Please select a member to buzz.');
-    }
-  });
-
-  // Handle logout
-  document.getElementById('logout').addEventListener('click', function () {
-    localStorage.removeItem('user');
-    showScreen('login-screen');
-  });
 });
+
+function createGroup() {
+  const groupName = prompt("Enter group name");
+  if (groupName) {
+    const groupList = document.getElementById("groups-list");
+    const groupDiv = document.createElement("div");
+    groupDiv.classList.add("group-item");
+    groupDiv.innerHTML = `
+      <span>${groupName}</span>
+      <button onclick="editGroup('${groupName}')">Edit</button>
+      <button onclick="removeGroup(this)">Remove</button>
+      <button onclick="showMembers('${groupName}')">View Members</button>
+    `;
+    groupList.appendChild(groupDiv);
+  }
+}
+
+function editGroup(groupName) {
+  const newName = prompt("Edit group name", groupName);
+  if (newName) {
+    const groupDiv = document.querySelector(`.group-item span:contains(${groupName})`).parentNode;
+    groupDiv.querySelector("span").textContent = newName;
+  }
+}
+
+function removeGroup(button) {
+  button.parentElement.remove();
+}
+
+function showMembers(groupName) {
+  const membersList = prompt("Enter members for " + groupName + " (comma separated)");
+  if (membersList) {
+    const members = membersList.split(",").map(name => name.trim());
+    const memberDiv = document.createElement("div");
+    memberDiv.innerHTML = `
+      <h3>Members for ${groupName}</h3>
+      <ul>
+        ${members.map(member => `<li>${member}</li>`).join("")}
+      </ul>
+      <button onclick="selectToBuzz()">Select to Buzz</button>
+    `;
+    document.body.appendChild(memberDiv);
+  }
+}
+
+function selectToBuzz() {
+  alert("You have selected members to buzz.");
+}
