@@ -1,5 +1,3 @@
-// server.js
-
 const express = require('express');
 const http = require('http');
 const cors = require('cors');
@@ -17,7 +15,7 @@ app.use(express.json()); // To parse JSON requests
 // Set up Socket.IO with CORS
 const io = new Server(server, {
   cors: {
-    origin: '*', // Allow all origins (you might restrict this in production)
+    origin: process.env.FRONTEND_URL || '*', // Use an environment variable for the frontend URL
     methods: ['GET', 'POST'],
     allowedHeaders: ['Content-Type'], // Allow specific headers
   },
