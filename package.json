@@ -1,7 +1,6 @@
 {
   "name": "buzz-app",
   "version": "1.0.0",
-  "description": "A simple app to buzz group members",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -9,8 +8,5 @@
   },
   "dependencies": {
     "express": "^4.18.2"
-  },
-  "devDependencies": {
-    "nodemon": "^3.0.2"
   }
 }
