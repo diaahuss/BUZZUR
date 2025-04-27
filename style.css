@@ -1,6 +1,6 @@
 body {
   font-family: Arial, sans-serif;
-  background-color: #e3f2fd; /* Pale blue */
+  background-color: #e3f2fd; /* Pale blue background */
   margin: 0;
   padding: 0;
 }
@@ -8,22 +8,23 @@ body {
 .container {
   width: 90%;
   max-width: 600px;
-  margin: 20px auto;
-  padding: 20px;
+  margin: 30px auto;
+  padding: 25px;
   border: 2px solid #ccc;
-  border-radius: 12px;
-  background-color: #f0f8ff;
+  border-radius: 16px;
+  background-color: #f0f8ff; /* Lighter blue inside the container */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .banner {
-  background-color: #007bb5;
+  background-color: #007bb5; /* Deep blue */
   color: white;
-  padding: 15px;
+  padding: 18px;
   text-align: center;
-  font-size: 28px;
-  font-weight: 600;
-  border-radius: 12px;
-  margin-bottom: 20px;
+  font-size: 30px;
+  font-weight: 700;
+  border-radius: 16px;
+  margin-bottom: 25px;
   width: 100%;
   box-sizing: border-box;
 }
@@ -32,15 +33,19 @@ input, button {
   display: block;
   width: 100%;
   box-sizing: border-box;
-  padding: 10px;
-  margin-top: 10px;
+  padding: 12px;
+  margin-top: 12px;
   font-size: 18px;
-  border-radius: 6px;
+  border-radius: 8px;
   border: 1px solid #ccc;
 }
 
+input::placeholder {
+  color: #999;
+}
+
 button {
-  background-color: #a6e3a1;
+  background-color: #a6e3a1; /* Pale green */
   color: #003300;
   border: none;
   cursor: pointer;
@@ -64,7 +69,7 @@ button:disabled {
   opacity: 0.6;
 }
 
-button:focus, input:focus {
+input:focus, button:focus {
   outline: 2px solid #3f80d1;
 }
 
@@ -83,7 +88,7 @@ a:active {
 }
 
 .link-row {
-  margin-top: 10px;
+  margin-top: 15px;
   text-align: center;
 }
 
@@ -92,13 +97,13 @@ a:active {
 }
 
 .link-row a {
-  margin: 0 10px;
+  margin: 0 12px;
 }
 
 .group-section {
-  margin-top: 15px;
+  margin-top: 20px;
+  padding-bottom: 15px;
   border-bottom: 1px solid #ddd;
-  padding-bottom: 10px;
 }
 
 @media (max-width: 600px) {
