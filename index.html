@@ -116,8 +116,11 @@
 </div>
 
 <!-- Audio element for buzz sound -->
-<audio id="buzz-sound" src="assets/sounds/buzz.mp3"></audio>
-
+<audio id="buzz-sound" preload="auto">
+  <source src="buzz.mp3" type="audio/mpeg">
+  Your browser doesn't support audio.
+</audio>
+        
     <!-- Scripts -->
     <script src="script.js"></script>
     <!-- Firebase SDKs -->
