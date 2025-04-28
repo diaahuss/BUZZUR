@@ -255,31 +255,51 @@ const BuzzService = {
         `).join('');
     },
 
-    sendBuzz() {
-        const groupId = Utils.getElement('current-buzz-group')?.value;
-        const group = AppState.groups.find(g => g.id === groupId);
-        
-        if (!group || group.members.length === 0) {
-            alert('No members in this group');
-            return;
-        }
-        
-        const selected = Array.from(
-            document.querySelectorAll('#member-list input:checked')
-        ).map(el => el.value);
-        
-        if (selected.length === 0) {
-            alert('Please select at least one member');
-            return;
-        }
-        
-        const sound = Utils.getElement('buzz-sound');
-        if (sound) sound.play();
-        
-        alert(`Buzz sent to ${selected.length} members!`);
-        Utils.debugLog('Buzz sent to:', selected);
+   sendBuzz() {
+    const groupId = Utils.getElement('current-buzz-group')?.value;
+    const group = AppState.groups.find(g => g.id === groupId);
+    
+    if (!group || group.members.length === 0) {
+        alert('No members in this group');
+        return;
     }
-};
+    
+    const selected = Array.from(
+        document.querySelectorAll('#member-list input:checked')
+    ).map(el => el.value);
+    
+    if (selected.length === 0) {
+        alert('Please select at least one member');
+        return;
+    }
+
+    // Play sound (optional)
+    const sound = Utils.getElement('buzz-sound');
+    if (sound) sound.play();
+
+    // Send buzz via Twilio Function
+    selected.forEach(phoneNumber => {
+        fetch('https://cadet-goldfinch-4268.twil.io/send-buzz', {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+                to: phoneNumber // Format: '+18176005715'
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            Utils.debugLog('Buzz sent to', phoneNumber, 'Result:', data);
+        })
+        .catch(err => {
+            console.error('Failed to buzz', phoneNumber, 'Error:', err);
+        });
+    });
+
+    alert(`Buzz sent to ${selected.length} members!`);
+}
+
 
 /*********************
  * NAVIGATION SERVICE
