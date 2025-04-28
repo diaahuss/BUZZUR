@@ -273,16 +273,8 @@ const BuzzService = {
             return;
         }
 
-        // 3. Play sound
-        try {
-            const sound = document.getElementById('buzz-sound');
-            if (sound) {
-                sound.currentTime = 0;
-                await sound.play();
-            }
-        } catch (e) {
-            console.warn('Audio error:', e);
-        }
+        // 3. Play sound with fallback
+        this._playBuzzSound();
 
         // 4. Send buzzes
         try {
@@ -315,12 +307,26 @@ const BuzzService = {
             console.error('Buzz failed:', err);
             alert('Network error - check console');
         }
+    },
+
+    _playBuzzSound() {
+        const sound = document.getElementById('buzz-sound');
+        if (!sound) return;
+
+        sound.currentTime = 0;
+        const playPromise = sound.play();
+        
+        if (playPromise !== undefined) {
+            playPromise.catch(e => {
+                console.warn('Auto-play blocked:', e);
+                // Optional: Add visual feedback here if needed
+            });
+        }
     }
 };
 
 // Initialize on app start
 BuzzService.init();
-
 /*********************
  * NAVIGATION SERVICE
  *********************/
