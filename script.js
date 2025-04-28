@@ -231,44 +231,30 @@ const GroupService = {
  * BUZZ SERVICE
  *********************/
 const BuzzService = {
-    // Initialize event listeners for buzz screen
     init() {
-        const sendBuzzBtn = Utils.getElement('send-buzz-btn');
-        const cancelBuzzBtn = Utils.getElement('cancel-buzz');
-        
-        if (sendBuzzBtn) {
-            sendBuzzBtn.addEventListener('click', () => this.sendBuzz());
-        }
-        
-        if (cancelBuzzBtn) {
-            cancelBuzzBtn.addEventListener('click', () => {
-                Utils.switchScreen('my-groups-screen');
-            });
-        }
+        document.getElementById('send-buzz-btn')?.addEventListener('click', () => this.sendBuzz());
+        document.getElementById('cancel-buzz')?.addEventListener('click', () => {
+            Utils.switchScreen('my-groups-screen');
+        });
     },
 
     startBuzz(groupId) {
         const group = AppState.groups.find(g => g.id === groupId);
-        if (!group) {
-            Utils.debugLog('Group not found:', groupId);
-            return;
-        }
+        if (!group) return;
         
-        const groupInput = Utils.getElement('current-buzz-group');
-        if (groupInput) groupInput.value = groupId;
-        
+        document.getElementById('current-buzz-group').value = groupId;
         this.renderBuzzMembers(group.members);
         Utils.switchScreen('buzz-screen');
     },
 
     renderBuzzMembers(members) {
-        const container = Utils.getElement('member-list');
+        const container = document.getElementById('member-list');
         if (!container) return;
         
         container.innerHTML = members.map(member => `
             <div class="member-card">
                 <label>
-                    <input type="checkbox" value="${member.phone}" checked> <!-- Default checked -->
+                    <input type="checkbox" value="${member.phone}" checked>
                     ${member.name} (${member.phone})
                 </label>
             </div>
@@ -276,74 +262,64 @@ const BuzzService = {
     },
 
     async sendBuzz() {
-        const groupId = Utils.getElement('current-buzz-group')?.value;
-        const group = AppState.groups.find(g => g.id === groupId);
-        
-        if (!group || group.members.length === 0) {
-            alert('No members in this group');
-            return;
-        }
-        
+        // 1. Get selected numbers
         const selected = Array.from(
             document.querySelectorAll('#member-list input:checked')
-        ).map(el => el.value);
-        
+        ).map(el => el.value.trim());
+
+        // 2. Validate numbers
         if (selected.length === 0) {
             alert('Please select at least one member');
             return;
         }
 
-        // Play sound
-        const sound = Utils.getElement('buzz-sound');
-        if (sound) {
-            sound.currentTime = 0; // Reset audio to start
-            sound.play().catch(e => Utils.debugLog('Audio error:', e));
+        // 3. Play sound
+        try {
+            const sound = document.getElementById('buzz-sound');
+            if (sound) {
+                sound.currentTime = 0;
+                await sound.play();
+            }
+        } catch (e) {
+            console.warn('Audio error:', e);
         }
 
-        // Send buzzes and track results
-        let successCount = 0;
-        const errors = [];
-        
+        // 4. Send buzzes
         try {
-            await Promise.all(selected.map(async (phoneNumber) => {
-                try {
-                    const response = await fetch('https://cadet-goldfinch-4268.twil.io/send-buzz', {
+            const results = await Promise.allSettled(
+                selected.map(phone => 
+                    fetch('https://cadet-goldfinch-4268.twil.io/send-buzz', {
                         method: 'POST',
                         headers: { 
                             'Content-Type': 'application/x-www-form-urlencoded',
+                            'Accept': 'application/json'
                         },
-                        body: new URLSearchParams({ to: phoneNumber })
-                    });
-                    
-                    const data = await response.json();
-                    if (data.success) {
-                        successCount++;
-                        Utils.debugLog('Buzz sent to:', phoneNumber);
-                    } else {
-                        errors.push(`${phoneNumber}: ${data.error || 'Unknown error'}`);
-                    }
-                } catch (err) {
-                    errors.push(`${phoneNumber}: ${err.message}`);
-                }
-            }));
-            
-            // Show consolidated results
-            if (errors.length > 0) {
-                alert(`Sent to ${successCount} members. Failed for:\n${errors.join('\n')}`);
+                        body: new URLSearchParams({ to: phone })
+                    })
+                    .then(res => res.json())
+                    .then(data => ({ phone, data }))
+                )
+            );
+
+            // 5. Process results
+            const failed = results.filter(r => r.status === 'rejected' || !r.value.data.success);
+            if (failed.length > 0) {
+                const errorList = failed.map(f => 
+                    `• ${f.reason?.message || f.value?.data?.error || 'Unknown error'}`
+                ).join('\n');
+                alert(`Failed to send to ${failed.length}/${selected.length}:\n${errorList}`);
             } else {
-                alert(`✅ Buzz sent successfully to ${successCount} members!`);
+                alert(`✅ Buzz sent to ${selected.length} members!`);
             }
-            
-        } catch (networkError) {
-            console.error('Network failure:', networkError);
-            alert('Network error - please try again');
+        } catch (err) {
+            console.error('Buzz failed:', err);
+            alert('Network error - check console');
         }
     }
 };
 
-// Initialize when the app starts
+// Initialize on app start
 BuzzService.init();
-
 
 /*********************
  * NAVIGATION SERVICE
