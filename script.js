@@ -231,12 +231,32 @@ const GroupService = {
  * BUZZ SERVICE
  *********************/
 const BuzzService = {
+    // Initialize event listeners for buzz screen
+    init() {
+        const sendBuzzBtn = Utils.getElement('send-buzz-btn');
+        const cancelBuzzBtn = Utils.getElement('cancel-buzz');
+        
+        if (sendBuzzBtn) {
+            sendBuzzBtn.addEventListener('click', () => this.sendBuzz());
+        }
+        
+        if (cancelBuzzBtn) {
+            cancelBuzzBtn.addEventListener('click', () => {
+                Utils.switchScreen('my-groups-screen');
+            });
+        }
+    },
+
     startBuzz(groupId) {
         const group = AppState.groups.find(g => g.id === groupId);
-        if (!group) return;
+        if (!group) {
+            Utils.debugLog('Group not found:', groupId);
+            return;
+        }
         
         const groupInput = Utils.getElement('current-buzz-group');
         if (groupInput) groupInput.value = groupId;
+        
         this.renderBuzzMembers(group.members);
         Utils.switchScreen('buzz-screen');
     },
@@ -248,57 +268,81 @@ const BuzzService = {
         container.innerHTML = members.map(member => `
             <div class="member-card">
                 <label>
-                    <input type="checkbox" value="${member.phone}">
+                    <input type="checkbox" value="${member.phone}" checked> <!-- Default checked -->
                     ${member.name} (${member.phone})
                 </label>
             </div>
         `).join('');
     },
 
-   sendBuzz() {
-    const groupId = Utils.getElement('current-buzz-group')?.value;
-    const group = AppState.groups.find(g => g.id === groupId);
-    
-    if (!group || group.members.length === 0) {
-        alert('No members in this group');
-        return;
+    async sendBuzz() {
+        const groupId = Utils.getElement('current-buzz-group')?.value;
+        const group = AppState.groups.find(g => g.id === groupId);
+        
+        if (!group || group.members.length === 0) {
+            alert('No members in this group');
+            return;
+        }
+        
+        const selected = Array.from(
+            document.querySelectorAll('#member-list input:checked')
+        ).map(el => el.value);
+        
+        if (selected.length === 0) {
+            alert('Please select at least one member');
+            return;
+        }
+
+        // Play sound
+        const sound = Utils.getElement('buzz-sound');
+        if (sound) {
+            sound.currentTime = 0; // Reset audio to start
+            sound.play().catch(e => Utils.debugLog('Audio error:', e));
+        }
+
+        // Send buzzes and track results
+        let successCount = 0;
+        const errors = [];
+        
+        try {
+            await Promise.all(selected.map(async (phoneNumber) => {
+                try {
+                    const response = await fetch('https://cadet-goldfinch-4268.twil.io/send-buzz', {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: new URLSearchParams({ to: phoneNumber })
+                    });
+                    
+                    const data = await response.json();
+                    if (data.success) {
+                        successCount++;
+                        Utils.debugLog('Buzz sent to:', phoneNumber);
+                    } else {
+                        errors.push(`${phoneNumber}: ${data.error || 'Unknown error'}`);
+                    }
+                } catch (err) {
+                    errors.push(`${phoneNumber}: ${err.message}`);
+                }
+            }));
+            
+            // Show consolidated results
+            if (errors.length > 0) {
+                alert(`Sent to ${successCount} members. Failed for:\n${errors.join('\n')}`);
+            } else {
+                alert(`✅ Buzz sent successfully to ${successCount} members!`);
+            }
+            
+        } catch (networkError) {
+            console.error('Network failure:', networkError);
+            alert('Network error - please try again');
+        }
     }
-    
-    const selected = Array.from(
-        document.querySelectorAll('#member-list input:checked')
-    ).map(el => el.value);
-    
-    if (selected.length === 0) {
-        alert('Please select at least one member');
-        return;
-    }
+};
 
-    // Play sound (optional)
-    const sound = Utils.getElement('buzz-sound');
-    if (sound) sound.play();
-
-    // Send buzz via Twilio Function
-    selected.forEach(phoneNumber => {
-        fetch('https://cadet-goldfinch-4268.twil.io/send-buzz', {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: new URLSearchParams({
-                to: phoneNumber // Format: '+18176005715'
-            })
-        })
-        .then(res => res.json())
-        .then(data => {
-            Utils.debugLog('Buzz sent to', phoneNumber, 'Result:', data);
-        })
-        .catch(err => {
-            console.error('Failed to buzz', phoneNumber, 'Error:', err);
-        });
-    });
-
-    alert(`Buzz sent to ${selected.length} members!`);
-}
+// Initialize when the app starts
+BuzzService.init();
 
 
 /*********************
