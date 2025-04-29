@@ -1,3 +1,4 @@
+// ========== INITIALIZATION ==========
 document.addEventListener('DOMContentLoaded', function() {
     // DOM Elements
     const loginScreen = document.getElementById('login-screen');
@@ -24,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const buzzSelectedBtn = document.getElementById('buzz-selected-btn');
     const buzzAllBtn = document.getElementById('buzz-all-btn');
 
-    // Sample data (replace with actual backend integration)
+    // Sample data
     let groups = [
         { id: 1, name: "Family", members: ["Mom", "Dad", "Sister"] },
         { id: 2, name: "Friends", members: ["Alice", "Bob", "Charlie"] },
@@ -32,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
     ];
     let currentGroup = null;
 
-    // Event Listeners
+    // ========== EVENT LISTENERS ==========
     loginBtn.addEventListener('click', handleLogin);
     listGroupsBtn.addEventListener('click', listGroups);
     createGroupBtn.addEventListener('click', showCreateGroupModal);
@@ -47,9 +48,8 @@ document.addEventListener('DOMContentLoaded', function() {
     buzzSelectedBtn.addEventListener('click', buzzSelectedMembers);
     buzzAllBtn.addEventListener('click', buzzAllMembers);
 
-    // Functions
+    // ========== CORE FUNCTIONS ==========
     function handleLogin() {
-        // In a real app, validate credentials with backend
         loginScreen.classList.add('hidden');
         groupsScreen.classList.remove('hidden');
         listGroups();
@@ -94,6 +94,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // ========== GROUP MANAGEMENT FUNCTIONS ==========
     function showCreateGroupModal() {
         newGroupName.value = '';
         createGroupModal.classList.remove('hidden');
@@ -161,13 +162,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // ========== BUZZ FUNCTIONS ==========
     function buzzSelectedMembers() {
         const checkboxes = membersList.querySelectorAll('input[type="checkbox"]:checked');
         const membersToBuzz = Array.from(checkboxes).map(cb => cb.nextElementSibling.textContent);
         
         if (membersToBuzz.length > 0) {
             alert(`Buzzing: ${membersToBuzz.join(', ')}`);
-            // In a real app, send buzz request to backend for these members
+            // Replace with actual buzz functionality
         } else {
             alert("Please select members to buzz");
         }
@@ -176,7 +178,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function buzzAllMembers() {
         if (currentGroup.members.length > 0) {
             alert(`Buzzing all: ${currentGroup.members.join(', ')}`);
-            // In a real app, send buzz request to backend for all members
+            // Replace with actual buzz functionality
         } else {
             alert("No members in this group");
         }
