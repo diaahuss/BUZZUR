@@ -1,307 +1,188 @@
 :root {
-    --primary: #4361ee;
-    --primary-dark: #3a56d4;
-    --secondary: #3f37c9;
-    --danger: #f72585;
-    --light: #f8f9fa;
-    --dark: #212529;
-    --gray: #6c757d;
-    --border: #dee2e6;
-    --card-bg: #ffffff;
-}
-
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+    --primary-color: #e1f5fe;
+    --secondary-color: #b3e5fc;
+    --accent-color: #4fc3f7;
+    --dark-accent: #0288d1;
+    --text-color: #01579b;
+    --light-text: #ffffff;
+    --border-color: #81d4fa;
+    --error-color: #ffcdd2;
 }
 
 body {
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    background-color: #f5f7fa;
-    color: var(--dark);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 0;
     line-height: 1.6;
 }
 
 .app-container {
-    max-width: 100%;
-    min-height: 100vh;
+    max-width: 600px;
     margin: 0 auto;
-    position: relative;
-}
-
-/* Auth Screens */
-.auth-screen {
-    display: none;
-    max-width: 400px;
-    margin: 0 auto;
-    padding: 2rem 1.5rem;
-}
-
-.auth-screen.active {
-    display: block;
-}
-
-.auth-header {
-    text-align: center;
-    margin-bottom: 2rem;
-}
-
-.auth-header i {
-    font-size: 3rem;
-    color: var(--primary);
-    margin-bottom: 1rem;
-}
-
-.auth-header h1 {
-    font-size: 1.8rem;
-    margin-bottom: 0.5rem;
-}
-
-.auth-header p {
-    color: var(--gray);
-}
-
-.auth-form {
-    background: white;
-    padding: 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-}
-
-.input-group {
-    position: relative;
-    margin-bottom: 1rem;
-}
-
-.input-group input {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    font-size: 1rem;
-}
-
-.input-group .toggle-pw {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    color: var(--gray);
-    cursor: pointer;
-}
-
-.btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.75rem 1.5rem;
-    border: none;
-    border-radius: 6px;
-    font-size: 1rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    gap: 0.5rem;
-}
-
-.btn.primary {
-    background-color: var(--primary);
-    color: white;
-    width: 100%;
-    margin-top: 0.5rem;
-}
-
-.btn.primary:hover {
-    background-color: var(--primary-dark);
-}
-
-.btn.secondary {
-    background-color: var(--light);
-    color: var(--dark);
-}
-
-.btn.icon {
-    background: none;
-    padding: 0.5rem;
-    color: var(--gray);
-}
-
-.btn.icon:hover {
-    color: var(--dark);
-}
-
-.btn.icon.danger {
-    color: var(--danger);
-}
-
-.btn.small {
-    padding: 0.5rem 1rem;
-    font-size: 0.875rem;
-}
-
-.auth-footer {
-    text-align: center;
-    margin-top: 1.5rem;
-    font-size: 0.9rem;
-}
-
-.auth-footer a {
-    color: var(--primary);
-    text-decoration: none;
-    font-weight: 500;
-}
-
-/* App Screens */
-.app-screen {
-    display: none;
-    flex-direction: column;
-    height: 100vh;
-    max-width: 400px;
-    margin: 0 auto;
-    background: white;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .app-header {
-    padding: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid var(--border);
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .app-header h1 {
-    font-size: 1.25rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+    color: var(--dark-accent);
+    margin-bottom: 5px;
 }
 
-.app-main {
-    flex: 1;
-    padding: 1rem;
-    overflow-y: auto;
+.app-subtitle {
+    color: var(--text-color);
+    font-size: 0.9em;
+    margin-top: 0;
 }
 
-.app-footer {
-    padding: 1rem;
-    border-top: 1px solid var(--border);
-}
-
-.cards-container {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1rem;
-}
-
-.group-card {
-    background: var(--card-bg);
-    border-radius: 8px;
-    padding: 1rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    transition: transform 0.2s;
-}
-
-.group-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-
-.group-card h3 {
-    margin-bottom: 0.5rem;
-}
-
-.group-card p {
-    color: var(--gray);
-    font-size: 0.875rem;
-}
-
-.group-actions {
-    display: flex;
-    gap: 0.5rem;
-    margin-top: 1rem;
-}
-
-.section {
-    margin-bottom: 1.5rem;
-}
-
-.section h2 {
-    font-size: 1rem;
-    margin-bottom: 1rem;
-    color: var(--gray);
-}
-
-.section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-}
-
-.members-list {
+.main-content {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 30px;
 }
 
-.member-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.75rem;
-    background: var(--light);
-    border-radius: 6px;
-}
-
-.member-item .actions {
-    display: flex;
-    gap: 0.5rem;
-}
-
-.selection-actions {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-}
-
-/* Modals */
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.5);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 100;
-}
-
-.modal.active {
-    display: flex;
-}
-
-.modal-content {
-    background: white;
-    width: 90%;
-    max-width: 400px;
+section {
+    background-color: var(--secondary-color);
+    padding: 20px;
     border-radius: 8px;
-    padding: 1.5rem;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-.modal-actions {
+h2 {
+    color: var(--dark-accent);
+    margin-top: 0;
+    font-size: 1.3em;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+input[type="text"],
+textarea,
+select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 0.9em;
+    box-sizing: border-box;
+}
+
+textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.button-group {
     display: flex;
-    justify-content: flex-end;
-    gap: 0.5rem;
-    margin-top: 1.5rem;
+    gap: 10px;
+    margin-bottom: 15px;
 }
 
-/* Utility Classes */
-.hidden {
-    display: none !important;
+.btn-primary, .btn-secondary {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-primary {
+    background-color: var(--dark-accent);
+    color: var(--light-text);
+}
+
+.btn-primary:hover {
+    background-color: #0277bd;
+}
+
+.btn-secondary {
+    background-color: var(--accent-color);
+    color: var(--light-text);
+}
+
+.btn-secondary:hover {
+    background-color: #29b6f6;
+}
+
+.groups-list {
+    margin-top: 15px;
+}
+
+.group-item {
+    background-color: white;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    border-left: 4px solid var(--accent-color);
+}
+
+.group-item h3 {
+    margin-top: 0;
+    color: var(--dark-accent);
+    font-size: 1em;
+}
+
+.group-item p {
+    margin-bottom: 5px;
+    font-size: 0.9em;
+}
+
+.status-message {
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 4px;
+    display: none;
+}
+
+.status-message.success {
+    background-color: var(--secondary-color);
+    border-left: 4px solid var(--dark-accent);
+    display: block;
+}
+
+.status-message.error {
+    background-color: var(--error-color);
+    border-left: 4px solid #d32f2f;
+    display: block;
+}
+
+@media (max-width: 480px) {
+    .app-container {
+        padding: 15px;
+    }
+    
+    section {
+        padding: 15px;
+    }
+    
+    .button-group {
+        flex-direction: column;
+    }
+    
+    .btn-primary, .btn-secondary {
+        width: 100%;
+    }
 }
