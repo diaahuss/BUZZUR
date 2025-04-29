@@ -1,330 +1,401 @@
-// DOM Elements
-const screens = {
-    login: document.getElementById('login-screen'),
-    signup: document.getElementById('signup-screen'),
-    myGroups: document.getElementById('my-groups-screen'),
-    createGroup: document.getElementById('create-group-screen'),
-    editGroup: document.getElementById('edit-group-screen'),
-    buzz: document.getElementById('buzz-screen')
-};
+class BuzzAllApp {
+    constructor() {
+        // DOM Elements
+        this.dom = {
+            authScreens: document.getElementById('auth-screens'),
+            appScreens: document.getElementById('app-screens'),
+            loginScreen: document.getElementById('login-screen'),
+            signupScreen: document.getElementById('signup-screen'),
+            groupsScreen: document.getElementById('groups-screen'),
+            groupManagementScreen: document.getElementById('group-management-screen'),
+            buzzScreen: document.getElementById('buzz-screen'),
+            groupsList: document.getElementById('groups-list'),
+            membersList: document.getElementById('members-list'),
+            buzzMembersList: document.getElementById('buzz-members-list'),
+            addMemberModal: document.getElementById('add-member-modal'),
+            buzzSound: document.getElementById('buzz-sound')
+        };
 
-// Sample data storage
-let users = [
-    { phone: '1234567890', password: 'password123', name: 'John Doe', groups: [] }
-];
-let groups = [];
-let currentUser = null;
+        // State
+        this.state = {
+            currentUser: null,
+            currentGroup: null,
+            groups: JSON.parse(localStorage.getItem('buzzall-groups')) || [],
+            users: JSON.parse(localStorage.getItem('buzzall-users')) || [
+                { phone: '1234567890', password: 'password123', name: 'Test User' }
+            ]
+        };
 
-// Initialize the app
-function init() {
-    // Show login screen by default
-    showScreen('login');
-    
-    // Setup event listeners
-    setupEventListeners();
-}
-
-// Show specific screen
-function showScreen(screenName) {
-    // Hide all screens first
-    Object.values(screens).forEach(screen => {
-        screen.style.display = 'none';
-    });
-    
-    // Show the requested screen
-    if (screens[screenName]) {
-        screens[screenName].style.display = 'flex';
+        // Initialize
+        this.initAuth();
+        this.initGroups();
+        this.initBuzz();
+        this.showScreen('login');
     }
-    
-    // Load data if needed
-    if (screenName === 'myGroups') {
-        loadGroups();
-    }
-}
 
-// Setup all event listeners
-function setupEventListeners() {
-    // Login/Signup navigation
-    document.getElementById('to-signup').addEventListener('click', () => showScreen('signup'));
-    document.getElementById('to-login').addEventListener('click', () => showScreen('login'));
-    
-    // Login button
-    document.getElementById('login-btn').addEventListener('click', handleLogin);
-    
-    // Signup button
-    document.getElementById('signup-btn').addEventListener('click', handleSignup);
-    
-    // Password toggle
-    document.querySelectorAll('.toggle-password').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const input = this.parentElement.querySelector('input');
-            const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
-            input.setAttribute('type', type);
-            this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+    // ======================
+    // CORE FUNCTIONALITY
+    // ======================
+
+    showScreen(screenName) {
+        // Hide all screens first
+        document.querySelectorAll('.auth-screen, .app-screen').forEach(el => {
+            el.classList.remove('active');
+            el.style.display = 'none';
         });
-    });
-    
-    // Groups screen buttons
-    document.getElementById('create-group-btn').addEventListener('click', () => showScreen('createGroup'));
-    document.getElementById('refresh-groups').addEventListener('click', loadGroups);
-    document.getElementById('logout-btn').addEventListener('click', () => {
-        currentUser = null;
-        showScreen('login');
-    });
-    
-    // Create group buttons
-    document.getElementById('confirm-create-group').addEventListener('click', createGroup);
-    document.getElementById('cancel-create-group').addEventListener('click', () => showScreen('myGroups'));
-    
-    // Edit group buttons
-    document.getElementById('add-member-btn').addEventListener('click', addMemberToGroup);
-    document.getElementById('save-group-btn').addEventListener('click', saveGroupChanges);
-    document.getElementById('cancel-edit-group').addEventListener('click', () => showScreen('myGroups'));
-    
-    // Buzz screen buttons
-    document.getElementById('send-buzz-btn').addEventListener('click', sendBuzz);
-    document.getElementById('cancel-buzz').addEventListener('click', () => showScreen('myGroups'));
-}
 
-// Handle login
-function handleLogin() {
-    const phone = document.getElementById('login-phone').value;
-    const password = document.getElementById('login-password').value;
-    
-    const user = users.find(u => u.phone === phone && u.password === password);
-    
-    if (user) {
-        currentUser = user;
-        showScreen('myGroups');
-    } else {
-        alert('Invalid phone number or password');
+        // Show the requested screen
+        switch(screenName) {
+            case 'login':
+                this.dom.loginScreen.classList.add('active');
+                break;
+            case 'signup':
+                this.dom.signupScreen.classList.add('active');
+                break;
+            case 'groups':
+                this.dom.groupsScreen.style.display = 'flex';
+                this.loadGroups();
+                break;
+            case 'group-management':
+                this.dom.groupManagementScreen.style.display = 'flex';
+                this.loadGroupManagement();
+                break;
+            case 'buzz':
+                this.dom.buzzScreen.style.display = 'flex';
+                this.loadBuzzScreen();
+                break;
+        }
     }
-}
 
-// Handle signup
-function handleSignup() {
-    const name = document.getElementById('signup-name').value;
-    const phone = document.getElementById('signup-phone').value;
-    const password = document.getElementById('signup-password').value;
-    const confirmPassword = document.getElementById('signup-confirm-password').value;
-    
-    if (password !== confirmPassword) {
-        alert('Passwords do not match');
-        return;
+    saveData() {
+        localStorage.setItem('buzzall-users', JSON.stringify(this.state.users));
+        localStorage.setItem('buzzall-groups', JSON.stringify(this.state.groups));
     }
-    
-    if (users.some(u => u.phone === phone)) {
-        alert('Phone number already registered');
-        return;
-    }
-    
-    const newUser = {
-        phone,
-        password,
-        name,
-        groups: []
-    };
-    
-    users.push(newUser);
-    currentUser = newUser;
-    showScreen('myGroups');
-}
 
-// Load groups for current user
-function loadGroups() {
-    const groupList = document.getElementById('group-list');
-    groupList.innerHTML = '';
-    
-    const userGroups = groups.filter(g => g.members.some(m => m.phone === currentUser.phone));
-    
-    if (userGroups.length === 0) {
-        groupList.innerHTML = '<p>No groups found. Create your first group!</p>';
-        return;
-    }
-    
-    userGroups.forEach(group => {
-        const groupCard = document.createElement('div');
-        groupCard.className = 'card';
-        groupCard.innerHTML = `
-            <h3>${group.name}</h3>
-            <p>${group.members.length} members</p>
-            <div class="card-actions">
-                <button class="btn primary edit-group" data-id="${group.id}">Edit</button>
-                <button class="btn primary buzz-group" data-id="${group.id}">Buzz</button>
-            </div>
-        `;
-        groupList.appendChild(groupCard);
-    });
-    
-    // Add event listeners to the new buttons
-    document.querySelectorAll('.edit-group').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const groupId = this.getAttribute('data-id');
-            editGroup(groupId);
+    // ======================
+    // AUTHENTICATION
+    // ======================
+
+    initAuth() {
+        // Login/Signup toggle
+        document.getElementById('show-signup').addEventListener('click', () => this.showScreen('signup'));
+        document.getElementById('show-login').addEventListener('click', () => this.showScreen('login'));
+
+        // Login form
+        document.getElementById('login-btn').addEventListener('click', () => {
+            const phone = document.getElementById('login-phone').value;
+            const password = document.getElementById('login-password').value;
+            this.handleLogin(phone, password);
         });
-    });
-    
-    document.querySelectorAll('.buzz-group').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const groupId = this.getAttribute('data-id');
-            prepareBuzz(groupId);
-        });
-    });
-}
 
-// Create a new group
-function createGroup() {
-    const groupName = document.getElementById('new-group-name').value;
-    
-    if (!groupName) {
-        alert('Please enter a group name');
-        return;
-    }
-    
-    const newGroup = {
-        id: Date.now().toString(),
-        name: groupName,
-        members: [
-            { name: currentUser.name, phone: currentUser.phone }
-        ]
-    };
-    
-    groups.push(newGroup);
-    showScreen('myGroups');
-}
-
-// Edit an existing group
-function editGroup(groupId) {
-    const group = groups.find(g => g.id === groupId);
-    
-    if (!group) {
-        alert('Group not found');
-        return;
-    }
-    
-    document.getElementById('edit-group-name').value = group.name;
-    document.getElementById('edit-group-id').value = group.id;
-    
-    const memberList = document.getElementById('current-members');
-    memberList.innerHTML = '';
-    
-    group.members.forEach(member => {
-        const memberItem = document.createElement('div');
-        memberItem.className = 'member-item';
-        memberItem.innerHTML = `
-            <span>${member.name} (${member.phone})</span>
-            <button class="btn icon remove-member" data-phone="${member.phone}">
-                <i class="fas fa-times"></i>
-            </button>
-        `;
-        memberList.appendChild(memberItem);
-    });
-    
-    // Add event listeners to remove buttons
-    document.querySelectorAll('.remove-member').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const phone = this.getAttribute('data-phone');
-            if (phone === currentUser.phone) {
-                alert('You cannot remove yourself from the group');
+        // Signup form
+        document.getElementById('signup-btn').addEventListener('click', () => {
+            const name = document.getElementById('signup-name').value;
+            const phone = document.getElementById('signup-phone').value;
+            const password = document.getElementById('signup-password').value;
+            const confirm = document.getElementById('signup-confirm').value;
+            
+            if (password !== confirm) {
+                alert("Passwords don't match");
                 return;
             }
-            removeMember(groupId, phone);
+            
+            this.handleSignup(name, phone, password);
         });
-    });
-    
-    showScreen('editGroup');
-}
 
-// Add member to group
-function addMemberToGroup() {
-    const groupId = document.getElementById('edit-group-id').value;
-    const name = document.getElementById('new-member-name').value;
-    const phone = document.getElementById('new-member-phone').value;
-    
-    if (!name || !phone) {
-        alert('Please enter both name and phone number');
-        return;
+        // Password toggle
+        document.querySelectorAll('.toggle-pw').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const input = this.parentElement.querySelector('input');
+                input.type = input.type === 'password' ? 'text' : 'password';
+                this.innerHTML = input.type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+            });
+        });
     }
-    
-    const group = groups.find(g => g.id === groupId);
-    
-    if (group.members.some(m => m.phone === phone)) {
-        alert('This member is already in the group');
-        return;
-    }
-    
-    group.members.push({ name, phone });
-    editGroup(groupId);
-}
 
-// Remove member from group
-function removeMember(groupId, phone) {
-    const group = groups.find(g => g.id === groupId);
-    group.members = group.members.filter(m => m.phone !== phone);
-    editGroup(groupId);
-}
-
-// Save group changes
-function saveGroupChanges() {
-    const groupId = document.getElementById('edit-group-id').value;
-    const newName = document.getElementById('edit-group-name').value;
-    
-    const group = groups.find(g => g.id === groupId);
-    group.name = newName;
-    
-    showScreen('myGroups');
-}
-
-// Prepare buzz screen
-function prepareBuzz(groupId) {
-    const group = groups.find(g => g.id === groupId);
-    
-    if (!group) {
-        alert('Group not found');
-        return;
-    }
-    
-    document.getElementById('current-buzz-group').value = groupId;
-    
-    const memberList = document.getElementById('member-list');
-    memberList.innerHTML = '';
-    
-    group.members.forEach(member => {
-        if (member.phone === currentUser.phone) return; // Skip self
+    handleLogin(phone, password) {
+        const user = this.state.users.find(u => u.phone === phone && u.password === password);
         
-        const memberCard = document.createElement('div');
-        memberCard.className = 'card';
-        memberCard.innerHTML = `
-            <label>
-                <input type="checkbox" class="member-checkbox" data-phone="${member.phone}">
-                ${member.name} (${member.phone})
-            </label>
-        `;
-        memberList.appendChild(memberCard);
-    });
-    
-    showScreen('buzz');
-}
-
-// Send buzz to selected members
-function sendBuzz() {
-    const groupId = document.getElementById('current-buzz-group').value;
-    const checkboxes = document.querySelectorAll('.member-checkbox:checked');
-    
-    if (checkboxes.length === 0) {
-        alert('Please select at least one member to buzz');
-        return;
+        if (user) {
+            this.state.currentUser = user;
+            this.showScreen('groups');
+        } else {
+            alert('Invalid phone number or password');
+        }
     }
-    
-    const membersToBuzz = Array.from(checkboxes).map(cb => cb.getAttribute('data-phone'));
-    
-    // Play buzz sound
-    const buzzSound = document.getElementById('buzz-sound');
-    buzzSound.play().catch(e => console.log('Audio play failed:', e));
-    
-    alert(`Buzz sent to ${membersToBuzz.length} members!`);
-    showScreen('myGroups');
+
+    handleSignup(name, phone, password) {
+        if (this.state.users.some(u => u.phone === phone)) {
+            alert('Phone number already registered');
+            return;
+        }
+        
+        const newUser = { name, phone, password };
+        this.state.users.push(newUser);
+        this.state.currentUser = newUser;
+        this.saveData();
+        this.showScreen('groups');
+    }
+
+    // ======================
+    // GROUPS MANAGEMENT
+    // ======================
+
+    initGroups() {
+        // Navigation
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            this.state.currentUser = null;
+            this.showScreen('login');
+        });
+
+        document.getElementById('back-to-groups').addEventListener('click', () => {
+            this.showScreen('groups');
+        });
+
+        // Group creation
+        document.getElementById('create-group-btn').addEventListener('click', () => {
+            this.createNewGroup();
+        });
+
+        // Group management
+        document.getElementById('save-group-btn').addEventListener('click', () => {
+            this.saveGroupChanges();
+        });
+
+        document.getElementById('delete-group-btn').addEventListener('click', () => {
+            if (confirm('Are you sure you want to delete this group?')) {
+                this.deleteCurrentGroup();
+            }
+        });
+
+        // Member management
+        document.getElementById('add-member-btn').addEventListener('click', () => {
+            this.dom.addMemberModal.classList.add('active');
+        });
+
+        document.getElementById('confirm-add-member').addEventListener('click', () => {
+            const name = document.getElementById('new-member-name').value;
+            const phone = document.getElementById('new-member-phone').value;
+            
+            if (!name || !phone) {
+                alert('Please enter both name and phone number');
+                return;
+            }
+            
+            this.addMemberToGroup(name, phone);
+        });
+
+        document.getElementById('cancel-add-member').addEventListener('click', () => {
+            this.dom.addMemberModal.classList.remove('active');
+        });
+    }
+
+    loadGroups() {
+        this.dom.groupsList.innerHTML = '';
+        
+        const userGroups = this.state.groups.filter(group => 
+            group.members.some(member => member.phone === this.state.currentUser.phone)
+        );
+        
+        if (userGroups.length === 0) {
+            this.dom.groupsList.innerHTML = '<p class="empty-state">No groups yet. Create your first group!</p>';
+            return;
+        }
+        
+        userGroups.forEach(group => {
+            const groupCard = document.createElement('div');
+            groupCard.className = 'group-card';
+            groupCard.innerHTML = `
+                <h3>${group.name}</h3>
+                <p>${group.members.length} members</p>
+                <div class="group-actions">
+                    <button class="btn small edit-group" data-id="${group.id}">
+                        <i class="fas fa-edit"></i> Manage
+                    </button>
+                    <button class="btn small buzz-group" data-id="${group.id}">
+                        <i class="fas fa-bell"></i> Buzz
+                    </button>
+                </div>
+            `;
+            this.dom.groupsList.appendChild(groupCard);
+            
+            // Add event listeners
+            groupCard.querySelector('.edit-group').addEventListener('click', () => {
+                this.state.currentGroup = group;
+                this.showScreen('group-management');
+            });
+            
+            groupCard.querySelector('.buzz-group').addEventListener('click', () => {
+                this.state.currentGroup = group;
+                this.showScreen('buzz');
+            });
+        });
+    }
+
+    createNewGroup() {
+        const groupName = prompt('Enter group name:');
+        if (!groupName) return;
+        
+        const newGroup = {
+            id: Date.now().toString(),
+            name: groupName,
+            members: [{
+                name: this.state.currentUser.name,
+                phone: this.state.currentUser.phone
+            }]
+        };
+        
+        this.state.groups.push(newGroup);
+        this.saveData();
+        this.loadGroups();
+    }
+
+    loadGroupManagement() {
+        if (!this.state.currentGroup) return;
+        
+        document.getElementById('group-management-title').textContent = this.state.currentGroup.name;
+        document.getElementById('group-name-input').value = this.state.currentGroup.name;
+        
+        this.dom.membersList.innerHTML = '';
+        this.state.currentGroup.members.forEach(member => {
+            const memberItem = document.createElement('div');
+            memberItem.className = 'member-item';
+            
+            const canRemove = member.phone !== this.state.currentUser.phone;
+            
+            memberItem.innerHTML = `
+                <span>${member.name} (${member.phone})</span>
+                ${canRemove ? `
+                <div class="actions">
+                    <button class="btn icon danger remove-member" data-phone="${member.phone}">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                ` : ''}
+            `;
+            
+            this.dom.membersList.appendChild(memberItem);
+            
+            if (canRemove) {
+                memberItem.querySelector('.remove-member').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.removeMemberFromGroup(member.phone);
+                });
+            }
+        });
+    }
+
+    addMemberToGroup(name, phone) {
+        if (this.state.currentGroup.members.some(m => m.phone === phone)) {
+            alert('This member is already in the group');
+            return;
+        }
+        
+        this.state.currentGroup.members.push({ name, phone });
+        this.saveData();
+        this.loadGroupManagement();
+        this.dom.addMemberModal.classList.remove('active');
+        
+        // Clear inputs
+        document.getElementById('new-member-name').value = '';
+        document.getElementById('new-member-phone').value = '';
+    }
+
+    removeMemberFromGroup(phone) {
+        this.state.currentGroup.members = this.state.currentGroup.members.filter(m => m.phone !== phone);
+        this.saveData();
+        this.loadGroupManagement();
+    }
+
+    saveGroupChanges() {
+        const newName = document.getElementById('group-name-input').value;
+        if (!newName) {
+            alert('Please enter a group name');
+            return;
+        }
+        
+        this.state.currentGroup.name = newName;
+        this.saveData();
+        this.showScreen('groups');
+    }
+
+    deleteCurrentGroup() {
+        this.state.groups = this.state.groups.filter(g => g.id !== this.state.currentGroup.id);
+        this.saveData();
+        this.state.currentGroup = null;
+        this.showScreen('groups');
+    }
+
+    // ======================
+    // BUZZ FUNCTIONALITY
+    // ======================
+
+    initBuzz() {
+        document.getElementById('back-from-buzz').addEventListener('click', () => {
+            this.showScreen('groups');
+        });
+
+        document.getElementById('send-buzz-btn').addEventListener('click', () => {
+            this.sendBuzz();
+        });
+
+        document.getElementById('select-all').addEventListener('click', () => {
+            this.selectAllMembers(true);
+        });
+
+        document.getElementById('deselect-all').addEventListener('click', () => {
+            this.selectAllMembers(false);
+        });
+    }
+
+    loadBuzzScreen() {
+        if (!this.state.currentGroup) return;
+        
+        document.getElementById('buzz-group-title').textContent = this.state.currentGroup.name;
+        this.dom.buzzMembersList.innerHTML = '';
+        
+        this.state.currentGroup.members.forEach(member => {
+            if (member.phone === this.state.currentUser.phone) return;
+            
+            const memberItem = document.createElement('div');
+            memberItem.className = 'member-item';
+            memberItem.innerHTML = `
+                <label>
+                    <input type="checkbox" class="member-checkbox" data-phone="${member.phone}">
+                    ${member.name} (${member.phone})
+                </label>
+            `;
+            this.dom.buzzMembersList.appendChild(memberItem);
+        });
+    }
+
+    selectAllMembers(select) {
+        document.querySelectorAll('.member-checkbox').forEach(checkbox => {
+            checkbox.checked = select;
+        });
+    }
+
+    sendBuzz() {
+        const selected = Array.from(document.querySelectorAll('.member-checkbox:checked'));
+        
+        if (selected.length === 0) {
+            alert('Please select at least one member to buzz');
+            return;
+        }
+        
+        // Play buzz sound
+        this.dom.buzzSound.currentTime = 0;
+        this.dom.buzzSound.play().catch(e => console.log('Audio play failed:', e));
+        
+        // Show confirmation
+        alert(`Buzz sent to ${selected.length} member(s)!`);
+        
+        // Return to groups screen
+        this.showScreen('groups');
+    }
 }
 
 // Initialize the app when DOM is loaded
-document.addEventListener('DOMContentLoaded', init);
+document.addEventListener('DOMContentLoaded', () => {
+    new BuzzAllApp();
+});
