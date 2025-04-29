@@ -5,7 +5,7 @@ const users = [
 
 // DOM Elements
 const authScreens = document.getElementById('auth-screens');
-const appScreens = document.getElementById('app-screens'); // Make sure this exists in your HTML
+const appScreens = document.getElementById('app-screens');
 const loginScreen = document.getElementById('login-screen');
 const signupScreen = document.getElementById('signup-screen');
 const loginBtn = document.getElementById('login-btn');
@@ -13,6 +13,38 @@ const signupBtn = document.getElementById('signup-btn');
 const showSignup = document.getElementById('show-signup');
 const showLogin = document.getElementById('show-login');
 const togglePassword = document.getElementById('toggle-password');
+
+// Initialize screens
+function initScreens() {
+  // Make sure app screens are hidden initially
+  if (appScreens) {
+    appScreens.style.display = 'none';
+    
+    // Create minimal app content if empty
+    if (appScreens.innerHTML.trim() === '') {
+      appScreens.innerHTML = `
+        <div class="screen active">
+          <div class="header">
+            <h2>Welcome to Buzz Manager</h2>
+            <button id="logout-btn" class="btn secondary">Logout</button>
+          </div>
+          <div class="content">
+            <p>You are successfully logged in!</p>
+          </div>
+        </div>
+      `;
+      
+      // Add logout functionality
+      document.getElementById('logout-btn')?.addEventListener('click', () => {
+        appScreens.style.display = 'none';
+        authScreens.style.display = 'block';
+        loginScreen.classList.add('active');
+        signupScreen.classList.remove('active');
+        showAlert('Logged out successfully', true);
+      });
+    }
+  }
+}
 
 // Toggle password visibility
 togglePassword?.addEventListener('click', () => {
@@ -43,7 +75,7 @@ function showAlert(message, isSuccess = true) {
   setTimeout(() => alert.remove(), 3000);
 }
 
-// Login function - UPDATED TO HANDLE SCREEN TRANSITION
+// Login function
 loginBtn?.addEventListener('click', () => {
   const phone = document.getElementById('login-phone').value;
   const password = document.getElementById('login-password').value;
@@ -53,18 +85,17 @@ loginBtn?.addEventListener('click', () => {
     return;
   }
 
-  // Mock authentication
   const user = users.find(u => u.phone === phone && u.password === password);
   
   if (user) {
     showAlert('Login successful!', true);
     
-    // HIDE auth screens and SHOW app screens
+    // Transition to app screens
     authScreens.style.display = 'none';
     appScreens.style.display = 'block';
     
-    // Here you would typically load user data or initialize the app
-    console.log('User logged in:', user.name);
+    // Here you would typically load user-specific data
+    console.log('Welcome, ' + user.name);
     
   } else {
     showAlert('Invalid phone number or password', false);
@@ -93,13 +124,14 @@ signupBtn?.addEventListener('click', () => {
     return;
   }
 
-  // Add new user
   users.push({ phone, password, name });
   showAlert('Account created successfully!', true);
   
-  // Switch back to login screen and clear form
+  // Switch back to login
   signupScreen.classList.remove('active');
   loginScreen.classList.add('active');
+  
+  // Clear form
   document.getElementById('signup-name').value = '';
   document.getElementById('signup-phone').value = '';
   document.getElementById('signup-password').value = '';
@@ -124,10 +156,23 @@ style.textContent = `
   .success { background-color: #4CAF50; }
   .error { background-color: #F44336; }
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  
+  #app-screens {
+    padding: 20px;
+  }
+  #app-screens .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  #app-screens .content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+  }
 `;
 document.head.appendChild(style);
 
-// Initialize - hide app screens by default
-document.addEventListener('DOMContentLoaded', () => {
-  if (appScreens) appScreens.style.display = 'none';
-});
+// Initialize the app
+document.addEventListener('DOMContentLoaded', initScreens);
