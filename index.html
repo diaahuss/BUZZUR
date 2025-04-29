@@ -3,38 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BuzzAll - Group Notification App</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="data:,">
+    <title>GroupConnect</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="app-container">
-        <!-- Login Screen -->
-        <div id="login-screen" class="auth-screen active">
-            <div class="auth-header">
-                <i class="fas fa-bell"></i>
-                <h1>BuzzAll</h1>
-                <p>Group notification system</p>
-            </div>
-            <div class="auth-form">
-                <div class="input-group">
-                    <input type="tel" id="login-phone" placeholder="Phone number" required value="1234567890">
-                </div>
-                <div class="input-group">
-                    <input type="password" id="login-password" placeholder="Password" required value="password123">
-                    <button class="toggle-pw"><i class="fas fa-eye"></i></button>
-                </div>
-                <button id="login-btn" class="btn primary">Sign In</button>
-                <div class="auth-footer">
-                    <p>Don't have an account? <a id="show-signup">Sign up</a></p>
-                </div>
-            </div>
-        </div>
+        <header class="app-header">
+            <h1>GroupConnect</h1>
+            <p class="app-subtitle">Manage your groups and send messages</p>
+        </header>
 
-        <!-- [Rest of your HTML remains the same] -->
+        <div class="main-content">
+            <!-- Group Management Section -->
+            <section class="group-section">
+                <h2>Group Management</h2>
+                
+                <div class="form-group">
+                    <label for="groupName">Group Name</label>
+                    <input type="text" id="groupName" placeholder="Enter group name">
+                </div>
+                
+                <div class="form-group">
+                    <label for="members">Members (comma separated phone numbers)</label>
+                    <textarea id="members" placeholder="+1234567890,+1987654321"></textarea>
+                </div>
+                
+                <div class="button-group">
+                    <button id="createGroupBtn" class="btn-primary">Create Group</button>
+                    <button id="loadGroupsBtn" class="btn-secondary">Load Groups</button>
+                </div>
+                
+                <div id="groupsList" class="groups-list">
+                    <!-- Groups will be listed here -->
+                </div>
+            </section>
+
+            <!-- Messaging Section -->
+            <section class="message-section">
+                <h2>Send Message</h2>
+                
+                <div class="form-group">
+                    <label for="selectedGroup">Select Group</label>
+                    <select id="selectedGroup" class="form-control">
+                        <option value="">-- Select a group --</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="messageText">Message</label>
+                    <textarea id="messageText" placeholder="Type your message here"></textarea>
+                </div>
+                
+                <button id="sendMessageBtn" class="btn-primary">Send Message</button>
+                
+                <div id="statusMessage" class="status-message">
+                    <!-- Status messages will appear here -->
+                </div>
+            </section>
+        </div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
