@@ -1,146 +1,122 @@
-/* Base Styles */
+/* Base colors and layout */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f5f5f5;
-    margin: 0;
-    padding: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
+  font-family: Arial, sans-serif;
+  background-color: #f0f8ff; /* Light blue for background */
+  color: #2c3e50; /* Darker text for contrast */
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
 
 #app {
-    width: 100%;
-    max-width: 500px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    overflow: hidden;
+  width: 90%;
+  max-width: 600px;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* Screen Containers */
-.screen {
-    padding: 20px;
-    display: none;
+h2 {
+  text-align: center;
+  color: #3498db; /* Blue */
 }
 
-.screen.active {
-    display: block;
+button {
+  background-color: #3498db; /* Blue */
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  width: 100%;
+  margin-top: 10px;
 }
 
-/* Headers */
-.screen-header {
-    text-align: center;
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid #eee;
+button:hover {
+  background-color: #2980b9; /* Darker blue */
 }
 
-.screen-header h1 {
-    margin: 0;
-    font-size: 1.5rem;
-    color: #333;
+input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
 }
 
-/* Form Elements */
-.form-group {
-    margin-bottom: 15px;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: 500;
-}
-
-input[type="text"],
-input[type="password"],
-input[type="tel"],
-select {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 16px;
-    box-sizing: border-box;
+input:focus {
+  border-color: #3498db;
 }
 
 .password-container {
-    position: relative;
+  position: relative;
+  margin-top: 10px;
 }
 
 .password-container input {
-    padding-right: 40px;
+  padding-right: 40px; /* Space for the button */
 }
 
-/* Buttons */
-.btn {
-    display: inline-block;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
-    text-align: center;
-    transition: background-color 0.2s;
+.show-password-btn {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  cursor: pointer;
+  font-size: 18px;
+  color: #3498db;
 }
 
-.btn-primary {
-    background-color: #4a89dc;
-    color: white;
+#groups-screen, #create-group-screen, #edit-group-screen {
+  display: none;
 }
 
-.btn-primary:hover {
-    background-color: #3a70c2;
+#group-list li {
+  padding: 10px;
+  margin: 5px 0;
+  background-color: #ecf0f1;
+  border-radius: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.btn-secondary {
-    background-color: #f5f5f5;
-    color: #333;
-    border: 1px solid #ddd;
+#group-list li button {
+  background-color: #e74c3c; /* Red for remove */
 }
 
-.btn-secondary:hover {
-    background-color: #eaeaea;
+#group-list li button:hover {
+  background-color: #c0392b; /* Darker red */
 }
 
-.btn-icon {
-    background: none;
-    border: none;
-    font-size: 1.2rem;
-    color: #666;
+.member-list {
+  margin-top: 20px;
 }
 
-/* Lists and Cards */
-.card-container {
-    margin: 15px 0;
+.member-list label {
+  display: block;
 }
 
-.group-item, .member-item {
-    padding: 12px;
-    margin-bottom: 10px;
-    background: #f9f9f9;
-    border-radius: 5px;
-    border-left: 3px solid #4a89dc;
+.member-list select {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
 }
 
-/* Utility Classes */
-.text-center {
-    text-align: center;
+#edit-group-screen .member-list {
+  display: none;
 }
 
-.mt-20 {
-    margin-top: 20px;
+#edit-group-screen button {
+  background-color: #f39c12; /* Yellow for edit */
 }
 
-/* Responsive Adjustments */
-@media (max-width: 480px) {
-    body {
-        padding: 10px;
-    }
-    
-    .screen {
-        padding: 15px;
-    }
+#edit-group-screen button:hover {
+  background-color: #e67e22;
 }
+
