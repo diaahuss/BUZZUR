@@ -1,209 +1,198 @@
-// Global variables
+// App State Management
+let currentUser = null;
 let groups = [];
+const socket = io('https://buzzur-server.onrender.com');
 
-// DOM elements
-const groupNameInput = document.getElementById('groupName');
-const membersInput = document.getElementById('members');
-const createGroupBtn = document.getElementById('createGroupBtn');
-const loadGroupsBtn = document.getElementById('loadGroupsBtn');
-const groupsList = document.getElementById('groupsList');
-const selectedGroup = document.getElementById('selectedGroup');
-const messageText = document.getElementById('messageText');
-const sendMessageBtn = document.getElementById('sendMessageBtn');
-const statusMessage = document.getElementById('statusMessage');
+// DOM Elements
+const app = document.getElementById('app');
+const buzzSound = document.getElementById('buzz-sound');
 
-// Event listeners
+// Initialize App
 document.addEventListener('DOMContentLoaded', () => {
-    loadGroupsFromStorage();
-    updateGroupDropdown();
+    loadUser();
+    renderScreen('login');
+    setupSocketListeners();
 });
 
-createGroupBtn.addEventListener('click', createGroup);
-loadGroupsBtn.addEventListener('click', loadGroupsFromStorage);
-sendMessageBtn.addEventListener('click', sendGroupMessage);
+// Socket.IO Setup
+function setupSocketListeners() {
+    socket.on('receive-buzz', () => {
+        playBuzzSound();
+        showNotification('Buzz Received!');
+    });
+}
 
-// Group management functions
+// Authentication Functions
+function handleLogin() {
+    const phone = document.getElementById('login-phone').value.trim();
+    const password = document.getElementById('login-password').value;
+
+    // In a real app, this would be an API call
+    const users = JSON.parse(localStorage.getItem('users') || '{}');
+    if (users[phone] && users[phone].password === password) {
+        currentUser = users[phone];
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        renderScreen('my-groups');
+    } else {
+        showError('Invalid phone or password');
+    }
+}
+
+function handleSignup() {
+    const name = document.getElementById('signup-name').value.trim();
+    const phone = document.getElementById('signup-phone').value.trim();
+    const password = document.getElementById('signup-password').value;
+    const confirmPassword = document.getElementById('signup-confirm-password').value;
+
+    if (password !== confirmPassword) {
+        return showError('Passwords do not match');
+    }
+
+    const users = JSON.parse(localStorage.getItem('users') || '{}');
+    if (users[phone]) {
+        return showError('Phone number already registered');
+    }
+
+    users[phone] = { name, phone, password, groups: [] };
+    localStorage.setItem('users', JSON.stringify(users));
+    showSuccess('Account created successfully!');
+    renderScreen('login');
+}
+
+// Group Management
 function createGroup() {
-    const groupName = groupNameInput.value.trim();
-    const members = membersInput.value.trim();
-    
-    if (!groupName || !members) {
-        showStatus('Please fill in all fields', 'error');
-        return;
-    }
-    
-    // Validate phone numbers
-    const phoneNumbers = members.split(',')
-        .map(num => num.trim())
-        .filter(num => {
-            if (!isValidPhoneNumber(num)) {
-                showStatus(`Invalid phone number: ${num}`, 'error');
-                return false;
-            }
-            return true;
-        });
-    
-    if (phoneNumbers.length === 0) {
-        showStatus('No valid phone numbers provided', 'error');
-        return;
-    }
-    
+    const groupName = document.getElementById('new-group-name').value.trim();
+    if (!groupName) return showError('Group name is required');
+
     const newGroup = {
         id: Date.now().toString(),
         name: groupName,
-        members: phoneNumbers,
+        members: [],
         createdAt: new Date().toISOString()
     };
-    
-    groups.push(newGroup);
-    saveGroupsToStorage();
-    updateGroupDropdown();
-    renderGroupsList();
-    
-    groupNameInput.value = '';
-    membersInput.value = '';
-    
-    showStatus('Group created successfully!', 'success');
+
+    currentUser.groups.push(newGroup);
+    saveUser();
+    renderScreen('my-groups');
 }
 
-function loadGroupsFromStorage() {
-    const savedGroups = localStorage.getItem('messageGroups');
-    if (savedGroups) {
-        groups = JSON.parse(savedGroups);
-        renderGroupsList();
-        showStatus('Groups loaded successfully', 'success');
-    } else {
-        showStatus('No groups found in storage', 'error');
+function addMemberToGroup(groupId) {
+    const name = document.getElementById('new-member-name').value.trim();
+    const phone = document.getElementById('new-member-phone').value.trim();
+
+    if (!name || !phone) return showError('Name and phone are required');
+
+    const group = currentUser.groups.find(g => g.id === groupId);
+    if (group) {
+        group.members.push({ name, phone });
+        saveUser();
+        renderScreen('edit-group', groupId);
     }
 }
 
-function saveGroupsToStorage() {
-    localStorage.setItem('messageGroups', JSON.stringify(groups));
-}
+// Buzz Functionality
+function sendBuzz(groupId) {
+    const group = currentUser.groups.find(g => g.id === groupId);
+    if (!group) return;
 
-function renderGroupsList() {
-    if (groups.length === 0) {
-        groupsList.innerHTML = '<p>No groups created yet</p>';
-        return;
-    }
-    
-    groupsList.innerHTML = '';
-    groups.forEach(group => {
-        const groupElement = document.createElement('div');
-        groupElement.className = 'group-item';
-        groupElement.innerHTML = `
-            <h3>${group.name}</h3>
-            <p><strong>Members:</strong> ${group.members.join(', ')}</p>
-            <p><small>Created: ${new Date(group.createdAt).toLocaleString()}</small></p>
-            <button class="btn-secondary delete-group" data-id="${group.id}">Delete</button>
-        `;
-        groupsList.appendChild(groupElement);
+    group.members.forEach(member => {
+        socket.emit('buzz', { to: member.phone });
     });
+    playBuzzSound();
+}
+
+// UI Rendering
+function renderScreen(screenName, data = null) {
+    app.innerHTML = '';
     
-    // Add event listeners to delete buttons
-    document.querySelectorAll('.delete-group').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const groupId = e.target.getAttribute('data-id');
-            deleteGroup(groupId);
-        });
-    });
-}
-
-function deleteGroup(groupId) {
-    groups = groups.filter(group => group.id !== groupId);
-    saveGroupsToStorage();
-    updateGroupDropdown();
-    renderGroupsList();
-    showStatus('Group deleted successfully', 'success');
-}
-
-function updateGroupDropdown() {
-    selectedGroup.innerHTML = '<option value="">-- Select a group --</option>';
-    groups.forEach(group => {
-        const option = document.createElement('option');
-        option.value = group.id;
-        option.textContent = group.name;
-        selectedGroup.appendChild(option);
-    });
-}
-
-// Messaging functions
-async function sendGroupMessage() {
-    const groupId = selectedGroup.value;
-    const message = messageText.value.trim();
-    
-    if (!groupId || !message) {
-        showStatus('Please select a group and enter a message', 'error');
-        return;
+    switch (screenName) {
+        case 'login':
+            app.innerHTML = getLoginScreen();
+            break;
+        case 'signup':
+            app.innerHTML = getSignupScreen();
+            break;
+        case 'my-groups':
+            app.innerHTML = getGroupsScreen();
+            break;
+        case 'create-group':
+            app.innerHTML = getCreateGroupScreen();
+            break;
+        case 'edit-group':
+            app.innerHTML = getEditGroupScreen(data);
+            break;
+        case 'buzz':
+            app.innerHTML = getBuzzScreen(data);
+            break;
     }
-    
-    const group = groups.find(g => g.id === groupId);
-    if (!group) {
-        showStatus('Selected group not found', 'error');
-        return;
-    }
-    
-    try {
-        // Send to each member
-        for (const phoneNumber of group.members) {
-            await sendTwilioMessage(phoneNumber, message);
-        }
-        
-        showStatus(`Message sent to ${group.members.length} recipients`, 'success');
-        messageText.value = '';
-    } catch (error) {
-        console.error('Error sending messages:', error);
-        showStatus(`Failed to send messages: ${error.message}`, 'error');
-    }
+
+    // Add active class to the rendered screen
+    const screen = document.createElement('div');
+    screen.className = 'screen active';
+    screen.innerHTML = app.innerHTML;
+    app.innerHTML = '';
+    app.appendChild(screen);
 }
 
-async function sendTwilioMessage(to, body) {
-    // Replace with your actual Twilio credentials and endpoint
-    const accountSid = 'YOUR_TWILIO_ACCOUNT_SID';
-    const authToken = 'YOUR_TWILIO_AUTH_TOKEN';
-    const fromNumber = 'YOUR_TWILIO_PHONE_NUMBER';
-    
-    const endpoint = 'https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json';
-    
-    const formData = new FormData();
-    formData.append('To', to);
-    formData.append('From', fromNumber);
-    formData.append('Body', body);
-    
-    try {
-        const response = await fetch(endpoint, {
-            method: 'POST',
-            headers: {
-                'Authorization': 'Basic ' + btoa(accountSid + ':' + authToken)
-            },
-            body: formData
-        });
-        
-        if (!response.ok) {
-            throw new Error(`Twilio API error: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        console.log('Message sent:', data.sid);
-        return data;
-    } catch (error) {
-        console.error('Error sending Twilio message:', error);
-        throw error;
+// Helper Functions
+function playBuzzSound() {
+    buzzSound.currentTime = 0;
+    buzzSound.play().catch(e => console.error('Audio error:', e));
+}
+
+function showError(message) {
+    alert(`Error: ${message}`); // Replace with better UI in production
+}
+
+function showSuccess(message) {
+    alert(`Success: ${message}`); // Replace with better UI in production
+}
+
+function saveUser() {
+    const users = JSON.parse(localStorage.getItem('users') || '{}');
+    if (currentUser) {
+        users[currentUser.phone] = currentUser;
+        localStorage.setItem('users', JSON.stringify(users));
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
     }
 }
 
-// Utility functions
-function isValidPhoneNumber(phoneNumber) {
-    // Simple validation - adjust as needed
-    return /^\+?[1-9]\d{1,14}$/.test(phoneNumber);
+function loadUser() {
+    const userData = localStorage.getItem('currentUser');
+    if (userData) {
+        currentUser = JSON.parse(userData);
+    }
 }
 
-function showStatus(message, type) {
-    statusMessage.textContent = message;
-    statusMessage.className = `status-message ${type}`;
-    
-    setTimeout(() => {
-        statusMessage.style.display = 'none';
-    }, 5000);
-    statusMessage.style.display = 'block';
+// Screen Templates (would be in separate files in a larger app)
+function getLoginScreen() {
+    return `
+        <div class="screen-header">
+            <h1><i class="fas fa-sign-in-alt"></i> Login</h1>
+        </div>
+        <div class="form-group">
+            <input type="tel" id="login-phone" placeholder="Phone Number" required>
+        </div>
+        <div class="form-group password-container">
+            <input type="password" id="login-password" placeholder="Password" required>
+            <button class="btn-icon" onclick="togglePassword('login-password')">
+                <i class="fas fa-eye"></i>
+            </button>
+        </div>
+        <button class="btn-primary" onclick="handleLogin()">Login</button>
+        <p class="text-center mt-20">
+            Don't have an account? <a href="#" onclick="renderScreen('signup')">Sign up</a>
+        </p>
+    `;
 }
+
+// Additional screen templates would follow the same pattern...
+
+// Make functions available globally
+window.handleLogin = handleLogin;
+window.handleSignup = handleSignup;
+window.renderScreen = renderScreen;
+window.togglePassword = function(id) {
+    const input = document.getElementById(id);
+    input.type = input.type === 'password' ? 'text' : 'password';
+};
