@@ -4,10 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BUZZALL</title>
+    <link rel="icon" href="data:,"> <!-- Empty favicon to prevent 404 -->
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Login Screen -->
+    <!-- ========== LOGIN SCREEN ========== -->
     <div id="login-screen" class="screen">
         <div class="banner">BUZZALL</div>
         <div class="login-container">
@@ -18,50 +19,62 @@
         </div>
     </div>
 
-    <!-- Groups Screen -->
+    <!-- ========== GROUPS MANAGEMENT SCREEN ========== -->
     <div id="groups-screen" class="screen hidden">
         <div class="banner">MY GROUPS</div>
         <div class="groups-container">
-            <button id="list-groups-btn">List of Created Groups</button>
-            <button id="create-group-btn">Create Group</button>
-            <div id="groups-list"></div>
+            <div class="section-heading">Group Management</div>
+            <button id="list-groups-btn">List Groups</button>
+            <button id="create-group-btn">Create New Group</button>
+            <div id="groups-list" class="groups-list"></div>
         </div>
     </div>
 
-    <!-- Group Management Screen -->
+    <!-- ========== GROUP DETAILS SCREEN ========== -->
     <div id="group-screen" class="screen hidden">
-        <div class="banner">THIS GROUP</div>
+        <div class="banner">GROUP DETAILS</div>
         <div class="group-container">
             <h2 id="group-name-display"></h2>
+            
+            <div class="section-heading">Group Actions</div>
             <div class="group-actions">
                 <button id="edit-name-btn">Edit Name</button>
                 <button id="add-member-btn">Add Member</button>
                 <button id="remove-member-btn">Remove Member</button>
+                <button id="back-btn">Back to Groups</button>
+            </div>
+
+            <div class="section-heading">Buzz Actions</div>
+            <div class="buzz-actions">
                 <button id="buzz-selected-btn">Buzz Selected</button>
                 <button id="buzz-all-btn">Buzz All</button>
-                <button id="back-btn">Back</button>
             </div>
+
+            <div class="section-heading">Group Members</div>
             <div id="members-list" class="members-grid"></div>
         </div>
     </div>
 
-    <!-- Create Group Modal -->
+    <!-- ========== MODALS ========== -->
     <div id="create-group-modal" class="modal hidden">
         <div class="modal-content">
             <h3>Create New Group</h3>
             <input type="text" id="new-group-name" placeholder="Group Name">
-            <button id="confirm-create-group">Create</button>
-            <button id="cancel-create-group">Cancel</button>
+            <div class="modal-buttons">
+                <button id="confirm-create-group">Create</button>
+                <button id="cancel-create-group">Cancel</button>
+            </div>
         </div>
     </div>
 
-    <!-- Add Member Modal -->
     <div id="add-member-modal" class="modal hidden">
         <div class="modal-content">
-            <h3>Add Member</h3>
+            <h3>Add New Member</h3>
             <input type="text" id="new-member-name" placeholder="Member Name">
-            <button id="confirm-add-member">Add</button>
-            <button id="cancel-add-member">Cancel</button>
+            <div class="modal-buttons">
+                <button id="confirm-add-member">Add</button>
+                <button id="cancel-add-member">Cancel</button>
+            </div>
         </div>
     </div>
 
