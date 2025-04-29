@@ -3,33 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buzz App</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>BuzzAll</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="data:,"> <!-- Prevents favicon 404 error -->
+    <link rel="icon" href="data:,">
 </head>
 <body>
     <div id="app">
+        <!-- Header Banner -->
+        <div id="banner" class="banner">BUZZALL</div>
+
         <!-- Login Screen -->
         <div id="login-screen" class="screen">
-            <h1><i class="fas fa-sign-in-alt"></i> Login</h1>
             <div class="form-group">
                 <input type="text" id="login-phone" placeholder="Phone Number" required>
             </div>
-            <div class="form-group password-container">
+            <div class="form-group">
                 <input type="password" id="login-password" placeholder="Password" required>
-                <button id="toggle-password" type="button"><i class="fas fa-eye"></i></button>
             </div>
             <button id="login-btn" class="btn primary">Login</button>
-            <button id="enable-notifications" class="btn secondary">
-                <i class="fas fa-bell"></i> Enable Notifications
-            </button>
             <p class="auth-link">Don't have an account? <a id="to-signup" href="#">Sign up</a></p>
         </div>
 
         <!-- Signup Screen -->
         <div id="signup-screen" class="screen" style="display:none;">
-            <h1><i class="fas fa-user-plus"></i> Sign Up</h1>
             <div class="form-group">
                 <input type="text" id="signup-name" placeholder="Full Name" required>
             </div>
@@ -47,102 +43,35 @@
         </div>
 
         <!-- My Groups Screen -->
-        <div id="my-groups-screen" class="screen" style="display:none;">
-            <div class="header-row">
-                <h1><i class="fas fa-users"></i> My Groups</h1>
-                <button id="refresh-groups" class="btn icon" title="Refresh">
-                    <i class="fas fa-sync-alt"></i>
-                </button>
-            </div>
-            <button id="create-group-btn" class="btn primary">
-                <i class="fas fa-plus"></i> Create Group
-            </button>
-            <div id="group-list" class="card-container"></div>
-            <button id="logout-btn" class="btn secondary">
-                <i class="fas fa-sign-out-alt"></i> Logout
-            </button>
+        <div id="groups-screen" class="screen" style="display:none;">
+            <div id="groups-banner" class="banner">My Groups</div>
+            <div id="group-list" class="list"></div>
+            <button id="create-group-btn" class="btn primary">Create Group</button>
+            <button id="logout-btn" class="btn secondary">Logout</button>
         </div>
 
-        <!-- Create Group Screen -->
-        <div id="create-group-screen" class="screen" style="display:none;">
-            <h1><i class="fas fa-plus-circle"></i> New Group</h1>
-            <div class="form-group">
-                <input type="text" id="new-group-name" placeholder="Group Name" required>
-            </div>
-            <button id="confirm-create-group" class="btn primary">Create</button>
-            <button id="cancel-create-group" class="btn secondary">Cancel</button>
-        </div>
-
-        <!-- Edit Group Screen -->
-        <div id="edit-group-screen" class="screen" style="display:none;">
-            <h1><i class="fas fa-edit"></i> Edit Group</h1>
-            <div class="form-group">
-                <input type="text" id="edit-group-name" placeholder="Group Name" required>
-                <input type="hidden" id="edit-group-id">
-            </div>
-            <div class="form-group">
-                <h3>Add Member</h3>
-                <input type="text" id="new-member-name" placeholder="Name">
-                <input type="text" id="new-member-phone" placeholder="Phone">
+        <!-- Group Details Screen -->
+        <div id="group-details-screen" class="screen" style="display:none;">
+            <div id="group-banner" class="banner">This Group</div>
+            <h2 id="selected-group-name"></h2>
+            <div id="member-list"></div>
+            <div class="button-group">
+                <button id="edit-name-btn" class="btn primary">Edit Name</button>
                 <button id="add-member-btn" class="btn primary">Add Member</button>
-            </div>
-            <div id="current-members" class="member-list"></div>
-            <button id="save-group-btn" class="btn primary">Save Changes</button>
-            <button id="cancel-edit-group" class="btn secondary">Cancel</button>
-        </div>
-
-        <!-- Buzz Screen -->
-        <div id="buzz-screen" class="screen" style="display:none;">
-            <div class="screen-header">
-                <h1><i class="fas fa-bell"></i> Buzz Members</h1>
-                <button id="refresh-members" class="btn icon" title="Refresh">
-                    <i class="fas fa-sync-alt"></i>
-                </button>
-            </div>
-            
-            <div class="screen-body">
-                <div class="buzz-instructions">
-                    <p>Select members to buzz and press the button below</p>
-                </div>
-                <div id="member-list" class="card-container"></div>
-                <input type="hidden" id="current-buzz-group">
-            </div>
-            
-            <div class="screen-footer">
-                <div class="button-group">
-                    <button id="send-buzz-btn" class="btn primary large">
-                        <i class="fas fa-paper-plane"></i> Send Buzz
-                    </button>
-                    <button id="cancel-buzz" class="btn secondary">
-                        <i class="fas fa-arrow-left"></i> Back to Groups
-                    </button>
-                </div>
+                <button id="remove-member-btn" class="btn primary">Remove Member</button>
+                <button id="buzz-selected-btn" class="btn primary">Buzz Selected</button>
+                <button id="buzz-all-btn" class="btn primary">Buzz All</button>
+                <button id="back-to-groups-btn" class="btn secondary">Back</button>
             </div>
         </div>
-
-        <!-- Audio element for buzz sound -->
-        <audio id="buzz-sound" preload="auto">
-            <source src="buzz.mp3" type="audio/mpeg">
-            Your browser doesn't support audio.
-        </audio>
     </div>
 
-    <!-- Scripts -->
+    <!-- Audio -->
+    <audio id="buzz-sound" preload="auto">
+        <source src="buzz.mp3" type="audio/mpeg">
+    </audio>
+
+    <script src="/socket.io/socket.io.js"></script>
     <script src="script.js"></script>
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging-compat.js"></script>
-    <script type="module">
-        import { requestNotificationPermission } from './firebase-config.js';
-        
-        const notifyBtn = document.getElementById('enable-notifications');
-        if (notifyBtn) {
-            notifyBtn.addEventListener('click', function() {
-                requestNotificationPermission();
-                this.disabled = true;
-                this.innerHTML = '<i class="fas fa-bell-slash"></i> Notifications Enabled';
-            });
-        }
-    </script>
 </body>
 </html>
