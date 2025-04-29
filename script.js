@@ -1,10 +1,11 @@
-// Simple mock database
+// Mock database
 const users = [
   { phone: "+1234567890", password: "password123", name: "Test User" }
 ];
 
 // DOM Elements
 const authScreens = document.getElementById('auth-screens');
+const appScreens = document.getElementById('app-screens'); // Make sure this exists in your HTML
 const loginScreen = document.getElementById('login-screen');
 const signupScreen = document.getElementById('signup-screen');
 const loginBtn = document.getElementById('login-btn');
@@ -17,16 +18,11 @@ const togglePassword = document.getElementById('toggle-password');
 togglePassword?.addEventListener('click', () => {
   const passwordInput = document.getElementById('login-password');
   const icon = togglePassword.querySelector('i');
-  if (passwordInput.type === 'password') {
-    passwordInput.type = 'text';
-    icon.classList.replace('fa-eye', 'fa-eye-slash');
-  } else {
-    passwordInput.type = 'password';
-    icon.classList.replace('fa-eye-slash', 'fa-eye');
-  }
+  passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
+  icon.classList.toggle('fa-eye-slash');
 });
 
-// Switch between login/signup screens
+// Switch between login/signup
 showSignup?.addEventListener('click', () => {
   loginScreen.classList.remove('active');
   signupScreen.classList.add('active');
@@ -37,19 +33,17 @@ showLogin?.addEventListener('click', () => {
   loginScreen.classList.add('active');
 });
 
-// Simple notification function
+// Notification function
 function showAlert(message, isSuccess = true) {
   const alert = document.createElement('div');
   alert.className = `alert ${isSuccess ? 'success' : 'error'}`;
   alert.textContent = message;
   document.body.appendChild(alert);
   
-  setTimeout(() => {
-    alert.remove();
-  }, 3000);
+  setTimeout(() => alert.remove(), 3000);
 }
 
-// Login function
+// Login function - UPDATED TO HANDLE SCREEN TRANSITION
 loginBtn?.addEventListener('click', () => {
   const phone = document.getElementById('login-phone').value;
   const password = document.getElementById('login-password').value;
@@ -64,9 +58,14 @@ loginBtn?.addEventListener('click', () => {
   
   if (user) {
     showAlert('Login successful!', true);
-    // Here you would typically redirect to the app
-    // authScreens.style.display = 'none';
-    // appScreens.style.display = 'block';
+    
+    // HIDE auth screens and SHOW app screens
+    authScreens.style.display = 'none';
+    appScreens.style.display = 'block';
+    
+    // Here you would typically load user data or initialize the app
+    console.log('User logged in:', user.name);
+    
   } else {
     showAlert('Invalid phone number or password', false);
   }
@@ -89,28 +88,25 @@ signupBtn?.addEventListener('click', () => {
     return;
   }
 
-  // Check if user already exists
   if (users.some(u => u.phone === phone)) {
     showAlert('Phone number already registered', false);
     return;
   }
 
-  // Add new user (in a real app, this would go to your backend)
+  // Add new user
   users.push({ phone, password, name });
   showAlert('Account created successfully!', true);
   
-  // Switch back to login screen
+  // Switch back to login screen and clear form
   signupScreen.classList.remove('active');
   loginScreen.classList.add('active');
-  
-  // Clear form
   document.getElementById('signup-name').value = '';
   document.getElementById('signup-phone').value = '';
   document.getElementById('signup-password').value = '';
   document.getElementById('signup-confirm').value = '';
 });
 
-// Add some basic styling for alerts
+// Add alert styling
 const style = document.createElement('style');
 style.textContent = `
   .alert {
@@ -130,3 +126,8 @@ style.textContent = `
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 `;
 document.head.appendChild(style);
+
+// Initialize - hide app screens by default
+document.addEventListener('DOMContentLoaded', () => {
+  if (appScreens) appScreens.style.display = 'none';
+});
