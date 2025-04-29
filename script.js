@@ -104,6 +104,15 @@ const AuthService = {
  * GROUP SERVICE
  *********************/
 const GroupService = {
+    init() {
+        // Initialize event listeners
+        document.getElementById('create-group-btn')?.addEventListener('click', this.showCreateGroupScreen);
+        document.getElementById('confirm-create-group')?.addEventListener('click', this.createGroup);
+        document.getElementById('back-to-groups')?.addEventListener('click', () => {
+            Utils.switchScreen('my-groups-screen');
+        });
+    },
+
     showCreateGroupScreen() {
         const nameInput = Utils.getElement('new-group-name');
         if (nameInput) nameInput.value = '';
@@ -214,6 +223,7 @@ const GroupService = {
         container.innerHTML = AppState.groups.map(group => `
             <div class="group-card" data-group-id="${group.id}">
                 <h3>${group.name}</h3>
+                <p>${group.members.length} members</p>
                 <div class="group-actions">
                     <button class="btn" onclick="GroupService.editGroup('${group.id}')">
                         <i class="fas fa-edit"></i> Edit
@@ -227,6 +237,8 @@ const GroupService = {
     }
 };
 
+// Initialize when app starts
+GroupService.init();
 /*********************
  * BUZZ SERVICE
  *********************/
