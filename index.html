@@ -3,75 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BuzzAll</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="data:,">
+    <title>BUZZALL</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div id="app">
-        <!-- Header Banner -->
-        <div id="banner" class="banner">BUZZALL</div>
-
-        <!-- Login Screen -->
-        <div id="login-screen" class="screen">
-            <div class="form-group">
-                <input type="text" id="login-phone" placeholder="Phone Number" required>
-            </div>
-            <div class="form-group">
-                <input type="password" id="login-password" placeholder="Password" required>
-            </div>
-            <button id="login-btn" class="btn primary">Login</button>
-            <p class="auth-link">Don't have an account? <a id="to-signup" href="#">Sign up</a></p>
-        </div>
-
-        <!-- Signup Screen -->
-        <div id="signup-screen" class="screen" style="display:none;">
-            <div class="form-group">
-                <input type="text" id="signup-name" placeholder="Full Name" required>
-            </div>
-            <div class="form-group">
-                <input type="text" id="signup-phone" placeholder="Phone Number" required>
-            </div>
-            <div class="form-group">
-                <input type="password" id="signup-password" placeholder="Password" required>
-            </div>
-            <div class="form-group">
-                <input type="password" id="signup-confirm-password" placeholder="Confirm Password" required>
-            </div>
-            <button id="signup-btn" class="btn primary">Sign Up</button>
-            <p class="auth-link">Already have an account? <a id="to-login" href="#">Login</a></p>
-        </div>
-
-        <!-- My Groups Screen -->
-        <div id="groups-screen" class="screen" style="display:none;">
-            <div id="groups-banner" class="banner">My Groups</div>
-            <div id="group-list" class="list"></div>
-            <button id="create-group-btn" class="btn primary">Create Group</button>
-            <button id="logout-btn" class="btn secondary">Logout</button>
-        </div>
-
-        <!-- Group Details Screen -->
-        <div id="group-details-screen" class="screen" style="display:none;">
-            <div id="group-banner" class="banner">This Group</div>
-            <h2 id="selected-group-name"></h2>
-            <div id="member-list"></div>
-            <div class="button-group">
-                <button id="edit-name-btn" class="btn primary">Edit Name</button>
-                <button id="add-member-btn" class="btn primary">Add Member</button>
-                <button id="remove-member-btn" class="btn primary">Remove Member</button>
-                <button id="buzz-selected-btn" class="btn primary">Buzz Selected</button>
-                <button id="buzz-all-btn" class="btn primary">Buzz All</button>
-                <button id="back-to-groups-btn" class="btn secondary">Back</button>
-            </div>
+    <!-- Login Screen -->
+    <div id="login-screen" class="screen">
+        <div class="banner">BUZZALL</div>
+        <div class="login-container">
+            <h2>Login</h2>
+            <input type="text" id="username" placeholder="Username">
+            <input type="password" id="password" placeholder="Password">
+            <button id="login-btn">Login</button>
         </div>
     </div>
 
-    <!-- Audio -->
-    <audio id="buzz-sound" preload="auto">
-        <source src="buzz.mp3" type="audio/mpeg">
-    </audio>
+    <!-- Groups Screen -->
+    <div id="groups-screen" class="screen hidden">
+        <div class="banner">MY GROUPS</div>
+        <div class="groups-container">
+            <button id="list-groups-btn">List of Created Groups</button>
+            <button id="create-group-btn">Create Group</button>
+            <div id="groups-list"></div>
+        </div>
+    </div>
 
-    <script src="/socket.io/socket.io.js"></script>
+    <!-- Group Management Screen -->
+    <div id="group-screen" class="screen hidden">
+        <div class="banner">THIS GROUP</div>
+        <div class="group-container">
+            <h2 id="group-name-display"></h2>
+            <div class="group-actions">
+                <button id="edit-name-btn">Edit Name</button>
+                <button id="add-member-btn">Add Member</button>
+                <button id="remove-member-btn">Remove Member</button>
+                <button id="buzz-selected-btn">Buzz Selected</button>
+                <button id="buzz-all-btn">Buzz All</button>
+                <button id="back-btn">Back</button>
+            </div>
+            <div id="members-list" class="members-grid"></div>
+        </div>
+    </div>
+
+    <!-- Create Group Modal -->
+    <div id="create-group-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Create New Group</h3>
+            <input type="text" id="new-group-name" placeholder="Group Name">
+            <button id="confirm-create-group">Create</button>
+            <button id="cancel-create-group">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Add Member Modal -->
+    <div id="add-member-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Add Member</h3>
+            <input type="text" id="new-member-name" placeholder="Member Name">
+            <button id="confirm-add-member">Add</button>
+            <button id="cancel-add-member">Cancel</button>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
