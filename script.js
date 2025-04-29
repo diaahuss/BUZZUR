@@ -1,126 +1,132 @@
-// ======================
-// Mock API Responses
-// ======================
-const mockUsers = [
+// Simple mock database
+const users = [
   { phone: "+1234567890", password: "password123", name: "Test User" }
 ];
 
-// Simulate API delay (ms)
-const simulateAPI = () => new Promise(resolve => setTimeout(resolve, 1000));
-
-// Mock login
-async function mockLogin(phone, password) {
-  await simulateAPI();
-  const user = mockUsers.find(u => u.phone === phone && u.password === password);
-  return user ? { success: true } : { error: "Invalid phone or password" };
-}
-
-// Mock signup
-async function mockSignup(name, phone, password) {
-  await simulateAPI();
-  const exists = mockUsers.some(u => u.phone === phone);
-  if (exists) return { error: "Phone already registered" };
-  mockUsers.push({ phone, password, name });
-  return { success: true };
-}
-
-// ======================
-// DOM Elements & Event Listeners 
-// (Same as your HTML structure)
-// ======================
+// DOM Elements
 const authScreens = document.getElementById('auth-screens');
-const appScreens = document.getElementById('app-screens');
+const loginScreen = document.getElementById('login-screen');
+const signupScreen = document.getElementById('signup-screen');
 const loginBtn = document.getElementById('login-btn');
 const signupBtn = document.getElementById('signup-btn');
-const logoutBtn = document.getElementById('logout-btn');
+const showSignup = document.getElementById('show-signup');
+const showLogin = document.getElementById('show-login');
 const togglePassword = document.getElementById('toggle-password');
 
 // Toggle password visibility
 togglePassword?.addEventListener('click', () => {
   const passwordInput = document.getElementById('login-password');
   const icon = togglePassword.querySelector('i');
-  passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
-  icon.classList.toggle('fa-eye-slash');
+  if (passwordInput.type === 'password') {
+    passwordInput.type = 'text';
+    icon.classList.replace('fa-eye', 'fa-eye-slash');
+  } else {
+    passwordInput.type = 'password';
+    icon.classList.replace('fa-eye-slash', 'fa-eye');
+  }
 });
 
-// Login (Mock)
-loginBtn?.addEventListener('click', async () => {
+// Switch between login/signup screens
+showSignup?.addEventListener('click', () => {
+  loginScreen.classList.remove('active');
+  signupScreen.classList.add('active');
+});
+
+showLogin?.addEventListener('click', () => {
+  signupScreen.classList.remove('active');
+  loginScreen.classList.add('active');
+});
+
+// Simple notification function
+function showAlert(message, isSuccess = true) {
+  const alert = document.createElement('div');
+  alert.className = `alert ${isSuccess ? 'success' : 'error'}`;
+  alert.textContent = message;
+  document.body.appendChild(alert);
+  
+  setTimeout(() => {
+    alert.remove();
+  }, 3000);
+}
+
+// Login function
+loginBtn?.addEventListener('click', () => {
   const phone = document.getElementById('login-phone').value;
   const password = document.getElementById('login-password').value;
 
   if (!phone || !password) {
-    showNotification('Please fill all fields', 'error');
+    showAlert('Please fill in all fields', false);
     return;
   }
 
-  const response = await mockLogin(phone, password);
-  if (response.success) {
-    showNotification('Login successful!', 'success');
-    authScreens.style.display = 'none';
-    appScreens.style.display = 'block';
+  // Mock authentication
+  const user = users.find(u => u.phone === phone && u.password === password);
+  
+  if (user) {
+    showAlert('Login successful!', true);
+    // Here you would typically redirect to the app
+    // authScreens.style.display = 'none';
+    // appScreens.style.display = 'block';
   } else {
-    showNotification(response.error || 'Login failed', 'error');
+    showAlert('Invalid phone number or password', false);
   }
 });
 
-// Signup (Mock)
-signupBtn?.addEventListener('click', async () => {
+// Signup function
+signupBtn?.addEventListener('click', () => {
   const name = document.getElementById('signup-name').value;
   const phone = document.getElementById('signup-phone').value;
   const password = document.getElementById('signup-password').value;
   const confirmPassword = document.getElementById('signup-confirm').value;
 
   if (!name || !phone || !password || !confirmPassword) {
-    showNotification('Please fill all fields', 'error');
+    showAlert('Please fill in all fields', false);
     return;
   }
 
   if (password !== confirmPassword) {
-    showNotification('Passwords do not match', 'error');
+    showAlert('Passwords do not match', false);
     return;
   }
 
-  const response = await mockSignup(name, phone, password);
-  if (response.success) {
-    showNotification('Account created! Redirecting to login...', 'success');
-    setTimeout(() => {
-      document.getElementById('signup-screen').classList.remove('active');
-      document.getElementById('login-screen').classList.add('active');
-    }, 1500);
-  } else {
-    showNotification(response.error || 'Signup failed', 'error');
+  // Check if user already exists
+  if (users.some(u => u.phone === phone)) {
+    showAlert('Phone number already registered', false);
+    return;
   }
+
+  // Add new user (in a real app, this would go to your backend)
+  users.push({ phone, password, name });
+  showAlert('Account created successfully!', true);
+  
+  // Switch back to login screen
+  signupScreen.classList.remove('active');
+  loginScreen.classList.add('active');
+  
+  // Clear form
+  document.getElementById('signup-name').value = '';
+  document.getElementById('signup-phone').value = '';
+  document.getElementById('signup-password').value = '';
+  document.getElementById('signup-confirm').value = '';
 });
 
-// Logout
-logoutBtn?.addEventListener('click', () => {
-  authScreens.style.display = 'block';
-  appScreens.style.display = 'none';
-  showNotification('Logged out', 'info');
-});
-
-// ======================
-// Helper Functions
-// ======================
-function showNotification(message, type = 'info') {
-  const notification = document.getElementById('notification');
-  notification.textContent = message;
-  notification.className = `notification ${type}`;
-  notification.style.display = 'block';
-  setTimeout(() => {
-    notification.style.display = 'none';
-  }, 3000);
-}
-
-// Initialize (check if "logged in" on page load)
-function init() {
-  // Example: If you want to simulate being logged in during development
-  // localStorage.setItem('mockLoggedIn', 'true');
-  const isLoggedIn = localStorage.getItem('mockLoggedIn');
-  if (isLoggedIn) {
-    authScreens.style.display = 'none';
-    appScreens.style.display = 'block';
+// Add some basic styling for alerts
+const style = document.createElement('style');
+style.textContent = `
+  .alert {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 12px 24px;
+    border-radius: 4px;
+    color: white;
+    font-weight: bold;
+    z-index: 1000;
+    animation: fadeIn 0.3s;
   }
-}
-
-init();
+  .success { background-color: #4CAF50; }
+  .error { background-color: #F44336; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+`;
+document.head.appendChild(style);
