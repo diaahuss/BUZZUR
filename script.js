@@ -13,38 +13,24 @@ const signupBtn = document.getElementById('signup-btn');
 const showSignup = document.getElementById('show-signup');
 const showLogin = document.getElementById('show-login');
 const togglePassword = document.getElementById('toggle-password');
+const logoutBtn = document.getElementById('logout-btn');
 
-// Initialize screens
-function initScreens() {
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
   // Make sure app screens are hidden initially
-  if (appScreens) {
-    appScreens.style.display = 'none';
-    
-    // Create minimal app content if empty
-    if (appScreens.innerHTML.trim() === '') {
-      appScreens.innerHTML = `
-        <div class="screen active">
-          <div class="header">
-            <h2>Welcome to Buzz Manager</h2>
-            <button id="logout-btn" class="btn secondary">Logout</button>
-          </div>
-          <div class="content">
-            <p>You are successfully logged in!</p>
-          </div>
-        </div>
-      `;
-      
-      // Add logout functionality
-      document.getElementById('logout-btn')?.addEventListener('click', () => {
-        appScreens.style.display = 'none';
-        authScreens.style.display = 'block';
-        loginScreen.classList.add('active');
-        signupScreen.classList.remove('active');
-        showAlert('Logged out successfully', true);
-      });
-    }
+  appScreens.style.display = 'none';
+  
+  // Setup logout button if it exists
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', () => {
+      appScreens.style.display = 'none';
+      authScreens.style.display = 'block';
+      loginScreen.classList.add('active');
+      signupScreen.classList.remove('active');
+      showNotification('Logged out successfully', 'success');
+    });
   }
-}
+});
 
 // Toggle password visibility
 togglePassword?.addEventListener('click', () => {
@@ -66,13 +52,14 @@ showLogin?.addEventListener('click', () => {
 });
 
 // Notification function
-function showAlert(message, isSuccess = true) {
-  const alert = document.createElement('div');
-  alert.className = `alert ${isSuccess ? 'success' : 'error'}`;
-  alert.textContent = message;
-  document.body.appendChild(alert);
-  
-  setTimeout(() => alert.remove(), 3000);
+function showNotification(message, type = 'info') {
+  const notification = document.getElementById('notification');
+  notification.textContent = message;
+  notification.className = `notification ${type}`;
+  notification.style.display = 'block';
+  setTimeout(() => {
+    notification.style.display = 'none';
+  }, 3000);
 }
 
 // Login function
@@ -81,24 +68,27 @@ loginBtn?.addEventListener('click', () => {
   const password = document.getElementById('login-password').value;
 
   if (!phone || !password) {
-    showAlert('Please fill in all fields', false);
+    showNotification('Please fill all fields', 'error');
     return;
   }
 
+  // Mock authentication
   const user = users.find(u => u.phone === phone && u.password === password);
   
   if (user) {
-    showAlert('Login successful!', true);
+    showNotification('Login successful!', 'success');
     
-    // Transition to app screens
+    // Hide auth screens and show app screens
     authScreens.style.display = 'none';
     appScreens.style.display = 'block';
     
-    // Here you would typically load user-specific data
-    console.log('Welcome, ' + user.name);
+    // Show the groups screen by default
+    document.getElementById('groups-screen').classList.add('active');
+    document.getElementById('create-group-screen').classList.remove('active');
+    document.getElementById('group-detail-screen').classList.remove('active');
     
   } else {
-    showAlert('Invalid phone number or password', false);
+    showNotification('Invalid phone or password', 'error');
   }
 });
 
@@ -110,24 +100,25 @@ signupBtn?.addEventListener('click', () => {
   const confirmPassword = document.getElementById('signup-confirm').value;
 
   if (!name || !phone || !password || !confirmPassword) {
-    showAlert('Please fill in all fields', false);
+    showNotification('Please fill all fields', 'error');
     return;
   }
 
   if (password !== confirmPassword) {
-    showAlert('Passwords do not match', false);
+    showNotification('Passwords do not match', 'error');
     return;
   }
 
   if (users.some(u => u.phone === phone)) {
-    showAlert('Phone number already registered', false);
+    showNotification('Phone already registered', 'error');
     return;
   }
 
+  // Add to mock database
   users.push({ phone, password, name });
-  showAlert('Account created successfully!', true);
+  showNotification('Account created! Please login.', 'success');
   
-  // Switch back to login
+  // Switch back to login screen
   signupScreen.classList.remove('active');
   loginScreen.classList.add('active');
   
@@ -138,10 +129,10 @@ signupBtn?.addEventListener('click', () => {
   document.getElementById('signup-confirm').value = '';
 });
 
-// Add alert styling
+// Add basic styling for notifications if not in your CSS
 const style = document.createElement('style');
 style.textContent = `
-  .alert {
+  .notification {
     position: fixed;
     top: 20px;
     left: 50%;
@@ -151,28 +142,10 @@ style.textContent = `
     color: white;
     font-weight: bold;
     z-index: 1000;
-    animation: fadeIn 0.3s;
+    display: none;
   }
-  .success { background-color: #4CAF50; }
-  .error { background-color: #F44336; }
-  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-  
-  #app-screens {
-    padding: 20px;
-  }
-  #app-screens .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-  }
-  #app-screens .content {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-  }
+  .notification.success { background-color: #4CAF50; }
+  .notification.error { background-color: #F44336; }
+  .notification.info { background-color: #2196F3; }
 `;
 document.head.appendChild(style);
-
-// Initialize the app
-document.addEventListener('DOMContentLoaded', initScreens);
