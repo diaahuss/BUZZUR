@@ -19,6 +19,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const cancelCreateGroup = document.getElementById('cancel-create-group');
     const confirmCreateGroup = document.getElementById('confirm-create-group');
     
+    // Audio element
+    const buzzSound = document.getElementById('buzz-sound');
+    
     // Sample Data
     let groups = [
         {
@@ -182,10 +185,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert('Please select at least one member to buzz');
                 return;
             }
+            buzzSound.play();
             alert(`Buzzing ${selected.length} selected members!`);
         });
         
         content.getElementById('buzz-all-btn').addEventListener('click', () => {
+            buzzSound.play();
             alert(`Buzzing all ${group.members.length} members!`);
         });
         
