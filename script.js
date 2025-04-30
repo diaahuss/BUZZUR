@@ -11,6 +11,13 @@ let groups = [
             { name: "John Doe", phone: "+1234567891" },
             { name: "Jane Doe", phone: "+1234567892" }
         ] 
+    },
+    { 
+        id: "2", 
+        name: "Friends", 
+        members: [
+            { name: "Alex Johnson", phone: "+1234567893" }
+        ] 
     }
 ];
 
@@ -22,37 +29,12 @@ const signupScreen = document.getElementById('signup-screen');
 const groupsScreen = document.getElementById('groups-screen');
 const groupDetailScreen = document.getElementById('group-detail-screen');
 
-// Buttons
-const loginBtn = document.getElementById('login-btn');
-const signupBtn = document.getElementById('signup-btn');
-const showSignup = document.getElementById('show-signup');
-const showLogin = document.getElementById('show-login');
-const logoutBtn = document.getElementById('logout-btn');
-const createGroupBtn = document.getElementById('create-group-btn');
-const backToGroups = document.getElementById('back-to-groups');
-const editGroupBtn = document.getElementById('edit-group-btn');
-const addMemberBtn = document.getElementById('add-member-btn');
-const removeMembersBtn = document.getElementById('remove-members-btn');
-const buzzSelectedBtn = document.getElementById('buzz-selected-btn');
-const buzzAllBtn = document.getElementById('buzz-all-btn');
-const deleteGroupBtn = document.getElementById('delete-group-btn');
-
-// Modals
-const editGroupModal = document.getElementById('edit-group-modal');
-const addMemberModal = document.getElementById('add-member-modal');
-
-// Current Group Tracking
-let currentGroupId = null;
-
 // Initialize the App
 function init() {
-    // Set up event listeners
     setupEventListeners();
-    
-    // Hide app screens by default
     appScreens.style.display = 'none';
     
-    // Check if user is already logged in (for development)
+    // For testing - remove in production
     // currentUser = users[0];
     // showApp();
 }
@@ -69,28 +51,28 @@ function setupEventListeners() {
     });
     
     // Auth navigation
-    showSignup.addEventListener('click', () => toggleAuthScreens());
-    showLogin.addEventListener('click', () => toggleAuthScreens());
+    document.getElementById('show-signup').addEventListener('click', () => toggleAuthScreens());
+    document.getElementById('show-login').addEventListener('click', () => toggleAuthScreens());
+    document.getElementById('forgot-password').addEventListener('click', handleForgotPassword);
     
     // Auth actions
-    loginBtn.addEventListener('click', handleLogin);
-    signupBtn.addEventListener('click', handleSignup);
-    logoutBtn.addEventListener('click', handleLogout);
+    document.getElementById('login-btn').addEventListener('click', handleLogin);
+    document.getElementById('signup-btn').addEventListener('click', handleSignup);
+    document.getElementById('logout-btn').addEventListener('click', handleLogout);
     
     // Group actions
-    createGroupBtn.addEventListener('click', handleCreateGroup);
-    backToGroups.addEventListener('click', () => showScreen('groups'));
-    editGroupBtn.addEventListener('click', () => editGroupModal.classList.add('active'));
-    addMemberBtn.addEventListener('click', () => addMemberModal.classList.add('active'));
-    removeMembersBtn.addEventListener('click', handleRemoveMembers);
-    buzzSelectedBtn.addEventListener('click', handleBuzzSelected);
-    buzzAllBtn.addEventListener('click', handleBuzzAll);
-    deleteGroupBtn.addEventListener('click', handleDeleteGroup);
+    document.getElementById('create-group-btn').addEventListener('click', handleCreateGroup);
+    document.getElementById('back-to-groups').addEventListener('click', () => showScreen('groups'));
+    document.getElementById('edit-group-btn').addEventListener('click', () => showEditGroupModal());
+    document.getElementById('add-member-btn').addEventListener('click', () => showAddMemberModal());
+    document.getElementById('delete-group-btn').addEventListener('click', handleDeleteGroup);
+    document.getElementById('buzz-selected-btn').addEventListener('click', handleBuzzSelected);
+    document.getElementById('buzz-all-btn').addEventListener('click', handleBuzzAll);
     
     // Modal actions
-    document.getElementById('cancel-edit-group').addEventListener('click', () => editGroupModal.classList.remove('active'));
+    document.getElementById('cancel-edit-group').addEventListener('click', () => hideModal('edit-group'));
     document.getElementById('save-group-name').addEventListener('click', handleSaveGroupName);
-    document.getElementById('cancel-add-member').addEventListener('click', () => addMemberModal.classList.remove('active'));
+    document.getElementById('cancel-add-member').addEventListener('click', () => hideModal('add-member'));
     document.getElementById('confirm-add-member').addEventListener('click', handleAddMember);
 }
 
@@ -149,6 +131,11 @@ function handleSignup() {
     clearSignupForm();
 }
 
+// Handle forgot password
+function handleForgotPassword() {
+    showNotification('Password reset link sent (simulated)', 'info');
+}
+
 // Handle logout
 function handleLogout() {
     currentUser = null;
@@ -162,9 +149,8 @@ function handleLogout() {
 // Show app screens
 function showApp() {
     authScreens.style.display = 'none';
-    appScreens.style.display = 'block';
+    appScreens.style.display = 'flex';
     showScreen('groups');
-    loadGroups();
 }
 
 // Show specific screen
@@ -188,17 +174,16 @@ function showScreen(screenName) {
 function loadGroups() {
     const groupsList = document.getElementById('groups-list');
     groupsList.innerHTML = groups.map(group => `
-        <div class="card" data-group-id="${group.id}">
-            <h3>${group.name}</h3>
-            <p>${group.members.length} members</p>
-            <button class="btn secondary view-group-btn">View</button>
+        <div class="group-card" data-group-id="${group.id}">
+            <div class="group-name">${group.name}</div>
+            <div class="member-count">${group.members.length}</div>
         </div>
     `).join('');
     
-    // Add event listeners to view buttons
-    document.querySelectorAll('.view-group-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            currentGroupId = this.closest('.card').dataset.groupId;
+    // Add event listeners to group cards
+    document.querySelectorAll('.group-card').forEach(card => {
+        card.addEventListener('click', function() {
+            currentGroupId = this.dataset.groupId;
             showScreen('group-detail');
         });
     });
@@ -213,11 +198,11 @@ function loadGroupDetail() {
     const membersList = document.getElementById('members-list');
     
     membersList.innerHTML = group.members.map(member => `
-        <div class="card member-item">
+        <div class="member-card">
             <input type="checkbox" class="member-checkbox" data-phone="${member.phone}">
-            <div>
-                <h3>${member.name}</h3>
-                <p>${member.phone}</p>
+            <div class="member-info">
+                <div class="member-name">${member.name}</div>
+                <div class="member-phone">${member.phone}</div>
             </div>
         </div>
     `).join('');
@@ -239,6 +224,15 @@ function handleCreateGroup() {
     loadGroups();
 }
 
+// Show edit group modal
+function showEditGroupModal() {
+    const group = groups.find(g => g.id === currentGroupId);
+    if (group) {
+        document.getElementById('edit-group-name').value = group.name;
+        showModal('edit-group');
+    }
+}
+
 // Handle save group name
 function handleSaveGroupName() {
     const newName = document.getElementById('edit-group-name').value;
@@ -252,10 +246,16 @@ function handleSaveGroupName() {
         group.name = newName;
         document.getElementById('group-detail-title').textContent = newName;
         showNotification('Group name updated', 'success');
-        editGroupModal.classList.remove('active');
-        document.getElementById('edit-group-name').value = '';
+        hideModal('edit-group');
         loadGroups(); // Update name in groups list
     }
+}
+
+// Show add member modal
+function showAddMemberModal() {
+    document.getElementById('new-member-name').value = '';
+    document.getElementById('new-member-phone').value = '';
+    showModal('add-member');
 }
 
 // Handle add member
@@ -270,7 +270,6 @@ function handleAddMember() {
     
     const group = groups.find(g => g.id === currentGroupId);
     if (group) {
-        // Check if member already exists
         if (group.members.some(m => m.phone === phone)) {
             showNotification('Member already exists in this group', 'error');
             return;
@@ -278,28 +277,18 @@ function handleAddMember() {
         
         group.members.push({ name, phone });
         showNotification('Member added successfully', 'success');
-        addMemberModal.classList.remove('active');
-        document.getElementById('new-member-name').value = '';
-        document.getElementById('new-member-phone').value = '';
+        hideModal('add-member');
         loadGroupDetail();
     }
 }
 
-// Handle remove selected members
-function handleRemoveMembers() {
-    const checkboxes = document.querySelectorAll('.member-checkbox:checked');
-    if (checkboxes.length === 0) {
-        showNotification('Please select members to remove', 'error');
-        return;
-    }
+// Handle delete group
+function handleDeleteGroup() {
+    if (!confirm('Are you sure you want to delete this group?')) return;
     
-    const group = groups.find(g => g.id === currentGroupId);
-    if (group) {
-        const phonesToRemove = Array.from(checkboxes).map(cb => cb.dataset.phone);
-        group.members = group.members.filter(m => !phonesToRemove.includes(m.phone));
-        showNotification(`${phonesToRemove.length} members removed`, 'success');
-        loadGroupDetail();
-    }
+    groups = groups.filter(g => g.id !== currentGroupId);
+    showNotification('Group deleted', 'success');
+    showScreen('groups');
 }
 
 // Handle buzz selected members
@@ -326,34 +315,10 @@ function handleBuzzAll() {
     }
 }
 
-// Handle delete group
-function handleDeleteGroup() {
-    if (!confirm('Are you sure you want to delete this group?')) return;
-    
-    groups = groups.filter(g => g.id !== currentGroupId);
-    showNotification('Group deleted', 'success');
-    showScreen('groups');
+// Show modal
+function showModal(modalId) {
+    document.getElementById(`${modalId}-modal`).classList.add('active');
 }
 
-// Clear signup form
-function clearSignupForm() {
-    document.getElementById('signup-name').value = '';
-    document.getElementById('signup-phone').value = '';
-    document.getElementById('signup-password').value = '';
-    document.getElementById('signup-confirm').value = '';
-}
-
-// Show notification
-function showNotification(message, type = 'info') {
-    const notification = document.getElementById('notification');
-    notification.textContent = message;
-    notification.className = `notification ${type}`;
-    notification.style.display = 'block';
-    
-    setTimeout(() => {
-        notification.style.display = 'none';
-    }, 3000);
-}
-
-// Initialize the app
-document.addEventListener('DOMContentLoaded', init);
+// Hide modal
+function hideModal(modalId
