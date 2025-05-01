@@ -56,6 +56,7 @@ document.addEventListener('DOMContentLoaded', function() {
     ];
     
     let currentGroup = null;
+    let authToken = null; // For API authentication
     
     // Initialize the app
     function init() {
@@ -123,18 +124,58 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function logout() {
+        authToken = null;
         showScreen('login-screen');
     }
     
     // Form handlers
-    function handleLogin(e) {
+    async function handleLogin(e) {
         e.preventDefault();
-        showScreen('app-screen');
+        const email = loginForm.querySelector('input[type="email"]').value;
+        const password = loginForm.querySelector('input[type="password"]').value;
+        
+        try {
+            const response = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            
+            if (!response.ok) throw new Error('Login failed');
+            
+            const data = await response.json();
+            authToken = data.token;
+            groups = data.groups || groups;
+            showScreen('app-screen');
+            renderGroups();
+        } catch (error) {
+            console.error('Login error:', error);
+            alert('Login failed. Please try again.');
+        }
     }
     
-    function handleSignup(e) {
+    async function handleSignup(e) {
         e.preventDefault();
-        showScreen('app-screen');
+        const email = signupForm.querySelector('input[type="email"]').value;
+        const password = signupForm.querySelector('input[type="password"]').value;
+        const name = signupForm.querySelector('input[placeholder="Full Name"]').value;
+        
+        try {
+            const response = await fetch('/api/signup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password, name })
+            });
+            
+            if (!response.ok) throw new Error('Signup failed');
+            
+            const data = await response.json();
+            authToken = data.token;
+            showScreen('app-screen');
+        } catch (error) {
+            console.error('Signup error:', error);
+            alert('Signup failed. Please try again.');
+        }
     }
     
     // Group functions
@@ -190,35 +231,59 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    function createGroup() {
+    async function createGroup() {
         const name = newGroupName.value.trim();
         if (!name) {
             alert('Please enter a group name');
             return;
         }
         
-        groups.push({
-            id: Date.now(),
-            name,
-            members: []
-        });
-        
-        newGroupName.value = '';
-        toggleModal(createGroupModal, false);
-        renderGroups();
+        try {
+            const response = await fetch('/api/groups', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authToken}`
+                },
+                body: JSON.stringify({ name })
+            });
+            
+            if (!response.ok) throw new Error('Failed to create group');
+            
+            const newGroup = await response.json();
+            groups.push(newGroup);
+            newGroupName.value = '';
+            toggleModal(createGroupModal, false);
+            renderGroups();
+        } catch (error) {
+            console.error('Create group error:', error);
+            alert('Failed to create group. Please try again.');
+        }
     }
     
-    function deleteGroup() {
+    async function deleteGroup() {
         if (!confirm(`Are you sure you want to delete "${currentGroup.name}" and all its members?`)) {
             return;
         }
         
-        groups = groups.filter(g => g.id !== currentGroup.id);
-        renderGroups();
-        showScreen('app-screen');
+        try {
+            const response = await fetch(`/api/groups/${currentGroup.id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${authToken}` }
+            });
+            
+            if (!response.ok) throw new Error('Failed to delete group');
+            
+            groups = groups.filter(g => g.id !== currentGroup.id);
+            renderGroups();
+            showScreen('app-screen');
+        } catch (error) {
+            console.error('Delete group error:', error);
+            alert('Failed to delete group. Please try again.');
+        }
     }
     
-    function addMember() {
+    async function addMember() {
         const name = memberName.value.trim();
         const phone = memberPhone.value.trim();
         
@@ -227,19 +292,32 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        currentGroup.members.push({
-            id: Date.now(),
-            name,
-            phone
-        });
-        
-        memberName.value = '';
-        memberPhone.value = '';
-        toggleModal(addMemberModal, false);
-        renderMembers();
+        try {
+            const response = await fetch(`/api/groups/${currentGroup.id}/members`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authToken}`
+                },
+                body: JSON.stringify({ name, phone })
+            });
+            
+            if (!response.ok) throw new Error('Failed to add member');
+            
+            const newMember = await response.json();
+            currentGroup.members.push(newMember);
+            
+            memberName.value = '';
+            memberPhone.value = '';
+            toggleModal(addMemberModal, false);
+            renderMembers();
+        } catch (error) {
+            console.error('Add member error:', error);
+            alert('Failed to add member. Please try again.');
+        }
     }
     
-    function removeMembers() {
+    async function removeMembers() {
         const checkboxes = document.querySelectorAll('.member-checkbox:checked');
         if (checkboxes.length === 0) {
             alert('Please select at least one member to remove');
@@ -251,11 +329,28 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         const idsToRemove = Array.from(checkboxes).map(cb => parseInt(cb.dataset.id));
-        currentGroup.members = currentGroup.members.filter(m => !idsToRemove.includes(m.id));
-        renderMembers();
+        
+        try {
+            const response = await fetch(`/api/groups/${currentGroup.id}/members`, {
+                method: 'DELETE',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authToken}`
+                },
+                body: JSON.stringify({ memberIds: idsToRemove })
+            });
+            
+            if (!response.ok) throw new Error('Failed to remove members');
+            
+            currentGroup.members = currentGroup.members.filter(m => !idsToRemove.includes(m.id));
+            renderMembers();
+        } catch (error) {
+            console.error('Remove members error:', error);
+            alert('Failed to remove members. Please try again.');
+        }
     }
     
-    function buzzSelected() {
+    async function buzzSelected() {
         const checkboxes = document.querySelectorAll('.member-checkbox:checked');
         if (checkboxes.length === 0) {
             alert('Please select at least one member to buzz');
@@ -269,14 +364,38 @@ document.addEventListener('DOMContentLoaded', function() {
         const idsToBuzz = Array.from(checkboxes).map(cb => parseInt(cb.dataset.id));
         const membersToBuzz = currentGroup.members.filter(m => idsToBuzz.includes(m.id));
         
-        alert(`Buzzing ${membersToBuzz.length} members!`);
-        console.log('Members to buzz:', membersToBuzz);
+        // Show loading state
+        buzzSelectedBtn.disabled = true;
+        buzzSelectedBtn.textContent = 'Sending...';
         
-        // Here you would add Twilio API calls
-        // sendBuzzNotifications(membersToBuzz);
+        try {
+            const response = await fetch(`/api/groups/${currentGroup.id}/buzz`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authToken}`
+                },
+                body: JSON.stringify({ 
+                    memberIds: idsToBuzz,
+                    message: `BUZZ ALERT from ${currentGroup.name}!`
+                })
+            });
+            
+            if (!response.ok) throw new Error('Buzz failed');
+            
+            const result = await response.json();
+            alert(`Successfully buzzed ${result.successCount}/${membersToBuzz.length} members!`);
+        } catch (error) {
+            console.error('Buzz error:', error);
+            alert('Buzz failed. Please try again.');
+        } finally {
+            // Reset button state
+            buzzSelectedBtn.disabled = false;
+            buzzSelectedBtn.textContent = 'Buzz Selected';
+        }
     }
     
-    function buzzAll() {
+    async function buzzAll() {
         if (currentGroup.members.length === 0) {
             alert('No members in this group to buzz');
             return;
@@ -285,11 +404,35 @@ document.addEventListener('DOMContentLoaded', function() {
         // Play buzz sound
         buzzSound.play();
         
-        alert(`Buzzing all ${currentGroup.members.length} members!`);
-        console.log('Buzzing all members:', currentGroup.members);
+        // Show loading state
+        buzzAllBtn.disabled = true;
+        buzzAllBtn.textContent = 'Sending...';
         
-        // Here you would add Twilio API calls
-        // sendBuzzNotifications(currentGroup.members);
+        try {
+            const response = await fetch(`/api/groups/${currentGroup.id}/buzz`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authToken}`
+                },
+                body: JSON.stringify({ 
+                    memberIds: currentGroup.members.map(m => m.id),
+                    message: `BUZZ ALERT from ${currentGroup.name}!`
+                })
+            });
+            
+            if (!response.ok) throw new Error('Buzz failed');
+            
+            const result = await response.json();
+            alert(`Successfully buzzed ${result.successCount}/${currentGroup.members.length} members!`);
+        } catch (error) {
+            console.error('Buzz error:', error);
+            alert('Buzz failed. Please try again.');
+        } finally {
+            // Reset button state
+            buzzAllBtn.disabled = false;
+            buzzAllBtn.textContent = 'Buzz All';
+        }
     }
     
     // Utility functions
