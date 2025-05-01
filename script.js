@@ -3,25 +3,33 @@ document.addEventListener('DOMContentLoaded', function() {
     const loginScreen = document.getElementById('login-screen');
     const signupScreen = document.getElementById('signup-screen');
     const appScreen = document.getElementById('app-screen');
+    const groupScreen = document.getElementById('group-screen');
     
     const loginForm = document.getElementById('login-form');
     const signupForm = document.getElementById('signup-form');
     const showSignupBtn = document.getElementById('show-signup');
     const showLoginBtn = document.getElementById('show-login');
     const logoutBtn = document.getElementById('logout-btn');
+    const backBtn = document.getElementById('back-btn');
     
     const groupsList = document.getElementById('groups-list');
     const createGroupBtn = document.getElementById('create-group-btn');
-    const groupContent = document.getElementById('group-content');
+    const groupTitle = document.getElementById('group-title');
+    const membersList = document.getElementById('members-list');
+    const addMemberBtn = document.getElementById('add-member-btn');
+    const buzzSelectedBtn = document.getElementById('buzz-selected-btn');
+    const buzzAllBtn = document.getElementById('buzz-all-btn');
     
     const createGroupModal = document.getElementById('create-group-modal');
-    const newGroupNameInput = document.getElementById('new-group-name');
-    const cancelCreateGroup = document.getElementById('cancel-create-group');
-    const confirmCreateGroup = document.getElementById('confirm-create-group');
+    const newGroupName = document.getElementById('new-group-name');
+    const cancelCreate = document.getElementById('cancel-create');
+    const confirmCreate = document.getElementById('confirm-create');
     
     const addMemberModal = document.getElementById('add-member-modal');
-    const cancelAddMember = document.getElementById('cancel-add-member');
-    const confirmAddMember = document.getElementById('confirm-add-member');
+    const memberName = document.getElementById('member-name');
+    const memberPhone = document.getElementById('member-phone');
+    const cancelAdd = document.getElementById('cancel-add');
+    const confirmAdd = document.getElementById('confirm-add');
     
     const buzzSound = document.getElementById('buzz-sound');
     
@@ -59,6 +67,7 @@ document.addEventListener('DOMContentLoaded', function() {
         showSignupBtn.addEventListener('click', showSignup);
         showLoginBtn.addEventListener('click', showLogin);
         logoutBtn.addEventListener('click', logout);
+        backBtn.addEventListener('click', goBack);
         
         // Forms
         loginForm.addEventListener('submit', handleLogin);
@@ -66,12 +75,17 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Groups
         createGroupBtn.addEventListener('click', () => toggleModal(createGroupModal, true));
-        cancelCreateGroup.addEventListener('click', () => toggleModal(createGroupModal, false));
-        confirmCreateGroup.addEventListener('click', createGroup);
+        cancelCreate.addEventListener('click', () => toggleModal(createGroupModal, false));
+        confirmCreate.addEventListener('click', createGroup);
         
         // Members
-        cancelAddMember.addEventListener('click', () => toggleModal(addMemberModal, false));
-        confirmAddMember.addEventListener('click', addMember);
+        addMemberBtn.addEventListener('click', () => toggleModal(addMemberModal, true));
+        cancelAdd.addEventListener('click', () => toggleModal(addMemberModal, false));
+        confirmAdd.addEventListener('click', addMember);
+        
+        // Buzz
+        buzzSelectedBtn.addEventListener('click', buzzSelected);
+        buzzAllBtn.addEventListener('click', buzzAll);
         
         // Password toggles
         document.querySelectorAll('.toggle-password').forEach(icon => {
@@ -84,101 +98,68 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Navigation functions
+    // Screen navigation
+    function showScreen(screen) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(screen).classList.add('active');
+    }
+    
     function showSignup(e) {
-        if (e) e.preventDefault();
-        loginScreen.classList.remove('active');
-        signupScreen.classList.add('active');
+        e.preventDefault();
+        showScreen('signup-screen');
     }
     
     function showLogin(e) {
-        if (e) e.preventDefault();
-        signupScreen.classList.remove('active');
-        loginScreen.classList.add('active');
+        e.preventDefault();
+        showScreen('login-screen');
     }
     
-    function showApp() {
-        loginScreen.classList.remove('active');
-        signupScreen.classList.remove('active');
-        appScreen.style.display = 'flex';
-        renderGroups();
+    function goBack() {
+        showScreen('app-screen');
     }
     
     function logout() {
-        appScreen.style.display = 'none';
-        loginScreen.classList.add('active');
+        showScreen('login-screen');
     }
     
     // Form handlers
     function handleLogin(e) {
         e.preventDefault();
-        const phone = document.getElementById('login-phone').value;
-        const password = document.getElementById('login-password').value;
-        
-        // Basic validation
-        if (!phone || !password) {
-            alert('Please enter both phone and password');
-            return;
-        }
-        
-        // In a real app, you would verify credentials with your server
-        showApp();
+        showScreen('app-screen');
     }
     
     function handleSignup(e) {
         e.preventDefault();
-        const name = document.getElementById('signup-name').value;
-        const phone = document.getElementById('signup-phone').value;
-        const password = document.getElementById('signup-password').value;
-        const confirm = document.getElementById('signup-confirm').value;
-        
-        // Validation
-        if (!name || !phone || !password || !confirm) {
-            alert('Please fill all fields');
-            return;
-        }
-        
-        if (password !== confirm) {
-            alert('Passwords do not match');
-            return;
-        }
-        
-        // In a real app, you would register the user with your server
-        showApp();
+        showScreen('app-screen');
     }
     
     // Group functions
     function renderGroups() {
         groupsList.innerHTML = '';
         
-        if (groups.length === 0) {
-            groupsList.innerHTML = '<p class="no-groups">No groups yet. Create your first group!</p>';
-            return;
-        }
-        
         groups.forEach(group => {
             const groupItem = document.createElement('div');
             groupItem.className = 'group-item';
             groupItem.innerHTML = `
-                ${group.name}
-                <span class="member-count">${group.members.length}</span>
+                <div>${group.name}</div>
+                <div>${group.members.length} members</div>
             `;
             
-            groupItem.addEventListener('click', () => showGroupDetail(group));
+            groupItem.addEventListener('click', () => {
+                currentGroup = group;
+                groupTitle.textContent = group.name;
+                renderMembers();
+                showScreen('group-screen');
+            });
+            
             groupsList.appendChild(groupItem);
         });
     }
     
-    function showGroupDetail(group) {
-        currentGroup = group;
-        document.getElementById('group-title').textContent = group.name;
+    function renderMembers() {
+        membersList.innerHTML = '';
         
-        groupContent.innerHTML = '';
-        const template = document.getElementById('group-detail-template');
-        const content = template.content.cloneNode(true);
-        
-        const membersList = content.getElementById('members-list');
-        group.members.forEach(member => {
+        currentGroup.members.forEach(member => {
             const memberItem = document.createElement('div');
             memberItem.className = 'member-item';
             memberItem.innerHTML = `
@@ -190,116 +171,65 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
             membersList.appendChild(memberItem);
         });
-        
-        // Add event listeners to buttons in the template
-        content.getElementById('add-member-btn').addEventListener('click', () => {
-            toggleModal(addMemberModal, true);
-        });
-        
-        content.getElementById('delete-group-btn').addEventListener('click', deleteGroup);
-        content.getElementById('buzz-selected-btn').addEventListener('click', buzzSelected);
-        content.getElementById('buzz-all-btn').addEventListener('click', buzzAll);
-        
-        groupContent.appendChild(content);
     }
     
     function createGroup() {
-        const name = newGroupNameInput.value.trim();
-        if (!name) {
-            alert('Please enter a group name');
-            return;
-        }
+        const name = newGroupName.value.trim();
+        if (!name) return;
         
-        const newGroup = {
+        groups.push({
             id: Date.now(),
             name,
             members: []
-        };
+        });
         
-        groups.push(newGroup);
-        renderGroups();
+        newGroupName.value = '';
         toggleModal(createGroupModal, false);
-        newGroupNameInput.value = '';
+        renderGroups();
     }
     
     function addMember() {
-        const name = document.getElementById('member-name').value.trim();
-        const phone = document.getElementById('member-phone').value.trim();
+        const name = memberName.value.trim();
+        const phone = memberPhone.value.trim();
         
-        if (!name || !phone) {
-            alert('Please fill all fields');
-            return;
-        }
+        if (!name || !phone) return;
         
-        const newMember = {
+        currentGroup.members.push({
             id: Date.now(),
             name,
             phone
-        };
+        });
         
-        currentGroup.members.push(newMember);
-        showGroupDetail(currentGroup);
+        memberName.value = '';
+        memberPhone.value = '';
         toggleModal(addMemberModal, false);
-        
-        // Clear inputs
-        document.getElementById('member-name').value = '';
-        document.getElementById('member-phone').value = '';
-    }
-    
-    function deleteGroup() {
-        if (confirm(`Are you sure you want to delete "${currentGroup.name}"?`)) {
-            groups = groups.filter(g => g.id !== currentGroup.id);
-            renderGroups();
-            
-            // Show empty state
-            groupContent.innerHTML = '';
-            document.getElementById('group-title').textContent = 'Select a Group';
-            
-            const emptyState = document.createElement('div');
-            emptyState.className = 'empty-state';
-            emptyState.innerHTML = `
-                <i class="fas fa-users"></i>
-                <p>Select a group from the sidebar or create a new one</p>
-            `;
-            groupContent.appendChild(emptyState);
-        }
+        renderMembers();
     }
     
     function buzzSelected() {
         const selected = document.querySelectorAll('.member-checkbox:checked');
         if (selected.length === 0) {
-            alert('Please select at least one member to buzz');
+            alert('Please select at least one member');
             return;
         }
         
-        // Play buzz sound
         buzzSound.play();
-        
-        // In a real app, you would send Twilio notifications here
-        const selectedMembers = Array.from(selected).map(checkbox => {
-            const memberId = parseInt(checkbox.dataset.id);
-            return currentGroup.members.find(m => m.id === memberId);
-        });
-        
-        alert(`Buzzing ${selected.length} selected members!`);
-        console.log('Selected members to buzz:', selectedMembers);
+        alert(`Buzzing ${selected.length} members!`);
     }
     
     function buzzAll() {
-        // Play buzz sound
         buzzSound.play();
-        
-        // In a real app, you would send Twilio notifications here
         alert(`Buzzing all ${currentGroup.members.length} members!`);
-        console.log('Buzzing all members:', currentGroup.members);
     }
     
     // Utility functions
     function toggleModal(modal, show) {
         if (show) {
             modal.classList.add('active');
+            document.body.classList.add('modal-open');
         } else {
             modal.classList.remove('active');
+            document.body.classList.remove('modal-open');
         }
     }
     
