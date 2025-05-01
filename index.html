@@ -5,21 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Buzz Manager</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="data:,">
 </head>
 <body>
-    <div class="app-container">
+    <div class="app-wrapper">
         <!-- Login Screen -->
-        <div class="auth-screen active" id="login-screen">
+        <div id="login-screen" class="screen active">
             <div class="auth-card">
                 <div class="app-logo">
                     <i class="fas fa-bell"></i>
                     <h1>Buzz Manager</h1>
                 </div>
                 
-                <form class="auth-form" id="login-form">
+                <form id="login-form" class="auth-form">
                     <div class="input-field">
                         <i class="fas fa-phone"></i>
                         <input type="tel" id="login-phone" placeholder="Phone number" required>
@@ -44,14 +43,14 @@
         </div>
 
         <!-- Signup Screen -->
-        <div class="auth-screen" id="signup-screen">
+        <div id="signup-screen" class="screen">
             <div class="auth-card">
                 <div class="app-logo">
                     <i class="fas fa-bell"></i>
                     <h1>Create Account</h1>
                 </div>
                 
-                <form class="auth-form" id="signup-form">
+                <form id="signup-form" class="auth-form">
                     <div class="input-field">
                         <i class="fas fa-user"></i>
                         <input type="text" id="signup-name" placeholder="Full name" required>
@@ -85,101 +84,82 @@
         </div>
 
         <!-- Main App Screen -->
-        <div class="app-screen" id="app-screen">
-            <!-- Sidebar -->
-            <div class="app-sidebar">
-                <div class="sidebar-header">
-                    <h2>Buzz Manager</h2>
-                    <button id="logout-btn" class="icon-btn">
-                        <i class="fas fa-sign-out-alt"></i>
-                    </button>
-                </div>
-                
-                <div class="sidebar-groups">
-                    <button class="primary-btn" id="create-group-btn">
-                        <i class="fas fa-plus"></i> New Group
-                    </button>
-                    
-                    <div class="groups-list" id="groups-list">
-                        <!-- Groups will be loaded here -->
-                    </div>
-                </div>
+        <div id="app-screen" class="screen">
+            <div class="app-header">
+                <h2><i class="fas fa-bell"></i> Buzz Groups</h2>
+                <button id="logout-btn" class="icon-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
             </div>
             
-            <!-- Main Content -->
             <div class="app-content">
-                <div class="content-header">
-                    <h2 id="group-title">Select a Group</h2>
-                </div>
+                <button id="create-group-btn" class="primary-btn">
+                    <i class="fas fa-plus"></i> Create Group
+                </button>
                 
-                <div class="content-body" id="group-content">
-                    <div class="empty-state">
-                        <i class="fas fa-users"></i>
-                        <p>Select a group from the sidebar or create a new one</p>
-                    </div>
+                <div id="groups-list" class="groups-container">
+                    <!-- Groups will load here -->
                 </div>
             </div>
         </div>
 
-        <!-- Group Detail Template -->
-        <template id="group-detail-template">
-            <div class="group-detail">
+        <!-- Group Detail Screen -->
+        <div id="group-screen" class="screen">
+            <div class="group-header">
+                <button id="back-btn" class="icon-btn">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h2 id="group-title">Group Name</h2>
+            </div>
+            
+            <div class="group-content">
                 <div class="group-actions">
-                    <button class="action-btn" id="edit-group-btn">
-                        <i class="fas fa-edit"></i> Edit
-                    </button>
-                    <button class="action-btn danger" id="delete-group-btn">
-                        <i class="fas fa-trash"></i> Delete
+                    <button id="add-member-btn" class="action-btn">
+                        <i class="fas fa-user-plus"></i> Add Member
                     </button>
                 </div>
                 
-                <div class="members-header">
-                    <h3>Group Members</h3>
-                    <button class="action-btn" id="add-member-btn">
-                        <i class="fas fa-user-plus"></i> Add
-                    </button>
-                </div>
-                
-                <div class="members-list" id="members-list">
-                    <!-- Members will be loaded here -->
+                <div id="members-list" class="members-container">
+                    <!-- Members will load here -->
                 </div>
                 
                 <div class="buzz-actions">
-                    <button class="primary-btn" id="buzz-selected-btn">
+                    <button id="buzz-selected-btn" class="primary-btn">
                         <i class="fas fa-bell"></i> Buzz Selected
                     </button>
-                    <button class="primary-btn" id="buzz-all-btn">
+                    <button id="buzz-all-btn" class="primary-btn">
                         <i class="fas fa-bell"></i> Buzz All
                     </button>
                 </div>
             </div>
-        </template>
+        </div>
 
-        <!-- Modals -->
-        <div class="modal" id="create-group-modal">
+        <!-- Create Group Modal -->
+        <div id="create-group-modal" class="modal">
             <div class="modal-content">
                 <h3>Create New Group</h3>
                 <input type="text" id="new-group-name" placeholder="Group name">
                 <div class="modal-actions">
-                    <button class="secondary-btn" id="cancel-create-group">Cancel</button>
-                    <button class="primary-btn" id="confirm-create-group">Create</button>
+                    <button id="cancel-create" class="secondary-btn">Cancel</button>
+                    <button id="confirm-create" class="primary-btn">Create</button>
                 </div>
             </div>
         </div>
 
-        <div class="modal" id="add-member-modal">
+        <!-- Add Member Modal -->
+        <div id="add-member-modal" class="modal">
             <div class="modal-content">
                 <h3>Add New Member</h3>
                 <input type="text" id="member-name" placeholder="Member name">
                 <input type="tel" id="member-phone" placeholder="Phone number">
                 <div class="modal-actions">
-                    <button class="secondary-btn" id="cancel-add-member">Cancel</button>
-                    <button class="primary-btn" id="confirm-add-member">Add</button>
+                    <button id="cancel-add" class="secondary-btn">Cancel</button>
+                    <button id="confirm-add" class="primary-btn">Add</button>
                 </div>
             </div>
         </div>
 
-        <!-- Audio element for buzz sound -->
+        <!-- Audio Element -->
         <audio id="buzz-sound" src="buzz.mp3" preload="auto"></audio>
     </div>
 
