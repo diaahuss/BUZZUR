@@ -17,6 +17,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const groupTitle = document.getElementById('group-title');
     const membersList = document.getElementById('members-list');
     const addMemberBtn = document.getElementById('add-member-btn');
+    const removeMembersBtn = document.getElementById('remove-members-btn');
+    const deleteGroupBtn = document.getElementById('delete-group-btn');
     const buzzSelectedBtn = document.getElementById('buzz-selected-btn');
     const buzzAllBtn = document.getElementById('buzz-all-btn');
     
@@ -77,11 +79,13 @@ document.addEventListener('DOMContentLoaded', function() {
         createGroupBtn.addEventListener('click', () => toggleModal(createGroupModal, true));
         cancelCreate.addEventListener('click', () => toggleModal(createGroupModal, false));
         confirmCreate.addEventListener('click', createGroup);
+        deleteGroupBtn.addEventListener('click', deleteGroup);
         
         // Members
         addMemberBtn.addEventListener('click', () => toggleModal(addMemberModal, true));
         cancelAdd.addEventListener('click', () => toggleModal(addMemberModal, false));
         confirmAdd.addEventListener('click', addMember);
+        removeMembersBtn.addEventListener('click', removeMembers);
         
         // Buzz
         buzzSelectedBtn.addEventListener('click', buzzSelected);
@@ -137,12 +141,20 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderGroups() {
         groupsList.innerHTML = '';
         
+        if (groups.length === 0) {
+            groupsList.innerHTML = '<div class="empty-message">No groups yet. Create your first group!</div>';
+            return;
+        }
+        
         groups.forEach(group => {
             const groupItem = document.createElement('div');
             groupItem.className = 'group-item';
             groupItem.innerHTML = `
-                <div>${group.name}</div>
-                <div>${group.members.length} members</div>
+                <div>
+                    <h4>${group.name}</h4>
+                    <p>${group.members.length} ${group.members.length === 1 ? 'member' : 'members'}</p>
+                </div>
+                <i class="fas fa-chevron-right"></i>
             `;
             
             groupItem.addEventListener('click', () => {
@@ -158,6 +170,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function renderMembers() {
         membersList.innerHTML = '';
+        
+        if (currentGroup.members.length === 0) {
+            membersList.innerHTML = '<div class="empty-message">No members yet. Add your first member!</div>';
+            return;
+        }
         
         currentGroup.members.forEach(member => {
             const memberItem = document.createElement('div');
@@ -175,7 +192,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function createGroup() {
         const name = newGroupName.value.trim();
-        if (!name) return;
+        if (!name) {
+            alert('Please enter a group name');
+            return;
+        }
         
         groups.push({
             id: Date.now(),
@@ -188,11 +208,24 @@ document.addEventListener('DOMContentLoaded', function() {
         renderGroups();
     }
     
+    function deleteGroup() {
+        if (!confirm(`Are you sure you want to delete "${currentGroup.name}" and all its members?`)) {
+            return;
+        }
+        
+        groups = groups.filter(g => g.id !== currentGroup.id);
+        renderGroups();
+        showScreen('app-screen');
+    }
+    
     function addMember() {
         const name = memberName.value.trim();
         const phone = memberPhone.value.trim();
         
-        if (!name || !phone) return;
+        if (!name || !phone) {
+            alert('Please enter both name and phone number');
+            return;
+        }
         
         currentGroup.members.push({
             id: Date.now(),
@@ -206,20 +239,57 @@ document.addEventListener('DOMContentLoaded', function() {
         renderMembers();
     }
     
-    function buzzSelected() {
-        const selected = document.querySelectorAll('.member-checkbox:checked');
-        if (selected.length === 0) {
-            alert('Please select at least one member');
+    function removeMembers() {
+        const checkboxes = document.querySelectorAll('.member-checkbox:checked');
+        if (checkboxes.length === 0) {
+            alert('Please select at least one member to remove');
             return;
         }
         
+        if (!confirm(`Remove ${checkboxes.length} selected members?`)) {
+            return;
+        }
+        
+        const idsToRemove = Array.from(checkboxes).map(cb => parseInt(cb.dataset.id));
+        currentGroup.members = currentGroup.members.filter(m => !idsToRemove.includes(m.id));
+        renderMembers();
+    }
+    
+    function buzzSelected() {
+        const checkboxes = document.querySelectorAll('.member-checkbox:checked');
+        if (checkboxes.length === 0) {
+            alert('Please select at least one member to buzz');
+            return;
+        }
+        
+        // Play buzz sound
         buzzSound.play();
-        alert(`Buzzing ${selected.length} members!`);
+        
+        // Get selected members
+        const idsToBuzz = Array.from(checkboxes).map(cb => parseInt(cb.dataset.id));
+        const membersToBuzz = currentGroup.members.filter(m => idsToBuzz.includes(m.id));
+        
+        alert(`Buzzing ${membersToBuzz.length} members!`);
+        console.log('Members to buzz:', membersToBuzz);
+        
+        // Here you would add Twilio API calls
+        // sendBuzzNotifications(membersToBuzz);
     }
     
     function buzzAll() {
+        if (currentGroup.members.length === 0) {
+            alert('No members in this group to buzz');
+            return;
+        }
+        
+        // Play buzz sound
         buzzSound.play();
+        
         alert(`Buzzing all ${currentGroup.members.length} members!`);
+        console.log('Buzzing all members:', currentGroup.members);
+        
+        // Here you would add Twilio API calls
+        // sendBuzzNotifications(currentGroup.members);
     }
     
     // Utility functions
