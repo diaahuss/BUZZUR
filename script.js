@@ -136,16 +136,23 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   
-  function setupPasswordToggles() {
-    document.querySelectorAll('.toggle-password').forEach(icon => {
-      icon.addEventListener('click', function() {
-        const input = this.previousElementSibling;
-        const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
-        input.setAttribute('type', type);
-        this.classList.toggle('fa-eye-slash');
-      });
+// Replace existing password toggle function with this:
+function setupPasswordToggles() {
+  document.querySelectorAll('.toggle-password').forEach(icon => {
+    icon.addEventListener('click', function() {
+      const input = this.previousElementSibling;
+      if (input.type === 'password') {
+        input.type = 'text';
+        this.classList.remove('fa-eye');
+        this.classList.add('fa-eye-slash');
+      } else {
+        input.type = 'password';
+        this.classList.remove('fa-eye-slash');
+        this.classList.add('fa-eye');
+      }
     });
-  }
+  });
+}
   
   // Screen Management
   function showScreen(screenName) {
