@@ -5,6 +5,14 @@
   --primary-darker: #2b5f8a;
   --primary-light: #d0e6fb;
 
+  /* Screen
+  .screen {
+  display: none;
+}
+.screen.active {
+  display: block;
+}
+  
   /* Neutral / Secondary */
   --secondary: #f1f3f5;
   --text: #212529;
