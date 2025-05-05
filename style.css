@@ -224,134 +224,146 @@ body {
 .buzz-actions {
     margin-top: auto;
 }
-/* ===== BUTTON RESET ===== */
-button, 
-input[type="button"], 
-input[type="submit"], 
-input[type="reset"], 
+
+/* ===== BUTTON NUCLEAR RESET ===== */
+button,
+[type="button"],
+[type="submit"],
+[type="reset"],
 .btn {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    margin: 0;
-    padding: 0;
-    background: none;
-    border: none;
-    border-radius: 0;
-    font: inherit;
-    color: inherit;
-    cursor: pointer;
-    outline: none;
+  all: unset;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  box-sizing: border-box;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  user-select: none;
+  vertical-align: middle;
+  text-decoration: none;
+  cursor: pointer;
+  margin: 0;
+  padding: 0;
+  border: none !important;
+  background: none;
+  font: inherit;
+  color: inherit;
+  outline: none;
 }
 
 /* ===== BASE BUTTON STYLES ===== */
 .btn {
-    --btn-padding-x: 1.75rem;
-    --btn-padding-y: 1.25rem;
-    --btn-border-width: 0px;
-    
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
-    padding: var(--btn-padding-y) var(--btn-padding-x);
-    min-height: 56px;
-    border-radius: 0.75rem;
-    font-size: 1rem;
-    font-weight: 500;
-    line-height: 1.5;
-    text-decoration: none;
-    vertical-align: middle;
-    user-select: none;
-    transition: all 0.2s ease;
-    overflow: hidden;
-    isolation: isolate;
-    border: var(--btn-border-width) solid transparent;
-    box-shadow: none;
+  --btn-padding-x: 1.75rem;
+  --btn-padding-y: 1.25rem;
+  
+  position: relative;
+  padding: var(--btn-padding-y) var(--btn-padding-x);
+  min-height: 56px;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.5;
+  transition: all 0.2s ease;
+  overflow: hidden;
+  isolation: isolate;
+  box-shadow: none !important;
+  background-clip: padding-box;
+  border: 0 solid transparent !important;
 }
 
-/* Remove any potential pseudo-element borders */
+/* ===== KILL ALL PSEUDO-ELEMENTS ===== */
+.btn *,
+.btn *::before,
+.btn *::after,
 .btn::before,
 .btn::after {
-    content: none !important;
+  all: unset !important;
+  display: none !important;
+  content: none !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
-/* ===== BUTTON VARIANTS ===== */
+/* ===== PRIMARY BUTTON ===== */
 .primary-btn {
-    background-color: var(--primary);
-    color: white;
-    background-image: linear-gradient(
-        to bottom,
-        var(--primary),
-        var(--primary-dark)
-    );
+  background: linear-gradient(
+    to bottom,
+    var(--primary),
+    var(--primary-dark)
+  ) !important;
+  color: white !important;
 }
 
 .primary-btn:hover {
-    background-image: linear-gradient(
-        to bottom,
-        var(--primary-dark),
-        var(--primary-darker)
-    );
-    transform: translateY(-2px);
+  background: linear-gradient(
+    to bottom,
+    var(--primary-dark),
+    var(--primary-darker)
+  ) !important;
+  transform: translateY(-2px);
 }
 
+/* ===== SECONDARY BUTTON ===== */
 .secondary-btn {
-    background-color: var(--secondary);
-    color: var(--text);
-    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+  background-color: var(--secondary) !important;
+  color: var(--text) !important;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1) !important;
 }
 
 .secondary-btn:hover {
-    background-color: #e9ecef;
-    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.2);
+  background-color: #e9ecef !important;
 }
 
+/* ===== ACTION BUTTON ===== */
 .action-btn {
-    --btn-padding-x: 1rem;
-    --btn-padding-y: 0.75rem;
-    background: transparent;
-    color: var(--primary);
-    min-height: auto;
+  --btn-padding-x: 1rem;
+  --btn-padding-y: 0.75rem;
+  background: transparent !important;
+  color: var(--primary) !important;
+  min-height: auto;
+  text-decoration: none !important;
 }
 
 .action-btn:hover {
-    background-color: var(--primary-light);
-    text-decoration: underline;
+  background-color: var(--primary-light) !important;
+  text-decoration: underline !important;
 }
 
 .action-btn.danger {
-    color: var(--danger);
+  color: var(--danger) !important;
 }
 
 .action-btn.danger:hover {
-    background-color: var(--danger-light);
+  background-color: var(--danger-light) !important;
 }
 
-/* ===== STATES ===== */
+/* ===== FOCUS STATE ===== */
 .btn:focus {
-    outline: 2px solid var(--primary-light);
-    outline-offset: 2px;
+  outline: 2px solid var(--primary-light) !important;
+  outline-offset: 2px !important;
 }
 
 /* ===== BROWSER HACKS ===== */
-/* Firefox focus fix */
+/* Firefox */
 @-moz-document url-prefix() {
-    .btn::-moz-focus-inner {
-        border: 0 !important;
-        padding: 0 !important;
-        margin: 0 !important;
-    }
+  .btn {
+    background-image: none !important;
+  }
+  .btn::-moz-focus-inner {
+    border: 0 !important;
+    padding: 0 !important;
+  }
 }
 
-/* Safari border-radius fix */
-@media not all and (min-resolution:.001dpcm) { 
-    @supports (-webkit-appearance:none) {
-        .btn {
-            -webkit-mask-image: -webkit-radial-gradient(white, black);
-        }
+/* Safari */
+@media not all and (min-resolution:.001dpcm) {
+  @supports (-webkit-appearance:none) {
+    .btn {
+      -webkit-mask-image: -webkit-radial-gradient(white, black);
     }
+  }
 }
 
 /* Modals */
