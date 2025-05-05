@@ -20,8 +20,12 @@ function playBuzzSound() {
 
 socket.on('buzz', playBuzzSound);
 
+function renderScreen(content) {
+  app.innerHTML = content;
+}
+
 function renderLogin() {
-  app.innerHTML = `
+  renderScreen(`
     <h2>Login</h2>
     <input type="text" placeholder="Phone Number" id="login-phone">
     <input type="password" placeholder="Password" id="login-password">
@@ -31,7 +35,7 @@ function renderLogin() {
       <span id="forgot-link">Forgot Password?</span>
       <span id="signup-link" class="right-link">Sign Up</span>
     </div>
-  `;
+  `);
 
   document.getElementById('login-show-password').onchange = e => {
     document.getElementById('login-password').type = e.target.checked ? 'text' : 'password';
@@ -54,7 +58,7 @@ function renderLogin() {
 }
 
 function renderSignup() {
-  app.innerHTML = `
+  renderScreen(`
     <h2>Sign Up</h2>
     <input type="text" placeholder="Name" id="signup-name">
     <input type="text" placeholder="Phone Number" id="signup-phone">
@@ -65,7 +69,7 @@ function renderSignup() {
     <div class="links">
       <span id="login-link">Back to Login</span>
     </div>
-  `;
+  `);
 
   document.getElementById('signup-show-password').onchange = e => {
     document.getElementById('signup-password').type =
@@ -92,7 +96,7 @@ function renderSignup() {
 }
 
 function renderForgot() {
-  app.innerHTML = `
+  renderScreen(`
     <h2>Reset Password</h2>
     <input type="text" placeholder="Phone Number" id="reset-phone">
     <input type="password" placeholder="New Password" id="reset-password">
@@ -101,7 +105,7 @@ function renderForgot() {
     <div class="links">
       <span id="login-link">Back to Login</span>
     </div>
-  `;
+  `);
 
   document.getElementById('reset-show-password').onchange = e => {
     document.getElementById('reset-password').type = e.target.checked ? 'text' : 'password';
@@ -122,12 +126,12 @@ function renderForgot() {
 
 function renderDashboard() {
   const user = currentUser;
-  app.innerHTML = `
+  renderScreen(`
     <h2>My Groups</h2>
     <div id="groups-container"></div>
     <button id="create-group-btn">+ Create Group</button>
     <button id="logout-btn" style="background-color: red; margin-top: 20px;">Logout</button>
-  `;
+  `);
 
   const container = document.getElementById('groups-container');
   user.groups.forEach((group, gi) => {
