@@ -5,7 +5,7 @@
   --primary-darker: #2b5f8a;
   --primary-light: #d0e6fb;
 
-/* Neutral / Secondary */
+  /* Neutral / Secondary */
   --secondary: #f1f3f5;
   --text: #212529;
   --border: #e9ecef;
@@ -15,8 +15,8 @@
   --danger-light: #f8d7da;
 
   /* Button Defaults */
-  --btn-padding-x: 1.75rem;
-  --btn-padding-y: 1.25rem; /* Reduced from 2.25rem */
+  --btn-padding-x: 2rem;
+  --btn-padding-y: 1.25rem;
 
   /* Border radius & transitions */
   --radius: 0.75rem;
@@ -26,32 +26,44 @@
 /* ===== INPUT FIELD STYLES ===== */
 .input-field input {
   width: 100%;
-  padding: 1rem 3rem;
+  padding: 1rem 1.25rem;
   border-radius: var(--radius);
   font-size: 1rem;
   background: white;
-  /* Border removal */
-  border: none !important;
-  box-shadow: inset 0 0 0 1px var(--border);
+  border: 1px solid var(--border);
+  box-shadow: none;
 }
 
 .input-field input:focus {
-  box-shadow: inset 0 0 0 2px var(--primary);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
   outline: none;
 }
 
-/* ===== BUTTON SYSTEM ===== */
+/* ===== BUTTON STYLES ===== */
+button,
+[type="button"],
+[type="submit"],
+[type="reset"],
 .btn {
-  padding: var(--btn-padding-y) var(--btn-padding-x);
-  min-height: 56px; /* Reduced from 72px */
+  all: unset;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+  font: inherit;
+  text-decoration: none;
   border-radius: var(--radius);
+  transition: var(--transition);
+  padding: var(--btn-padding-y) var(--btn-padding-x);
+  min-height: 64px; /* More height */
   font-size: 1rem;
   font-weight: 500;
-  transition: var(--transition);
-  /* Border removal */
-  border: none !important;
 }
 
+/* Primary Button */
 .primary-btn {
   background: linear-gradient(to bottom, var(--primary), var(--primary-dark));
   color: white;
@@ -59,15 +71,21 @@
 
 .primary-btn:hover {
   background: linear-gradient(to bottom, var(--primary-dark), var(--primary-darker));
+  transform: translateY(-1px);
 }
 
+/* Secondary Button */
 .secondary-btn {
   background-color: var(--secondary);
   color: var(--text);
-  /* Border replacement */
-  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
 }
 
+.secondary-btn:hover {
+  background-color: #e9ecef;
+}
+
+/* Action Button */
 .action-btn {
   padding: 0.75rem 1rem;
   background: transparent;
@@ -75,47 +93,36 @@
   min-height: auto;
 }
 
-/* Keep all other existing styles below this line */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: system-ui, -apple-system, sans-serif;
+.action-btn:hover {
+  background-color: var(--primary-light);
+  text-decoration: underline;
 }
 
-body {
-    background-color: #f5f7fa;
-    color: var(--text);
+.action-btn.danger {
+  color: var(--danger);
 }
 
-.app-wrapper {
-    max-width: 400px;
-    margin: 0 auto;
-    position: relative;
-    height: 100vh;
-    overflow: hidden;
+.action-btn.danger:hover {
+  background-color: var(--danger-light);
 }
 
-/* [Keep all other existing CSS rules exactly as they were] */
-/* ===== FOCUS STATE ===== */
+/* Focus States */
 .btn:focus {
-  outline: 2px solid var(--primary-light) !important;
-  outline-offset: 2px !important;
+  outline: 2px solid var(--primary-light);
+  outline-offset: 2px;
 }
 
-/* ===== BROWSER HACKS ===== */
-/* Firefox */
+/* Browser-Specific Fixes */
 @-moz-document url-prefix() {
   .btn {
     background-image: none !important;
   }
   .btn::-moz-focus-inner {
-    border: 0 !important;
-    padding: 0 !important;
+    border: 0;
+    padding: 0;
   }
 }
 
-/* Safari */
 @media not all and (min-resolution:.001dpcm) {
   @supports (-webkit-appearance:none) {
     .btn {
@@ -124,56 +131,76 @@ body {
   }
 }
 
-/* Modals */
+/* Base Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+body {
+  background-color: #f5f7fa;
+  color: var(--text);
+}
+
+.app-wrapper {
+  max-width: 400px;
+  margin: 0 auto;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Modal Styling */
 .modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 100;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
 }
 
 .modal.active {
-    display: flex;
+  display: flex;
 }
 
 .modal-content {
-    background-color: white;
-    width: 90%;
-    max-width: 400px;
-    padding: 1.5rem;
-    border-radius: 0.75rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
+  background-color: white;
+  width: 90%;
+  max-width: 400px;
+  padding: 1.5rem;
+  border-radius: var(--radius);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
 }
 
 .modal-content h3 {
-    font-size: 1.25rem;
-    font-weight: 600;
+  font-size: 1.25rem;
+  font-weight: 600;
 }
 
 .modal-content input {
-    width: 100%;
-    padding: 1rem;
-    border: 1px solid var(--border);
-    border-radius: 0.75rem;
-    font-size: 1rem;
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 1rem;
 }
 
 .modal-content input:focus {
-    outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px var(--primary-light);
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
 }
 
 .modal-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 0.75rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
 }
