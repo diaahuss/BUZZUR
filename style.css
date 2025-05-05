@@ -1,5 +1,5 @@
 :root {
-  /* ===== Color Palette ===== */
+  /* Color Palette */
   --color-primary: #4a90e2;
   --color-primary-dark: #357ab8;
   --color-primary-light: #d0e6fb;
@@ -12,37 +12,29 @@
   --color-white: #fff;
   --color-shadow: rgba(0, 0, 0, 0.1);
 
-  /* ===== Spacing & Sizing ===== */
+  /* Spacing & Sizing */
   --spacing-sm: 0.5rem;
   --spacing-md: 1rem;
   --spacing-lg: 1.5rem;
   --spacing-xl: 2rem;
-  --input-height: 3rem; /* 48px */
-  --btn-height: 3rem; /* 48px */
-  --app-max-width: 37.5rem; /* 600px */
-  --border-radius: 0.5rem; /* 8px */
+  --input-height: 3rem;
+  --app-max-width: 37.5rem;
+  --border-radius: 0.5rem;
 
-  /* ===== Transitions ===== */
+  /* Transitions */
   --transition-fast: 0.15s ease;
   --transition-base: 0.2s ease;
 }
 
-/* ===== Base Reset ===== */
-*,
-*::before,
-*::after {
+/* Base Styles */
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
 body {
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-  line-height: 1.5;
   background-color: var(--color-bg);
   color: var(--color-text);
   padding: var(--spacing-xl);
@@ -51,7 +43,7 @@ body {
   justify-content: center;
 }
 
-/* ===== Layout Components ===== */
+/* App Layout */
 .app-wrapper {
   width: 100%;
   max-width: var(--app-max-width);
@@ -70,153 +62,34 @@ body {
   display: block;
 }
 
-/* ===== Form Elements ===== */
-.input-field {
-  margin-bottom: var(--spacing-lg);
-  position: relative;
+/* Auth Screens */
+.auth-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
 }
 
-.input-field input {
-  width: 100%;
-  height: var(--input-height);
-  padding: 0 var(--spacing-md) 0 3rem;
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius);
-  font-size: 1rem;
-  transition: var(--transition-base);
+.app-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
 }
 
-.input-field input:focus {
-  border-color: var(--color-primary);
-  outline: none;
-  box-shadow: 0 0 0 2px var(--color-primary-light);
-}
-
-.input-field i {
-  position: absolute;
-  left: var(--spacing-md);
-  top: 50%;
-  transform: translateY(-50%);
+.app-logo i {
+  font-size: 2.5rem;
   color: var(--color-primary);
 }
 
-.toggle-password {
-  cursor: pointer;
-  right: var(--spacing-md);
-  left: auto;
-}
-
-/* ===== Buttons ===== */
-.btn {
-  --btn-bg: transparent;
-  --btn-color: currentColor;
-  
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: var(--btn-height);
-  padding: 0 var(--spacing-lg);
-  border-radius: var(--border-radius);
-  font-weight: 600;
-  cursor: pointer;
-  transition: 
-    background-color var(--transition-fast),
-    transform 0.1s ease;
-  gap: var(--spacing-sm);
-  width: 100%;
-  margin-bottom: var(--spacing-sm);
-  border: none;
-  background: var(--btn-bg);
-  color: var(--btn-color);
-}
-
-.btn:active {
-  transform: scale(0.98);
-}
-
-.btn--primary {
-  --btn-bg: var(--color-primary);
-  --btn-color: var(--color-white);
-}
-
-.btn--primary:hover {
-  --btn-bg: var(--color-primary-dark);
-}
-
-.btn--danger {
-  --btn-bg: var(--color-danger);
-  --btn-color: var(--color-white);
-}
-
-.btn--secondary {
-  --btn-bg: var(--color-bg);
-  --btn-color: var(--color-text);
-  border: 1px solid var(--color-border);
-}
-
-.btn--icon {
-  width: auto;
-  background: transparent;
-}
-
-/* ===== Utility Components ===== */
-.action-group {
+.auth-form {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-sm);
-  margin-bottom: var(--spacing-lg);
+  gap: var(--spacing-lg);
 }
 
-.buzz-actions {
+.auth-links {
   display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
-  margin-top: var(--spacing-lg);
+  justify-content: space-between;
 }
 
-/* ===== List Items ===== */
-.member-item {
-  display: flex;
-  align-items: center;
-  padding: var(--spacing-md);
-  background: #f8f9fa;
-  border-radius: var(--border-radius);
-  margin-bottom: var(--spacing-sm);
-}
-
-.member-item input {
-  margin-right: var(--spacing-md);
-}
-
-/* ===== Modal Overlays ===== */
-.modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity var(--transition-base);
-}
-
-.modal.active {
-  opacity: 1;
-  pointer-events: all;
-}
-
-.modal-content {
-  background: var(--color-white);
-  border-radius: var(--border-radius);
-  width: 90%;
-  max-width: 30rem;
-  padding: var(--spacing-lg);
-  transform: translateY(-1rem);
-  transition: transform var(--transition-base);
-}
-
-.modal.active .modal-content {
-  transform: translateY(0);
-}
+/* ... rest of your CSS ... */
