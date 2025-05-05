@@ -8,9 +8,14 @@ const port = 3000;
 // Add body parser for JSON
 app.use(express.json());
 
+// ✅ Twilio setup (using API Key & Secret, not Auth Token)
+const accountSid = process.env.TWILIO_ACCOUNT_SID;
+const apiKey = process.env.TWILIO_API_KEY_SID;
+const apiSecret = process.env.TWILIO_API_KEY_SECRET;
+const twilioPhone = process.env.TWILIO_PHONE_NUMBER;
+console.log('Twilio loaded with:', { accountSid, apiKey, apiSecret, twilioPhone });
 
-
-const client = twilio(apiKey, apiSecret, { accountSid });
+const client = require('twilio')(apiKey, apiSecret, { accountSid });
 
 // 🔔 Test route for sending SMS
 app.post('/api/test-sms', async (req, res) => {
