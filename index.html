@@ -1,41 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Buzz Manager</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="style.css">
-  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="data:," />
 </head>
 <body>
   <div class="app-wrapper">
 
-    <!-- Login Screen -->
+    <!-- ===== LOGIN SCREEN ===== -->
     <div id="login-screen" class="screen active">
       <div class="auth-card">
         <div class="app-logo">
           <i class="fas fa-bell"></i>
           <h1>Buzz Manager</h1>
         </div>
-
         <form id="login-form" class="auth-form">
           <div class="input-field">
             <i class="fas fa-phone"></i>
-            <input type="tel" id="login-phone" placeholder="Phone number" required>
+            <input type="tel" id="login-phone" placeholder="Phone number" required />
           </div>
-
           <div class="input-field">
             <i class="fas fa-lock"></i>
-            <input type="password" id="login-password" placeholder="Password" required>
+            <input type="password" id="login-password" placeholder="Password" required />
             <i class="fas fa-eye toggle-password"></i>
           </div>
-
           <button type="submit" class="btn primary-btn">
             <i class="fas fa-sign-in-alt"></i> Login
           </button>
         </form>
-
         <div class="auth-links">
           <a href="#" id="show-signup">Create account</a>
           <a href="#" id="forgot-password">Forgot password?</a>
@@ -43,49 +39,43 @@
       </div>
     </div>
 
-    <!-- Signup Screen -->
+    <!-- ===== SIGNUP SCREEN ===== -->
     <div id="signup-screen" class="screen">
       <div class="auth-card">
         <div class="app-logo">
           <i class="fas fa-bell"></i>
           <h1>Create Account</h1>
         </div>
-
         <form id="signup-form" class="auth-form">
           <div class="input-field">
             <i class="fas fa-user"></i>
-            <input type="text" id="signup-name" placeholder="Full name" required>
+            <input type="text" id="signup-name" placeholder="Full name" required />
           </div>
-
           <div class="input-field">
             <i class="fas fa-phone"></i>
-            <input type="tel" id="signup-phone" placeholder="Phone number" required>
+            <input type="tel" id="signup-phone" placeholder="Phone number" required />
           </div>
-
           <div class="input-field">
             <i class="fas fa-lock"></i>
-            <input type="password" id="signup-password" placeholder="Password" required>
+            <input type="password" id="signup-password" placeholder="Password" required />
             <i class="fas fa-eye toggle-password"></i>
           </div>
-
           <div class="input-field">
             <i class="fas fa-lock"></i>
-            <input type="password" id="signup-confirm" placeholder="Confirm password" required>
+            <input type="password" id="signup-confirm" placeholder="Confirm password" required />
             <i class="fas fa-eye toggle-password"></i>
           </div>
-
           <button type="submit" class="btn primary-btn">
             <i class="fas fa-user-plus"></i> Sign Up
           </button>
         </form>
-
         <div class="auth-links">
           <a href="#" id="show-login">Already have an account? Login</a>
         </div>
       </div>
     </div>
 
-    <!-- Main App Screen -->
+    <!-- ===== MAIN APP SCREEN ===== -->
     <div id="app-screen" class="screen">
       <div class="app-header">
         <h2><i class="fas fa-bell"></i> Buzz Groups</h2>
@@ -98,14 +88,13 @@
         <button id="create-group-btn" class="btn primary-btn">
           <i class="fas fa-plus"></i> Create Group
         </button>
-
         <div id="groups-list" class="groups-container">
-          <!-- Groups will be added here -->
+          <!-- Group cards will appear here -->
         </div>
       </div>
     </div>
 
-    <!-- Group Detail Screen -->
+    <!-- ===== GROUP DETAIL SCREEN ===== -->
     <div id="group-screen" class="screen">
       <div class="group-header">
         <button id="back-btn" class="btn icon-btn" title="Back">
@@ -128,7 +117,7 @@
         </div>
 
         <div id="members-list" class="members-container">
-          <!-- Members will be added here -->
+          <!-- Members will be listed here -->
         </div>
 
         <div class="buzz-actions">
@@ -142,11 +131,11 @@
       </div>
     </div>
 
-    <!-- Create Group Modal -->
+    <!-- ===== CREATE GROUP MODAL ===== -->
     <div id="create-group-modal" class="modal">
       <div class="modal-content">
         <h3>Create New Group</h3>
-        <input type="text" id="new-group-name" placeholder="Group name">
+        <input type="text" id="new-group-name" placeholder="Group name" />
         <div class="modal-actions">
           <button id="cancel-create" class="btn secondary-btn">Cancel</button>
           <button id="confirm-create" class="btn primary-btn">Create</button>
@@ -154,12 +143,12 @@
       </div>
     </div>
 
-    <!-- Add Member Modal -->
+    <!-- ===== ADD MEMBER MODAL ===== -->
     <div id="add-member-modal" class="modal">
       <div class="modal-content">
         <h3>Add New Member</h3>
-        <input type="text" id="member-name" placeholder="Member name">
-        <input type="tel" id="member-phone" placeholder="Phone number">
+        <input type="text" id="member-name" placeholder="Member name" />
+        <input type="tel" id="member-phone" placeholder="Phone number" />
         <div class="modal-actions">
           <button id="cancel-add" class="btn secondary-btn">Cancel</button>
           <button id="confirm-add" class="btn primary-btn">Add</button>
@@ -167,10 +156,12 @@
       </div>
     </div>
 
-    <!-- Audio for Buzz -->
+    <!-- ===== BUZZ AUDIO ===== -->
     <audio id="buzz-sound" src="buzz.mp3" preload="auto"></audio>
+
   </div>
 
+  <!-- ===== SCRIPTS ===== -->
   <script src="script.js"></script>
 </body>
 </html>
