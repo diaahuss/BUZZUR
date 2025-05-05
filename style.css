@@ -1,12 +1,25 @@
 :root {
+  /* Primary Theme Colors */
   --primary: #4a90e2;
   --primary-dark: #357ab8;
   --primary-darker: #2b5f8a;
   --primary-light: #d0e6fb;
+
+  /* Neutral / Secondary */
   --secondary: #f1f3f5;
   --text: #212529;
+
+  /* Danger / Error States */
   --danger: #dc3545;
   --danger-light: #f8d7da;
+
+  /* Button Defaults */
+  --btn-padding-x: 1.75rem;
+  --btn-padding-y: 2.25rem;
+
+  /* Border radius & transitions */
+  --radius: 0.75rem;
+  --transition: 0.2s ease;
 }
 
 * {
@@ -224,7 +237,7 @@ body {
     margin-top: auto;
 }
 
-/* ===== BUTTON NUCLEAR RESET ===== */
+/* ===== BUTTON RESET ===== */
 button,
 [type="button"],
 [type="submit"],
@@ -235,17 +248,16 @@ button,
   -moz-appearance: none;
   appearance: none;
   box-sizing: border-box;
-  display: inline-flex !important;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   white-space: nowrap;
   user-select: none;
   vertical-align: middle;
-  text-decoration: none;
   cursor: pointer;
+  text-decoration: none;
   margin: 0;
   padding: 0;
-  border: none !important;
   background: none;
   font: inherit;
   color: inherit;
@@ -254,111 +266,81 @@ button,
 
 /* ===== BASE BUTTON STYLES ===== */
 .btn {
-  --btn-padding-x: 1.75rem;
-  --btn-padding-y: 1.25rem;
-  
-  position: relative;
   padding: var(--btn-padding-y) var(--btn-padding-x);
-  min-height: 56px;
-  border-radius: 0.75rem;
+  min-height: 72px; /* increased height */
+  border-radius: var(--radius);
   font-size: 1rem;
   font-weight: 500;
   line-height: 1.5;
-  transition: all 0.2s ease;
-  overflow: hidden;
-  isolation: isolate;
-  box-shadow: none !important;
+  transition: background var(--transition), transform var(--transition);
   background-clip: padding-box;
-  border: 0 solid transparent !important;
-}
-
-/* ===== KILL ALL PSEUDO-ELEMENTS ===== */
-.btn *,
-.btn *::before,
-.btn *::after,
-.btn::before,
-.btn::after {
-  all: unset !important;
-  display: none !important;
-  content: none !important;
-  border: none !important;
-  box-shadow: none !important;
+  border: none;
 }
 
 /* ===== PRIMARY BUTTON ===== */
 .primary-btn {
-  background: linear-gradient(
-    to bottom,
-    var(--primary),
-    var(--primary-dark)
-  ) !important;
-  color: white !important;
+  background: linear-gradient(to bottom, var(--primary), var(--primary-dark));
+  color: white;
 }
 
 .primary-btn:hover {
-  background: linear-gradient(
-    to bottom,
-    var(--primary-dark),
-    var(--primary-darker)
-  ) !important;
+  background: linear-gradient(to bottom, var(--primary-dark), var(--primary-darker));
   transform: translateY(-2px);
 }
 
 /* ===== SECONDARY BUTTON ===== */
 .secondary-btn {
-  background-color: var(--secondary) !important;
-  color: var(--text) !important;
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1) !important;
+  background-color: var(--secondary);
+  color: var(--text);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
 }
 
 .secondary-btn:hover {
-  background-color: #e9ecef !important;
+  background-color: #e9ecef;
 }
 
 /* ===== ACTION BUTTON ===== */
 .action-btn {
-  --btn-padding-x: 1rem;
-  --btn-padding-y: 0.75rem;
-  background: transparent !important;
-  color: var(--primary) !important;
+  padding: 0.75rem 1rem;
+  background: transparent;
+  color: var(--primary);
   min-height: auto;
-  text-decoration: none !important;
+  text-decoration: none;
 }
 
 .action-btn:hover {
-  background-color: var(--primary-light) !important;
-  text-decoration: underline !important;
+  background-color: var(--primary-light);
+  text-decoration: underline;
 }
 
 .action-btn.danger {
-  color: var(--danger) !important;
+  color: var(--danger);
 }
 
 .action-btn.danger:hover {
-  background-color: var(--danger-light) !important;
+  background-color: var(--danger-light);
 }
 
 /* ===== FOCUS STATE ===== */
 .btn:focus {
-  outline: 2px solid var(--primary-light) !important;
-  outline-offset: 2px !important;
+  outline: 2px solid var(--primary-light);
+  outline-offset: 2px;
 }
 
-/* ===== BROWSER HACKS ===== */
-/* Firefox */
+/* ===== FIREFOX FIX ===== */
 @-moz-document url-prefix() {
   .btn {
-    background-image: none !important;
+    background-image: none;
   }
   .btn::-moz-focus-inner {
-    border: 0 !important;
-    padding: 0 !important;
+    border: 0;
+    padding: 0;
   }
 }
 
-/* Safari */
+/* ===== SAFARI FIX ===== */
 @media not all and (min-resolution:.001dpcm) {
-  @supports (-webkit-appearance:none) {
+  @supports (-webkit-appearance: none) {
     .btn {
       -webkit-mask-image: -webkit-radial-gradient(white, black);
     }
