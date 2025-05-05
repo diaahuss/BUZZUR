@@ -15,10 +15,14 @@ const apiKey = process.env.TWILIO_API_KEY_SID;
 const apiSecret = process.env.TWILIO_API_KEY_SECRET;
 const twilioPhone = process.env.TWILIO_PHONE_NUMBER;
 
-const client = require('twilio')(apiKey, apiSecret, { accountSid });
+console.log('Environment Variables:', {
+  accountSid,
+  apiKey,
+  apiSecret,
+  twilioPhone
+}); // Add this to check if variables are loaded correctly
 
-// Check if Twilio loaded correctly
-console.log('Twilio loaded with:', { accountSid, apiKey, apiSecret, twilioPhone });
+const client = require('twilio')(apiKey, apiSecret, { accountSid });
 
 // Test route for sending SMS
 app.post('/api/test-sms', async (req, res) => {
