@@ -10,9 +10,9 @@ app.use(express.json());
 
 // Twilio setup
 const twilio = require('twilio');
-const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const apiKey = process.env.TWILIO_API_KEY_SID;
 const apiSecret = process.env.TWILIO_API_KEY_SECRET;
+const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const twilioPhone = process.env.TWILIO_PHONE_NUMBER;
 
 console.log('Environment Variables:', {
