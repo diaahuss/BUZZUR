@@ -1,141 +1,21 @@
 :root {
-  /* Primary Theme Colors */
+  /* Color Scheme */
   --primary: #4a90e2;
   --primary-dark: #357ab8;
   --primary-darker: #2b5f8a;
   --primary-light: #d0e6fb;
-
-  /* Screen
-  .screen {
-  display: none;
-}
-.screen.active {
-  display: block;
-}
-  
-  /* Neutral / Secondary */
   --secondary: #f1f3f5;
   --text: #212529;
   --border: #e9ecef;
-
-  /* Danger / Error States */
   --danger: #dc3545;
   --danger-light: #f8d7da;
-
-  /* Button Defaults */
-  --btn-padding-x: 2rem;
-  --btn-padding-y: 1.25rem;
-
-  /* Border radius & transitions */
-  --radius: 0.75rem;
+  
+  /* Dimensions */
+  --app-width: 600px;
+  --input-height: 56px;
+  --btn-height: 56px;
+  --radius: 12px;
   --transition: 0.2s ease;
-}
-
-
-.input-field input {
-  width: 100%;
-  padding: 1rem 1.25rem;
-  border-radius: var(--radius);
-  font-size: 1rem;
-  background: white;
-  border: 1px solid var(--border);
-  box-shadow: none;
-}
-
-.input-field input:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px var(--primary-light);
-  outline: none;
-}
-
-button,
-[type="button"],
-[type="submit"],
-[type="reset"],
-.btn {
-  all: unset;
-  box-sizing: border-box;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  user-select: none;
-  font: inherit;
-  text-decoration: none;
-  border-radius: var(--radius);
-  transition: var(--transition);
-  padding: var(--btn-padding-y) var(--btn-padding-x);
-  min-height: 64px; /* More height */
-  font-size: 1rem;
-  font-weight: 500;
-}
-
-/* Primary Button */
-.primary-btn {
-  background: linear-gradient(to bottom, var(--primary), var(--primary-dark));
-  color: white;
-}
-
-.primary-btn:hover {
-  background: linear-gradient(to bottom, var(--primary-dark), var(--primary-darker));
-  transform: translateY(-1px);
-}
-
-/* Secondary Button */
-.secondary-btn {
-  background-color: var(--secondary);
-  color: var(--text);
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
-}
-
-.secondary-btn:hover {
-  background-color: #e9ecef;
-}
-
-/* Action Button */
-.action-btn {
-  padding: 0.75rem 1rem;
-  background: transparent;
-  color: var(--primary);
-  min-height: auto;
-}
-
-.action-btn:hover {
-  background-color: var(--primary-light);
-  text-decoration: underline;
-}
-
-.action-btn.danger {
-  color: var(--danger);
-}
-
-.action-btn.danger:hover {
-  background-color: var(--danger-light);
-}
-
-/* Focus States */
-.btn:focus {
-  outline: 2px solid var(--primary-light);
-  outline-offset: 2px;
-}
-
-/* Browser-Specific Fixes */
-@-moz-document url-prefix() {
-  .btn {
-    background-image: none !important;
-  }
-  .btn::-moz-focus-inner {
-    border: 0;
-    padding: 0;
-  }
-}
-
-@media not all and (min-resolution:.001dpcm) {
-  @supports (-webkit-appearance:none) {
-    .btn {
-      -webkit-mask-image: -webkit-radial-gradient(white, black);
-    }
-  }
 }
 
 /* Base Reset */
@@ -149,27 +29,167 @@ button,
 body {
   background-color: #f5f7fa;
   color: var(--text);
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
 }
 
+/* App Container */
 .app-wrapper {
-  max-width: 400px;
-  margin: 0 auto;
-  height: 100vh;
+  width: 100%;
+  max-width: var(--app-width);
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   overflow: hidden;
 }
 
-/* Modal Styling */
+/* Screen Management */
+.screen {
+  display: none;
+  padding: 2rem;
+}
+
+.screen.active {
+  display: block;
+}
+
+/* Input Fields */
+.input-field {
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.input-field input {
+  width: 100%;
+  height: var(--input-height);
+  padding: 0 1rem 0 3rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  font-size: 1rem;
+  transition: var(--transition);
+}
+
+.input-field i:first-child {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--primary);
+}
+
+.toggle-password {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: var(--primary);
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: var(--btn-height);
+  border-radius: var(--radius);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  gap: 0.5rem;
+}
+
+.primary-btn {
+  background: var(--primary);
+  color: white;
+  border: none;
+}
+
+.primary-btn:hover {
+  background: var(--primary-dark);
+}
+
+.secondary-btn {
+  background: var(--secondary);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.icon-btn {
+  width: auto;
+  padding: 0 1rem;
+  background: transparent;
+}
+
+/* Auth Card */
+.auth-card {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.app-logo {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.app-logo i {
+  font-size: 2.5rem;
+  color: var(--primary);
+}
+
+.auth-links {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+}
+
+/* App Header */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+  margin-bottom: 1.5rem;
+}
+
+/* Groups List */
+.groups-container {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.group-card {
+  padding: 1.5rem;
+  border-radius: var(--radius);
+  background: var(--secondary);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.group-card:hover {
+  transform: translateY(-2px);
+}
+
+/* Modal Styles */
 .modal {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background: rgba(0,0,0,0.5);
   display: none;
   justify-content: center;
   align-items: center;
-  z-index: 100;
+  z-index: 1000;
 }
 
 .modal.active {
@@ -177,37 +197,29 @@ body {
 }
 
 .modal-content {
-  background-color: white;
+  background: white;
   width: 90%;
   max-width: 400px;
-  padding: 1.5rem;
+  padding: 2rem;
   border-radius: var(--radius);
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
-}
-
-.modal-content h3 {
-  font-size: 1.25rem;
-  font-weight: 600;
-}
-
-.modal-content input {
-  width: 100%;
-  padding: 1rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  font-size: 1rem;
-}
-
-.modal-content input:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px var(--primary-light);
+  gap: 1.5rem;
 }
 
 .modal-actions {
   display: flex;
+  gap: 1rem;
   justify-content: flex-end;
-  gap: 0.75rem;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 640px) {
+  body {
+    padding: 1rem;
+  }
+  
+  .app-wrapper {
+    border-radius: 0;
+  }
 }
