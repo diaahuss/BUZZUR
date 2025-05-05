@@ -1,23 +1,26 @@
+require('dotenv').config(); // Load environment variables
+
 const express = require('express');
 const path = require('path');
-const twilio = require('twilio');
-
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 // Add body parser for JSON
 app.use(express.json());
 
-// ✅ Twilio setup (using API Key & Secret, not Auth Token)
+// Twilio setup
+const twilio = require('twilio');
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const apiKey = process.env.TWILIO_API_KEY_SID;
 const apiSecret = process.env.TWILIO_API_KEY_SECRET;
 const twilioPhone = process.env.TWILIO_PHONE_NUMBER;
-console.log('Twilio loaded with:', { accountSid, apiKey, apiSecret, twilioPhone });
 
 const client = require('twilio')(apiKey, apiSecret, { accountSid });
 
-// 🔔 Test route for sending SMS
+// Check if Twilio loaded correctly
+console.log('Twilio loaded with:', { accountSid, apiKey, apiSecret, twilioPhone });
+
+// Test route for sending SMS
 app.post('/api/test-sms', async (req, res) => {
   const { to, message } = req.body;
   try {
