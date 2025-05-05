@@ -1,174 +1,176 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buzz Manager</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="data:,">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Buzz Manager</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="data:,">
 </head>
 <body>
-    <div class="app-wrapper">
-        <!-- Login Screen -->
-        <div id="login-screen" class="screen active">
-            <div class="auth-card">
-                <div class="app-logo">
-                    <i class="fas fa-bell"></i>
-                    <h1>Buzz Manager</h1>
-                </div>
-                
-                <form id="login-form" class="auth-form">
-                    <div class="input-field">
-                        <i class="fas fa-phone"></i>
-                        <input type="tel" id="login-phone" placeholder="Phone number" required>
-                    </div>
-                    
-                    <div class="input-field">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" id="login-password" placeholder="Password" required>
-                        <i class="fas fa-eye toggle-password"></i>
-                    </div>
-                    
-                    <button type="submit" class="btn primary-btn">
-                        <i class="fas fa-sign-in-alt"></i> Login
-                    </button>
-                </form>
-                
-                <div class="auth-links">
-                    <a href="#" id="show-signup">Create account</a>
-                    <a href="#" id="forgot-password">Forgot password?</a>
-                </div>
-            </div>
+  <div class="app-wrapper">
+
+    <!-- Login Screen -->
+    <div id="login-screen" class="screen active">
+      <div class="auth-card">
+        <div class="app-logo">
+          <i class="fas fa-bell"></i>
+          <h1>Buzz Manager</h1>
         </div>
 
-        <!-- Signup Screen -->
-        <div id="signup-screen" class="screen">
-            <div class="auth-card">
-                <div class="app-logo">
-                    <i class="fas fa-bell"></i>
-                    <h1>Create Account</h1>
-                </div>
-                
-                <form id="signup-form" class="auth-form">
-                    <div class="input-field">
-                        <i class="fas fa-user"></i>
-                        <input type="text" id="signup-name" placeholder="Full name" required>
-                    </div>
-                    
-                    <div class="input-field">
-                        <i class="fas fa-phone"></i>
-                        <input type="tel" id="signup-phone" placeholder="Phone number" required>
-                    </div>
-                    
-                    <div class="input-field">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" id="signup-password" placeholder="Password" required>
-                        <i class="fas fa-eye toggle-password"></i>
-                    </div>
-                    
-                    <div class="input-field">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" id="signup-confirm" placeholder="Confirm password" required>
-                    </div>
-                    
-                    <button type="submit" class="btn primary-btn">
-                        <i class="fas fa-user-plus"></i> Sign Up
-                    </button>
-                </form>
-                
-                <div class="auth-links">
-                    <a href="#" id="show-login">Already have an account? Login</a>
-                </div>
-            </div>
-        </div>
+        <form id="login-form" class="auth-form">
+          <div class="input-field">
+            <i class="fas fa-phone"></i>
+            <input type="tel" id="login-phone" placeholder="Phone number" required />
+          </div>
 
-        <!-- Main App Screen -->
-        <div id="app-screen" class="screen">
-            <div class="app-header">
-                <h2><i class="fas fa-bell"></i> Buzz Groups</h2>
-                <button id="logout-btn" class="btn icon-btn">
-                    <i class="fas fa-sign-out-alt"></i>
-                </button>
-            </div>
-            
-            <div class="app-content">
-                <button id="create-group-btn" class="btn primary-btn">
-                    <i class="fas fa-plus"></i> Create Group
-                </button>
-                
-                <div id="groups-list" class="groups-container">
-                    <!-- Groups will load here -->
-                </div>
-            </div>
-        </div>
+          <div class="input-field">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="login-password" placeholder="Password" required />
+            <i class="fas fa-eye toggle-password"></i>
+          </div>
 
-        <!-- Group Detail Screen -->
-        <div id="group-screen" class="screen">
-            <div class="group-header">
-                <button id="back-btn" class="btn icon-btn">
-                    <i class="fas fa-arrow-left"></i>
-                </button>
-                <h2 id="group-title">Group Name</h2>
-                <button id="delete-group-btn" class="btn icon-btn danger">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </div>
-            
-            <div class="group-content">
-                <div class="group-actions">
-                    <button id="add-member-btn" class="btn action-btn">
-                        <i class="fas fa-user-plus"></i> Add Member
-                    </button>
-                    <button id="remove-members-btn" class="btn action-btn danger">
-                        <i class="fas fa-user-minus"></i> Remove Selected
-                    </button>
-                </div>
-                
-                <div id="members-list" class="members-container">
-                    <!-- Members will load here -->
-                </div>
-                
-                <div class="buzz-actions">
-                    <button id="buzz-selected-btn" class="btn primary-btn">
-                        <i class="fas fa-bell"></i> Buzz Selected
-                    </button>
-                    <button id="buzz-all-btn" class="btn primary-btn">
-                        <i class="fas fa-bell"></i> Buzz All
-                    </button>
-                </div>
-            </div>
-        </div>
+          <button type="submit" class="btn primary-btn">
+            <i class="fas fa-sign-in-alt"></i> Login
+          </button>
+        </form>
 
-        <!-- Create Group Modal -->
-        <div id="create-group-modal" class="modal">
-            <div class="modal-content">
-                <h3>Create New Group</h3>
-                <input type="text" id="new-group-name" placeholder="Group name">
-                <div class="modal-actions">
-                    <button id="cancel-create" class="btn secondary-btn">Cancel</button>
-                    <button id="confirm-create" class="btn primary-btn">Create</button>
-                </div>
-            </div>
+        <div class="auth-links">
+          <a href="#" id="show-signup">Create account</a>
+          <a href="#" id="forgot-password">Forgot password?</a>
         </div>
-
-        <!-- Add Member Modal -->
-        <div id="add-member-modal" class="modal">
-            <div class="modal-content">
-                <h3>Add New Member</h3>
-                <input type="text" id="member-name" placeholder="Member name">
-                <input type="tel" id="member-phone" placeholder="Phone number">
-                <div class="modal-actions">
-                    <button id="cancel-add" class="btn secondary-btn">Cancel</button>
-                    <button id="confirm-add" class="btn primary-btn">Add</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Audio Element -->
-        <audio id="buzz-sound" src="buzz.mp3" preload="auto"></audio>
+      </div>
     </div>
 
-    <script src="script.js"></script>
+    <!-- Signup Screen -->
+    <div id="signup-screen" class="screen">
+      <div class="auth-card">
+        <div class="app-logo">
+          <i class="fas fa-bell"></i>
+          <h1>Create Account</h1>
+        </div>
+
+        <form id="signup-form" class="auth-form">
+          <div class="input-field">
+            <i class="fas fa-user"></i>
+            <input type="text" id="signup-name" placeholder="Full name" required />
+          </div>
+
+          <div class="input-field">
+            <i class="fas fa-phone"></i>
+            <input type="tel" id="signup-phone" placeholder="Phone number" required />
+          </div>
+
+          <div class="input-field">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="signup-password" placeholder="Password" required />
+            <i class="fas fa-eye toggle-password"></i>
+          </div>
+
+          <div class="input-field">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="signup-confirm" placeholder="Confirm password" required />
+            <i class="fas fa-eye toggle-password"></i>
+          </div>
+
+          <button type="submit" class="btn primary-btn">
+            <i class="fas fa-user-plus"></i> Sign Up
+          </button>
+        </form>
+
+        <div class="auth-links">
+          <a href="#" id="show-login">Already have an account? Login</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main App Screen -->
+    <div id="app-screen" class="screen">
+      <div class="app-header">
+        <h2><i class="fas fa-bell"></i> Buzz Groups</h2>
+        <button id="logout-btn" class="btn icon-btn" title="Logout">
+          <i class="fas fa-sign-out-alt"></i>
+        </button>
+      </div>
+
+      <div class="app-content">
+        <button id="create-group-btn" class="btn primary-btn">
+          <i class="fas fa-plus"></i> Create Group
+        </button>
+
+        <div id="groups-list" class="groups-container">
+          <!-- Group cards will be injected here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Group Detail Screen -->
+    <div id="group-screen" class="screen">
+      <div class="group-header">
+        <button id="back-btn" class="btn icon-btn" title="Back">
+          <i class="fas fa-arrow-left"></i>
+        </button>
+        <h2 id="group-title">Group Name</h2>
+        <button id="delete-group-btn" class="btn icon-btn danger" title="Delete Group">
+          <i class="fas fa-trash"></i>
+        </button>
+      </div>
+
+      <div class="group-content">
+        <div class="group-actions">
+          <button id="add-member-btn" class="btn action-btn">
+            <i class="fas fa-user-plus"></i> Add Member
+          </button>
+          <button id="remove-members-btn" class="btn action-btn danger">
+            <i class="fas fa-user-minus"></i> Remove Selected
+          </button>
+        </div>
+
+        <div id="members-list" class="members-container">
+          <!-- Member items will be injected here -->
+        </div>
+
+        <div class="buzz-actions">
+          <button id="buzz-selected-btn" class="btn primary-btn">
+            <i class="fas fa-bell"></i> Buzz Selected
+          </button>
+          <button id="buzz-all-btn" class="btn primary-btn">
+            <i class="fas fa-bell"></i> Buzz All
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Create Group Modal -->
+    <div id="create-group-modal" class="modal">
+      <div class="modal-content">
+        <h3>Create New Group</h3>
+        <input type="text" id="new-group-name" placeholder="Group name" />
+        <div class="modal-actions">
+          <button id="cancel-create" class="btn secondary-btn">Cancel</button>
+          <button id="confirm-create" class="btn primary-btn">Create</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Member Modal -->
+    <div id="add-member-modal" class="modal">
+      <div class="modal-content">
+        <h3>Add New Member</h3>
+        <input type="text" id="member-name" placeholder="Member name" />
+        <input type="tel" id="member-phone" placeholder="Phone number" />
+        <div class="modal-actions">
+          <button id="cancel-add" class="btn secondary-btn">Cancel</button>
+          <button id="confirm-add" class="btn primary-btn">Add</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Audio for Buzz -->
+    <audio id="buzz-sound" src="buzz.mp3" preload="auto"></audio>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
