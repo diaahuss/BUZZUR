@@ -1,237 +1,175 @@
-// Simplified Buzzur App JavaScript
+// ================= SCREEN MANAGEMENT =================
+const SCREENS = {
+  LOGIN: 'login-screen',
+  SIGNUP: 'signup-screen',
+  APP: 'app-screen',
+  GROUP: 'group-screen'
+};
 
-// DOM loaded
-window.addEventListener('DOMContentLoaded', () => {
-  const screens = {
-    login: document.getElementById('login-screen'),
-    signup: document.getElementById('signup-screen'),
-    app: document.getElementById('app-screen'),
-    group: document.getElementById('group-screen')
-  };
+let currentUser = null;
 
-  const forms = {
-    login: document.getElementById('login-form'),
-    signup: document.getElementById('signup-form')
-  };
-
-  const buttons = {
-    showSignup: document.getElementById('show-signup'),
-    showLogin: document.getElementById('show-login'),
-    logout: document.getElementById('logout-btn'),
-    back: document.getElementById('back-btn'),
-    createGroup: document.getElementById('create-group-btn'),
-    deleteGroup: document.getElementById('delete-group-btn'),
-    addMember: document.getElementById('add-member-btn'),
-    removeMembers: document.getElementById('remove-members-btn'),
-    buzzSelected: document.getElementById('buzz-selected-btn'),
-    buzzAll: document.getElementById('buzz-all-btn')
-  };
-
-  const modals = {
-    createGroup: document.getElementById('create-group-modal'),
-    addMember: document.getElementById('add-member-modal')
-  };
-
-  const inputs = {
-    newGroupName: document.getElementById('new-group-name'),
-    memberName: document.getElementById('member-name'),
-    memberPhone: document.getElementById('member-phone')
-  };
-
-  const lists = {
-    groups: document.getElementById('groups-list'),
-    members: document.getElementById('members-list')
-  };
-
-  const groupTitle = document.getElementById('group-title');
-  const buzzSound = document.getElementById('buzz-sound');
-
-  let authToken = null;
-  let groups = [];
-  let currentGroup = null;
-
-  // Navigation
-  function show(screenName) {
-    Object.values(screens).forEach(screen => screen.classList.remove('active'));
-    screens[screenName].classList.add('active');
+function showScreen(screenId) {
+  // Hide all screens
+  document.querySelectorAll('.screen').forEach(screen => {
+    screen.classList.remove('active');
+  });
+  
+  // Show requested screen
+  const screen = document.getElementById(screenId);
+  if (screen) screen.classList.add('active');
+  
+  // Special cases
+  if (screenId === SCREENS.APP) {
+    loadGroups(); // Load groups when app screen shows
   }
+}
 
-  // Event handlers
-  buttons.showSignup.onclick = e => { e.preventDefault(); show('signup'); };
-  buttons.showLogin.onclick = e => { e.preventDefault(); show('login'); };
-  buttons.logout.onclick = () => { authToken = null; show('login'); };
-  buttons.back.onclick = () => show('app');
+// ================= AUTHENTICATION =================
+// Mock database
+const users = [
+  { phone: '1234567890', password: 'password123', name: 'Test User' }
+];
 
-  forms.login.onsubmit = async e => {
-    e.preventDefault();
-    const email = forms.login.querySelector('input[type="email"]').value;
-    const password = forms.login.querySelector('input[type="password"]').value;
-    try {
-      const res = await fetch('/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error();
-      authToken = data.token;
-      groups = data.groups || [];
-      renderGroups();
-      show('app');
-    } catch {
-      alert('Login failed');
-    }
-  };
-
-  forms.signup.onsubmit = async e => {
-    e.preventDefault();
-    const name = forms.signup.querySelector('input[placeholder="Full Name"]').value;
-    const email = forms.signup.querySelector('input[type="email"]').value;
-    const password = forms.signup.querySelector('input[type="password"]').value;
-    try {
-      const res = await fetch('/api/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password })
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error();
-      authToken = data.token;
-      show('app');
-    } catch {
-      alert('Signup failed');
-    }
-  };
-
-  // Group rendering
-  function renderGroups() {
-    lists.groups.innerHTML = groups.length
-      ? ''
-      : '<div class="empty-message">No groups yet.</div>';
-
-    groups.forEach(group => {
-      const el = document.createElement('div');
-      el.className = 'group-item';
-      el.innerHTML = `<div><h4>${group.name}</h4><p>${group.members.length} members</p></div><i class="fas fa-chevron-right"></i>`;
-      el.onclick = () => {
-        currentGroup = group;
-        groupTitle.textContent = group.name;
-        renderMembers();
-        show('group');
-      };
-      lists.groups.appendChild(el);
-    });
+// Login Functionality
+document.getElementById('login-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  
+  const phone = document.getElementById('login-phone').value;
+  const password = document.getElementById('login-password').value;
+  
+  // Simple validation
+  if (!phone || !password) {
+    alert('Please enter both phone and password');
+    return;
   }
-
-  function renderMembers() {
-    lists.members.innerHTML = currentGroup.members.length
-      ? ''
-      : '<div class="empty-message">No members yet.</div>';
-    currentGroup.members.forEach(m => {
-      const el = document.createElement('div');
-      el.className = 'member-item';
-      el.innerHTML = `<div><h4>${m.name}</h4><p>${m.phone}</p></div><input type="checkbox" class="member-checkbox" data-id="${m.id}">`;
-      lists.members.appendChild(el);
-    });
-  }
-
-  // Group management
-  buttons.createGroup.onclick = () => toggle(modals.createGroup, true);
-  document.getElementById('cancel-create').onclick = () => toggle(modals.createGroup, false);
-  document.getElementById('confirm-create').onclick = async () => {
-    const name = inputs.newGroupName.value.trim();
-    if (!name) return alert('Enter group name');
-    try {
-      const res = await fetch('/api/groups', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
-        body: JSON.stringify({ name })
-      });
-      const newGroup = await res.json();
-      if (!res.ok) throw new Error();
-      groups.push(newGroup);
-      renderGroups();
-      toggle(modals.createGroup, false);
-      inputs.newGroupName.value = '';
-    } catch {
-      alert('Failed to create group');
-    }
-  };
-
-  buttons.deleteGroup.onclick = async () => {
-    if (!confirm(`Delete group "${currentGroup.name}"?`)) return;
-    try {
-      const res = await fetch(`/api/groups/${currentGroup.id}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${authToken}` }
-      });
-      if (!res.ok) throw new Error();
-      groups = groups.filter(g => g.id !== currentGroup.id);
-      renderGroups();
-      show('app');
-    } catch {
-      alert('Delete failed');
-    }
-  };
-
-  // Member management
-  buttons.addMember.onclick = () => toggle(modals.addMember, true);
-  document.getElementById('cancel-add').onclick = () => toggle(modals.addMember, false);
-  document.getElementById('confirm-add').onclick = async () => {
-    const name = inputs.memberName.value.trim();
-    const phone = inputs.memberPhone.value.trim();
-    if (!name || !phone) return alert('Enter name and phone');
-    try {
-      const res = await fetch(`/api/groups/${currentGroup.id}/members`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
-        body: JSON.stringify({ name, phone })
-      });
-      const newMember = await res.json();
-      if (!res.ok) throw new Error();
-      currentGroup.members.push(newMember);
-      renderMembers();
-      toggle(modals.addMember, false);
-      inputs.memberName.value = inputs.memberPhone.value = '';
-    } catch {
-      alert('Add member failed');
-    }
-  };
-
-  buttons.removeMembers.onclick = async () => {
-    const ids = [...document.querySelectorAll('.member-checkbox:checked')].map(cb => cb.dataset.id);
-    try {
-      for (const id of ids) {
-        await fetch(`/api/groups/${currentGroup.id}/members/${id}`, {
-          method: 'DELETE',
-          headers: { 'Authorization': `Bearer ${authToken}` }
-        });
-        currentGroup.members = currentGroup.members.filter(m => m.id != id);
-      }
-      renderMembers();
-    } catch {
-      alert('Remove members failed');
-    }
-  };
-
-  // Buzz
-  function buzz(ids) {
-    buzzSound.play();
-    // You can integrate a socket emit or API call here if needed
-    alert(`Buzz sent to ${ids.length} members`);
-  }
-
-  buttons.buzzSelected.onclick = () => {
-    const ids = [...document.querySelectorAll('.member-checkbox:checked')].map(cb => cb.dataset.id);
-    if (ids.length) buzz(ids);
-  };
-  buttons.buzzAll.onclick = () => {
-    const ids = currentGroup.members.map(m => m.id);
-    if (ids.length) buzz(ids);
-  };
-
-  // Modal toggle helper
-  function toggle(el, show) {
-    el.style.display = show ? 'block' : 'none';
+  
+  // Find user
+  const user = users.find(u => u.phone === phone && u.password === password);
+  
+  if (user) {
+    currentUser = user;
+    showScreen(SCREENS.APP);
+  } else {
+    alert('Invalid credentials');
   }
 });
+
+// Signup Functionality
+document.getElementById('signup-form').addEventListener('submit', (e) => {
+  e.preventDefault();
+  
+  const name = document.getElementById('signup-name').value;
+  const phone = document.getElementById('signup-phone').value;
+  const password = document.getElementById('signup-password').value;
+  const confirmPassword = document.getElementById('signup-confirm').value;
+  
+  // Validation
+  if (password !== confirmPassword) {
+    alert('Passwords do not match!');
+    return;
+  }
+  
+  if (users.some(u => u.phone === phone)) {
+    alert('User already exists!');
+    return;
+  }
+  
+  // Add new user
+  users.push({ name, phone, password });
+  alert('Account created successfully!');
+  showScreen(SCREENS.LOGIN);
+});
+
+// ================= NAVIGATION =================
+document.getElementById('show-signup').addEventListener('click', (e) => {
+  e.preventDefault();
+  showScreen(SCREENS.SIGNUP);
+});
+
+document.getElementById('show-login').addEventListener('click', (e) => {
+  e.preventDefault();
+  showScreen(SCREENS.LOGIN);
+});
+
+document.getElementById('logout-btn').addEventListener('click', () => {
+  currentUser = null;
+  showScreen(SCREENS.LOGIN);
+});
+
+document.getElementById('back-btn').addEventListener('click', () => {
+  showScreen(SCREENS.APP);
+});
+
+// ================= GROUP MANAGEMENT =================
+let groups = [
+  { id: 1, name: 'Family', members: [
+    { name: 'Mom', phone: '1111111111' },
+    { name: 'Dad', phone: '2222222222' }
+  ]},
+  { id: 2, name: 'Friends', members: [
+    { name: 'Alice', phone: '3333333333' }
+  ]}
+];
+
+function loadGroups() {
+  const container = document.getElementById('groups-list');
+  container.innerHTML = '';
+  
+  groups.forEach(group => {
+    const groupCard = document.createElement('div');
+    groupCard.className = 'group-card';
+    groupCard.innerHTML = `
+      <h3>${group.name}</h3>
+      <p>${group.members.length} members</p>
+    `;
+    groupCard.addEventListener('click', () => {
+      showGroupDetail(group);
+    });
+    container.appendChild(groupCard);
+  });
+}
+
+function showGroupDetail(group) {
+  document.getElementById('group-title').textContent = group.name;
+  const membersList = document.getElementById('members-list');
+  membersList.innerHTML = '';
+  
+  group.members.forEach(member => {
+    const memberItem = document.createElement('div');
+    memberItem.className = 'member-item';
+    memberItem.innerHTML = `
+      <input type="checkbox" id="member-${member.phone}">
+      <label for="member-${member.phone}">
+        ${member.name} (${member.phone})
+      </label>
+    `;
+    membersList.appendChild(memberItem);
+  });
+  
+  showScreen(SCREENS.GROUP);
+}
+
+// ================= MODAL CONTROLS =================
+document.getElementById('create-group-btn').addEventListener('click', () => {
+  document.getElementById('create-group-modal').style.display = 'block';
+});
+
+document.getElementById('cancel-create').addEventListener('click', () => {
+  document.getElementById('create-group-modal').style.display = 'none';
+});
+
+document.getElementById('confirm-create').addEventListener('click', () => {
+  const groupName = document.getElementById('new-group-name').value;
+  if (groupName) {
+    groups.push({
+      id: groups.length + 1,
+      name: groupName,
+      members: []
+    });
+    loadGroups();
+    document.getElementById('create-group-modal').style.display = 'none';
+  }
+});
+
+// Initialize app
+showScreen(SCREENS.LOGIN);
