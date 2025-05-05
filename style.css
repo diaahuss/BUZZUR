@@ -12,13 +12,12 @@
 
   /* Dimensions */
   --app-width: 600px;
-  --input-height: 50px;
-  --btn-height: 50px;
+  --input-height: 48px; /* 0.5 inch */
+  --btn-height: 48px; /* 0.5 inch */
   --radius: 8px;
   --transition: 0.2s ease;
 }
 
-/* Base Styles */
 * {
   margin: 0;
   padding: 0;
@@ -29,20 +28,20 @@
 body {
   background-color: var(--bg);
   color: var(--text);
-  line-height: 1.6;
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
 }
 
 .app-wrapper {
   width: 100%;
   max-width: var(--app-width);
-  margin: 2rem auto;
   background: white;
   border-radius: var(--radius);
   box-shadow: 0 5px 15px rgba(0,0,0,0.1);
   overflow: hidden;
 }
 
-/* Screen Management */
 .screen {
   display: none;
   padding: 2rem;
@@ -65,13 +64,6 @@ body {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   font-size: 1rem;
-  transition: var(--transition);
-}
-
-.input-field input:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px var(--primary-light);
 }
 
 .input-field i {
@@ -82,9 +74,15 @@ body {
   color: var(--primary);
 }
 
+.toggle-password {
+  cursor: pointer;
+  right: 1rem;
+  left: auto;
+}
+
 /* Buttons */
 .btn {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
   height: var(--btn-height);
@@ -93,13 +91,15 @@ body {
   font-weight: 600;
   cursor: pointer;
   transition: var(--transition);
-  border: none;
   gap: 0.5rem;
+  width: 100%;
+  margin-bottom: 0.5rem;
 }
 
 .primary-btn {
   background: var(--primary);
   color: white;
+  border: none;
 }
 
 .primary-btn:hover {
@@ -111,169 +111,34 @@ body {
   color: white;
 }
 
-.danger-btn:hover {
-  background: #c0392b;
+.secondary-btn {
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
 }
 
-.secondary-btn {
-  background: #ecf0f1;
+.icon-btn {
+  width: auto;
+  background: transparent;
   color: var(--text);
 }
 
-/* Auth Screens */
-.auth-card {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-}
-
-.app-logo {
-  text-align: center;
-  margin-bottom: 1rem;
-}
-
-.app-logo i {
-  font-size: 3rem;
-  color: var(--primary);
-}
-
-.app-logo h1 {
-  margin-top: 0.5rem;
-}
-
-.auth-links {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 1rem;
-}
-
-/* App Screens */
-.app-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 1rem;
-  margin-bottom: 1.5rem;
-  border-bottom: 1px solid var(--border);
-}
-
-/* Groups List */
-.groups-container {
-  display: grid;
-  gap: 1rem;
-  margin-top: 1.5rem;
-}
-
-.group-card {
-  padding: 1.25rem;
-  background: white;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  cursor: pointer;
-  transition: var(--transition);
-}
-
-.group-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-}
-
-/* Group Detail */
-.group-content {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.group-actions, .buzz-actions {
-  display: flex;
-  gap: 1rem;
-}
-
-.members-container {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.member-item {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 0.75rem;
-  background: #f9f9f9;
-  border-radius: var(--radius);
-}
-
-/* Modals */
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.5);
-  display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.modal.active {
-  display: flex;
-}
-
-.modal-content {
-  background: white;
-  width: 90%;
-  max-width: 400px;
-  padding: 2rem;
-  border-radius: var(--radius);
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-}
-
-/* Add these to your existing CSS */
-
-/* Group Action Buttons Container */
+/* Group Actions */
 .group-actions {
   display: flex;
-  flex-direction: column; /* Stack vertically */
+  flex-direction: column;
   gap: 0.5rem;
-  width: 100%;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
-/* Standardize all action buttons */
-.action-btn {
-  width: 100%;
-  height: 48px; /* 0.5 inch approx */
-  padding: 0 1rem;
-  border-radius: var(--radius);
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-}
-
-/* Buzz Action Buttons */
 .buzz-actions {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  width: 100%;
-  margin-top: 1rem;
+  margin-top: 1.5rem;
 }
 
-/* Member Item Styling */
+/* Member Items */
 .member-item {
   display: flex;
   align-items: center;
@@ -283,14 +148,15 @@ body {
   margin-bottom: 0.5rem;
 }
 
-.member-item input[type="checkbox"] {
+.member-item input {
   margin-right: 1rem;
 }
 
-/* Modal Input Fixes */
-.modal-content input {
+/* Modals */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
-  height: 48px;
-  padding: 0 1rem;
-  margin-bottom: 1rem;
-}
+  height: 100%;
+  background: rgba(0,0,0,0
