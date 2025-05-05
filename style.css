@@ -31,7 +31,7 @@
   --transition: 0.2s ease;
 }
 
-/* ===== INPUT FIELD STYLES ===== */
+
 .input-field input {
   width: 100%;
   padding: 1rem 1.25rem;
@@ -48,7 +48,6 @@
   outline: none;
 }
 
-/* ===== BUTTON STYLES ===== */
 button,
 [type="button"],
 [type="submit"],
