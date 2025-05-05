@@ -2,46 +2,43 @@
   /* Color Scheme */
   --primary: #4a90e2;
   --primary-dark: #357ab8;
-  --primary-darker: #2b5f8a;
   --primary-light: #d0e6fb;
-  --secondary: #f1f3f5;
-  --text: #212529;
-  --border: #e9ecef;
-  --danger: #dc3545;
-  --danger-light: #f8d7da;
-  
+  --danger: #e74c3c;
+  --danger-light: #fadbd8;
+  --success: #2ecc71;
+  --text: #333;
+  --border: #ddd;
+  --bg: #f5f7fa;
+
   /* Dimensions */
   --app-width: 600px;
-  --input-height: 56px;
-  --btn-height: 56px;
-  --radius: 12px;
+  --input-height: 50px;
+  --btn-height: 50px;
+  --radius: 8px;
   --transition: 0.2s ease;
 }
 
-/* Base Reset */
+/* Base Styles */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: 'Segoe UI', system-ui, sans-serif;
 }
 
 body {
-  background-color: #f5f7fa;
+  background-color: var(--bg);
   color: var(--text);
-  display: flex;
-  justify-content: center;
-  min-height: 100vh;
-  padding: 2rem;
+  line-height: 1.6;
 }
 
-/* App Container */
 .app-wrapper {
   width: 100%;
   max-width: var(--app-width);
+  margin: 2rem auto;
   background: white;
   border-radius: var(--radius);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
   overflow: hidden;
 }
 
@@ -65,26 +62,23 @@ body {
   width: 100%;
   height: var(--input-height);
   padding: 0 1rem 0 3rem;
-  border-radius: var(--radius);
   border: 1px solid var(--border);
+  border-radius: var(--radius);
   font-size: 1rem;
   transition: var(--transition);
 }
 
-.input-field i:first-child {
+.input-field input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+.input-field i {
   position: absolute;
   left: 1rem;
   top: 50%;
   transform: translateY(-50%);
-  color: var(--primary);
-}
-
-.toggle-password {
-  position: absolute;
-  right: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  cursor: pointer;
   color: var(--primary);
 }
 
@@ -93,38 +87,40 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
   height: var(--btn-height);
+  padding: 0 1.5rem;
   border-radius: var(--radius);
   font-weight: 600;
   cursor: pointer;
   transition: var(--transition);
+  border: none;
   gap: 0.5rem;
 }
 
 .primary-btn {
   background: var(--primary);
   color: white;
-  border: none;
 }
 
 .primary-btn:hover {
   background: var(--primary-dark);
 }
 
+.danger-btn {
+  background: var(--danger);
+  color: white;
+}
+
+.danger-btn:hover {
+  background: #c0392b;
+}
+
 .secondary-btn {
-  background: var(--secondary);
+  background: #ecf0f1;
   color: var(--text);
-  border: 1px solid var(--border);
 }
 
-.icon-btn {
-  width: auto;
-  padding: 0 1rem;
-  background: transparent;
-}
-
-/* Auth Card */
+/* Auth Screens */
 .auth-card {
   display: flex;
   flex-direction: column;
@@ -133,15 +129,16 @@ body {
 
 .app-logo {
   text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
+  margin-bottom: 1rem;
 }
 
 .app-logo i {
-  font-size: 2.5rem;
+  font-size: 3rem;
   color: var(--primary);
+}
+
+.app-logo h1 {
+  margin-top: 0.5rem;
 }
 
 .auth-links {
@@ -150,13 +147,14 @@ body {
   margin-top: 1rem;
 }
 
-/* App Header */
+/* App Screens */
 .app-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 0;
+  padding-bottom: 1rem;
   margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
 }
 
 /* Groups List */
@@ -167,18 +165,47 @@ body {
 }
 
 .group-card {
-  padding: 1.5rem;
+  padding: 1.25rem;
+  background: white;
+  border: 1px solid var(--border);
   border-radius: var(--radius);
-  background: var(--secondary);
   cursor: pointer;
   transition: var(--transition);
 }
 
 .group-card:hover {
   transform: translateY(-2px);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
 }
 
-/* Modal Styles */
+/* Group Detail */
+.group-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.group-actions, .buzz-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.members-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.member-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem;
+  background: #f9f9f9;
+  border-radius: var(--radius);
+}
+
+/* Modals */
 .modal {
   position: fixed;
   top: 0;
@@ -209,17 +236,6 @@ body {
 
 .modal-actions {
   display: flex;
-  gap: 1rem;
   justify-content: flex-end;
-}
-
-/* Responsive Adjustments */
-@media (max-width: 640px) {
-  body {
-    padding: 1rem;
-  }
-  
-  .app-wrapper {
-    border-radius: 0;
-  }
+  gap: 1rem;
 }
