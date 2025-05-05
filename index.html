@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Buzz Manager</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
   <link rel="icon" href="data:,">
 </head>
 <body>
@@ -22,12 +22,12 @@
         <form id="login-form" class="auth-form">
           <div class="input-field">
             <i class="fas fa-phone"></i>
-            <input type="tel" id="login-phone" placeholder="Phone number" required />
+            <input type="tel" id="login-phone" placeholder="Phone number" required>
           </div>
 
           <div class="input-field">
             <i class="fas fa-lock"></i>
-            <input type="password" id="login-password" placeholder="Password" required />
+            <input type="password" id="login-password" placeholder="Password" required>
             <i class="fas fa-eye toggle-password"></i>
           </div>
 
@@ -54,23 +54,23 @@
         <form id="signup-form" class="auth-form">
           <div class="input-field">
             <i class="fas fa-user"></i>
-            <input type="text" id="signup-name" placeholder="Full name" required />
+            <input type="text" id="signup-name" placeholder="Full name" required>
           </div>
 
           <div class="input-field">
             <i class="fas fa-phone"></i>
-            <input type="tel" id="signup-phone" placeholder="Phone number" required />
+            <input type="tel" id="signup-phone" placeholder="Phone number" required>
           </div>
 
           <div class="input-field">
             <i class="fas fa-lock"></i>
-            <input type="password" id="signup-password" placeholder="Password" required />
+            <input type="password" id="signup-password" placeholder="Password" required>
             <i class="fas fa-eye toggle-password"></i>
           </div>
 
           <div class="input-field">
             <i class="fas fa-lock"></i>
-            <input type="password" id="signup-confirm" placeholder="Confirm password" required />
+            <input type="password" id="signup-confirm" placeholder="Confirm password" required>
             <i class="fas fa-eye toggle-password"></i>
           </div>
 
@@ -100,7 +100,7 @@
         </button>
 
         <div id="groups-list" class="groups-container">
-          <!-- Group cards will be injected here -->
+          <!-- Groups will be added here -->
         </div>
       </div>
     </div>
@@ -119,16 +119,16 @@
 
       <div class="group-content">
         <div class="group-actions">
-          <button id="add-member-btn" class="btn action-btn">
+          <button id="add-member-btn" class="btn primary-btn">
             <i class="fas fa-user-plus"></i> Add Member
           </button>
-          <button id="remove-members-btn" class="btn action-btn danger">
+          <button id="remove-members-btn" class="btn danger-btn">
             <i class="fas fa-user-minus"></i> Remove Selected
           </button>
         </div>
 
         <div id="members-list" class="members-container">
-          <!-- Member items will be injected here -->
+          <!-- Members will be added here -->
         </div>
 
         <div class="buzz-actions">
@@ -146,7 +146,7 @@
     <div id="create-group-modal" class="modal">
       <div class="modal-content">
         <h3>Create New Group</h3>
-        <input type="text" id="new-group-name" placeholder="Group name" />
+        <input type="text" id="new-group-name" placeholder="Group name">
         <div class="modal-actions">
           <button id="cancel-create" class="btn secondary-btn">Cancel</button>
           <button id="confirm-create" class="btn primary-btn">Create</button>
@@ -158,8 +158,8 @@
     <div id="add-member-modal" class="modal">
       <div class="modal-content">
         <h3>Add New Member</h3>
-        <input type="text" id="member-name" placeholder="Member name" />
-        <input type="tel" id="member-phone" placeholder="Phone number" />
+        <input type="text" id="member-name" placeholder="Member name">
+        <input type="tel" id="member-phone" placeholder="Phone number">
         <div class="modal-actions">
           <button id="cancel-add" class="btn secondary-btn">Cancel</button>
           <button id="confirm-add" class="btn primary-btn">Add</button>
