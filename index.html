@@ -1,77 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BUZZALL</title>
+  <title>BZZALL - Login / Signup</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" href="data:," />
 </head>
+
 <body>
+  <div class="app-wrapper">
 
-  <!-- * Screen: Login -->
-  <div id="login-page" class="page">
-    <header class="banner">BUZZALL</header>
-    <main class="form-wrapper">
-      <input type="tel" id="login-phone" placeholder="Phone number" />
-      <input type="password" id="login-password" placeholder="Password" />
-      <button id="login-btn">Login</button>
-      <div class="form-links">
-        <a href="#" id="to-signup">Create an Account</a>
-        <a href="forgot.html">Forgot Password?</a>
+    <!-- ===== LOGIN SCREEN ===== -->
+    <div id="login-page" class="page active">
+      <div class="auth-card">
+        <div class="app-logo">
+          <h1>BZZALL</h1>
+        </div>
+        <form id="login-form" class="auth-form">
+          <div class="input-field">
+            <input type="tel" id="login-phone" placeholder="Phone number" required />
+          </div>
+          <div class="input-field">
+            <input type="password" id="login-password" placeholder="Password" required />
+          </div>
+          <button type="submit" class="btn primary-btn">Login</button>
+        </form>
+        <div class="auth-links">
+          <a href="#" id="to-signup">Create an account</a>
+          <a href="#" id="forgot-password">Forgot password?</a>
+        </div>
       </div>
-    </main>
+    </div>
+
+    <!-- ===== SIGNUP SCREEN ===== -->
+    <div id="signup-page" class="page">
+      <div class="auth-card">
+        <div class="app-logo">
+          <h1>Sign Up</h1>
+        </div>
+        <form id="signup-form" class="auth-form">
+          <div class="input-field">
+            <input type="text" id="signup-name" placeholder="Full name" required />
+          </div>
+          <div class="input-field">
+            <input type="tel" id="signup-phone" placeholder="Phone number" required />
+          </div>
+          <div class="input-field">
+            <input type="password" id="signup-password" placeholder="Password" required />
+          </div>
+          <div class="input-field">
+            <input type="password" id="signup-confirm" placeholder="Confirm password" required />
+          </div>
+          <button type="submit" class="btn primary-btn">Sign Up</button>
+        </form>
+        <div class="auth-links">
+          <a href="#" id="to-login">Already have an account? Login</a>
+        </div>
+      </div>
+    </div>
+
   </div>
 
-  <!-- * Screen: Signup -->
-  <div id="signup-page" class="page" hidden>
-    <header class="banner">SIGN UP</header>
-    <main class="form-wrapper">
-      <input type="text" id="signup-name" placeholder="Full name" />
-      <input type="tel" id="signup-phone" placeholder="Phone number" />
-      <input type="password" id="signup-password" placeholder="Password" />
-      <input type="password" id="signup-confirm" placeholder="Confirm password" />
-      <label class="show-password"><input type="checkbox" id="show-password"> Show Password</label>
-      <button id="signup-btn">Sign Up</button>
-      <div class="form-links">
-        <a href="index.html">Back to Login</a>
-      </div>
-    </main>
-  </div>
-
-  <!-- * Screen: My Groups -->
-  <div id="groups-page" class="page" hidden>
-    <header class="banner">MY GROUPS</header>
-    <main class="groups-wrapper">
-      <div id="group-list"></div>
-      <div class="group-controls">
-        <button id="create-group-btn">Create Group</button>
-        <button id="remove-group-btn">Remove Group</button>
-        <button id="logout-btn">Logout</button>
-      </div>
-    </main>
-  </div>
-
-  <!-- * Screen: Group Details -->
-  <div id="group-page" class="page" hidden>
-    <header class="banner" id="group-banner">Group Name</header>
-    <main class="group-controls">
-      <button id="edit-group-name-btn">Edit Group Name</button>
-      <button id="buzz-member-btn">Buzz Member</button>
-      <button id="buzz-all-btn">Buzz All</button>
-      <button id="toggle-members-btn">Members</button>
-      <div id="members-section" hidden>
-        <div id="member-list"></div>
-        <button id="add-member-btn">Add Member</button>
-        <button id="remove-member-btn">Remove Member</button>
-      </div>
-      <button id="back-to-groups-btn">Back</button>
-    </main>
-  </div>
-
-  <audio id="buzz-sound" src="buzz.mp3" preload="auto"></audio>
-
-  <script src="/socket.io/socket.io.js"></script>
   <script src="script.js"></script>
 </body>
+
 </html>
