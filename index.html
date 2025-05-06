@@ -7,42 +7,42 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <!-- \ Login Page -->
+
+  <!-- Login Page -->
   <div id="login-page" class="page">
     <div class="banner">BUZZALL</div>
-    <div class="form">
-      <input type="text" id="login-phone" placeholder="Phone Number" />
-      <input type="password" id="login-password" placeholder="Password" />
-      <label><input type="checkbox" id="login-show-pw" /> Show Password</label>
-      <button id="login-button">Login</button>
-      <div class="links">
-        <a href="#" id="to-signup">Sign Up</a>
-        <a href="#" id="to-forgot">Forgot Password</a>
-      </div>
+    <input type="text" id="login-phone" placeholder="Phone Number" />
+    <input type="password" id="login-password" placeholder="Password" />
+    <label><input type="checkbox" id="login-show-password" /> Show Password</label>
+    <button id="login-button">Login</button>
+    <div class="links">
+      <a href="#" id="go-to-signup">Create Account</a>
+      <a href="#" id="go-to-forgot">Forgot Password?</a>
     </div>
   </div>
 
-  <!-- \ Sign Up Page -->
+  <!-- Signup Page -->
   <div id="signup-page" class="page hidden">
     <div class="banner">SIGN UP</div>
-    <div class="form">
-      <input type="text" id="signup-name" placeholder="Name" />
-      <input type="text" id="signup-phone" placeholder="Phone Number" />
-      <input type="password" id="signup-password" placeholder="Password" />
-      <input type="password" id="signup-confirm" placeholder="Confirm Password" />
-      <label><input type="checkbox" id="signup-show-pw" /> Show Password</label>
-      <button id="signup-button">Sign Up</button>
-      <div class="links"><a href="#" id="to-login">Back to Login</a></div>
+    <input type="text" id="signup-name" placeholder="Name" />
+    <input type="text" id="signup-phone" placeholder="Phone Number" />
+    <input type="password" id="signup-password" placeholder="Password" />
+    <input type="password" id="signup-confirm-password" placeholder="Confirm Password" />
+    <label><input type="checkbox" id="signup-show-password" /> Show Password</label>
+    <button id="signup-button">Sign Up</button>
+    <div class="links">
+      <a href="#" id="go-to-login">Back to Login</a>
     </div>
   </div>
 
-  <!-- \ My Groups Page -->
-  <div id="groups-page" class="page hidden">
-    <div class="banner">MY GROUPS</div>
-    <div id="groups-list"></div>
-    <button id="create-group">Create Group</button>
-    <button id="remove-group">Remove Group</button>
-    <button id="logout-button">Logout</button>
+  <!-- Forgot Password Page -->
+  <div id="forgot-page" class="page hidden">
+    <div class="banner">RESET PASSWORD</div>
+    <input type="text" id="reset-phone" placeholder="Phone Number" />
+    <button id="reset-button">Send Reset Link</button>
+    <div class="links">
+      <a href="#" id="go-to-login2">Back to Login</a>
+    </div>
   </div>
 
   <script src="script.js"></script>
