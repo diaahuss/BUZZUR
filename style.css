@@ -1,64 +1,59 @@
-/* Layout */
 body {
-  font-family: sans-serif;
+  font-family: Arial, sans-serif;
+  max-width: 600px;
   margin: 0 auto;
   padding: 0;
-  max-width: 600px;
-  background: #f2f2f2;
+  background: #f9f9f9;
 }
 
-/* Page sections */
 .page {
   display: none;
   padding: 20px;
 }
+
 .page:not(.hidden) {
   display: block;
 }
 
-/* Banner */
 .banner {
-  background-color: #b0d8f5;
+  background-color: #a8d8f0;
   color: white;
   text-align: center;
   font-size: 1.5rem;
-  padding: 12px;
-  height: 48px; /* ~0.5 inch */
+  height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 20px;
 }
 
-/* Form inputs */
-input[type="text"],
-input[type="password"] {
-  display: block;
+input {
   width: 100%;
-  height: 48px; /* ~0.5 inch */
+  height: 48px;
   margin-bottom: 12px;
   padding: 8px;
   font-size: 1rem;
   box-sizing: border-box;
 }
 
-/* Buttons */
 button {
   width: 100%;
-  height: 48px; /* ~0.5 inch */
-  background-color: #c4e5c1;
+  height: 48px;
+  background-color: #b4e2b4;
   color: black;
-  border: none;
   font-size: 1rem;
-  margin: 10px 0;
+  border: none;
   cursor: pointer;
+  margin: 10px 0;
 }
 
-/* Links section */
+button:hover {
+  background-color: #a0d89c;
+}
+
 .links {
   display: flex;
   justify-content: space-between;
-  margin-top: 10px;
 }
 
 a {
@@ -71,7 +66,6 @@ a:hover {
   text-decoration: underline;
 }
 
-/* Hide class */
 .hidden {
   display: none;
 }
