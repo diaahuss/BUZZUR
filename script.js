@@ -21,8 +21,15 @@ document.querySelectorAll('.toggle-password').forEach(checkbox => {
 });
 
 // \ Navigation Links
-document.getElementById('to-signup').addEventListener('click', () => showPage('signup-page'));
-document.getElementById('to-login').addEventListener('click', () => showPage('login-page'));
+document.getElementById('to-signup').addEventListener('click', (e) => {
+  e.preventDefault();
+  showPage('signup-page');
+});
+
+document.getElementById('to-login').addEventListener('click', (e) => {
+  e.preventDefault();
+  showPage('login-page');
+});
 
 // \ Sign Up
 document.getElementById('signup-button').addEventListener('click', () => {
