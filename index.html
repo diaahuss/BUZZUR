@@ -3,12 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Prevent Outlook/MS auth interception -->
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  
   <title>BUZZALL</title>
-  <link href="style.css?v=1.0" rel="stylesheet">
+  <!-- Relative path with cache busting -->
+  <link href="./style.css?v=1.1" rel="stylesheet">
 </head>
 <body>
-
-  <!-- Login Page -->
+  <!-- Login Page (default visible) -->
   <div id="login-page" class="page">
     <div class="banner">BUZZALL</div>
     <input type="text" id="login-phone" placeholder="Phone Number" />
@@ -21,10 +26,10 @@
     </div>
   </div>
 
-  <!-- Signup Page -->
+  <!-- Signup Page (hidden by default) -->
   <div id="signup-page" class="page hidden">
     <div class="banner">SIGN UP</div>
-    <input type="text" id="signup-name" placeholder="Name" />
+    <input type="text" id="signup-name" placeholder="Full Name" />
     <input type="text" id="signup-phone" placeholder="Phone Number" />
     <input type="password" id="signup-password" placeholder="Password" />
     <input type="password" id="signup-confirm-password" placeholder="Confirm Password" />
@@ -35,7 +40,7 @@
     </div>
   </div>
 
-  <!-- Forgot Password Page -->
+  <!-- Forgot Password Page (hidden by default) -->
   <div id="forgot-page" class="page hidden">
     <div class="banner">RESET PASSWORD</div>
     <input type="text" id="reset-phone" placeholder="Phone Number" />
@@ -45,6 +50,32 @@
     </div>
   </div>
 
-  <script src="script.js"></script>
+  <!-- GitHub Pages Fixes -->
+  <script>
+    // Redirect if Outlook auth page appears
+    if (window.location.href.includes('login.microsoftonline.com')) {
+      window.location.href = 'https://diaahuss.github.io/buzzur/';
+    }
+    
+    // Show password toggle functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      // Login page show password
+      document.getElementById('login-show-password')?.addEventListener('change', function() {
+        const passwordField = document.getElementById('login-password');
+        passwordField.type = this.checked ? 'text' : 'password';
+      });
+      
+      // Signup page show password
+      document.getElementById('signup-show-password')?.addEventListener('change', function() {
+        const passwordField = document.getElementById('signup-password');
+        const confirmField = document.getElementById('signup-confirm-password');
+        passwordField.type = this.checked ? 'text' : 'password';
+        confirmField.type = this.checked ? 'text' : 'password';
+      });
+    });
+  </script>
+
+  <!-- Main JavaScript (deferred loading) -->
+  <script src="./script.js?v=1.1" defer></script>
 </body>
 </html>
