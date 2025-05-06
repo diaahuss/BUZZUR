@@ -1,42 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BZZALL</title>
+  <title>BUZZALL</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
-  <div class="container">
+  <div id="app">
 
-    <!-- Login Page -->
-    <div id="login-page" class="page active">
-      <div class="banner">BZZALL</div>
-      <form id="login-form" class="form-box">
-        <input type="tel" id="login-phone" placeholder="Phone number" required />
+    <!-- \ Login Page -->
+    <div id="login-page" class="page">
+      <div class="banner">BUZZALL</div>
+      <form id="login-form" class="form">
+        <input type="tel" id="login-phone" placeholder="Phone Number" required />
         <input type="password" id="login-password" placeholder="Password" required />
-        <button type="submit" class="btn">Login</button>
+        <button type="submit">Login</button>
       </form>
-      <div class="link-box">
-        <a href="#" id="to-signup">Create an account</a>
-        <a href="#" id="forgot-password">Forgot password?</a>
+      <div class="nav-links">
+        <a href="#" id="to-signup">Create Account</a>
+        <a href="#" id="to-forgot">Forgot Password?</a>
       </div>
     </div>
 
-    <!-- Signup Page -->
-    <div id="signup-page" class="page">
+    <!-- \ Signup Page -->
+    <div id="signup-page" class="page hidden">
       <div class="banner">SIGN UP</div>
-      <form id="signup-form" class="form-box">
-        <input type="text" id="signup-name" placeholder="Full name" required />
-        <input type="tel" id="signup-phone" placeholder="Phone number" required />
+      <form id="signup-form" class="form">
+        <input type="text" id="signup-name" placeholder="Full Name" required />
+        <input type="tel" id="signup-phone" placeholder="Phone Number" required />
         <input type="password" id="signup-password" placeholder="Password" required />
-        <input type="password" id="signup-confirm" placeholder="Confirm password" required />
-        <button type="submit" class="btn">Sign Up</button>
+        <input type="password" id="signup-confirm" placeholder="Confirm Password" required />
+        <label><input type="checkbox" id="show-passwords" /> Show Passwords</label>
+        <button type="submit">Sign Up</button>
       </form>
-      <div class="link-box">
-        <a href="#" id="to-login">Already have an account? Login</a>
+      <div class="nav-links">
+        <a href="#" id="to-login">Back to Login</a>
+      </div>
+    </div>
+
+    <!-- \ Dashboard Page -->
+    <div id="dashboard-page" class="page hidden">
+      <div class="banner">MY GROUPS</div>
+      <div id="group-list" class="group-list">
+        <!-- Groups will appear here -->
+      </div>
+      <div class="button-row">
+        <button id="create-group">Create Group</button>
+        <button id="logout">Logout</button>
       </div>
     </div>
 
@@ -44,5 +55,4 @@
 
   <script src="script.js"></script>
 </body>
-
 </html>
