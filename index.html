@@ -6,7 +6,9 @@
     <title>BUZZALL - Real-time Group Alerts</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Base Styles */
+        /* ============ */
+        /* BASE STYLES */
+        /* ============ */
         :root {
             --primary: #4361ee;
             --secondary: #3a0ca3;
@@ -30,46 +32,71 @@
             background-color: #f5f7fa;
             color: var(--dark);
             line-height: 1.6;
-            display: flex;
-            justify-content: center;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        /* App Container - Max 600px */
+        /* ============= */
+        /* APP CONTAINER */
+        /* ============= */
         #app {
             width: 100%;
             max-width: 600px;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
         }
 
-        /* Screen Styles */
+        /* ========== */
+        /* SCREENS */
+        /* ========== */
         .screen {
-            flex: 1;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            padding: 20px;
             display: flex;
             flex-direction: column;
-            width: 100%;
+            transform: translateX(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background-color: #f5f7fa;
         }
 
-        /* Header with Back Button */
+        .screen.active {
+            transform: translateX(0);
+            z-index: 1;
+        }
+
+        /* ========== */
+        /* HEADER */
+        /* ========== */
         .screen-header {
             display: flex;
             align-items: center;
             margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
         }
 
         .back-button {
             background: none;
             border: none;
-            font-size: 1.2rem;
-            margin-right: 10px;
+            font-size: 1.5rem;
+            margin-right: 15px;
             cursor: pointer;
             color: var(--primary);
+            padding: 5px;
+            border-radius: 50%;
+            transition: background-color 0.2s;
         }
 
-        /* Rest of your CSS remains the same */
+        .back-button:hover {
+            background-color: rgba(67, 97, 238, 0.1);
+        }
+
         .banner {
             font-size: 2rem;
             font-weight: 700;
@@ -79,16 +106,21 @@
             margin-bottom: 20px;
         }
 
+        /* ========== */
+        /* FORMS */
+        /* ========== */
         .form-container {
             background: white;
             padding: 25px;
             border-radius: var(--border-radius);
             box-shadow: var(--shadow);
             width: 100%;
+            max-width: 100%;
         }
 
         .input-group {
-            margin-bottom: 1.2rem;
+            margin-bottom: 1.5rem;
+            position: relative;
         }
 
         .input-group label {
@@ -104,7 +136,17 @@
             border: 1px solid #ddd;
             border-radius: var(--border-radius);
             font-size: 1rem;
-            transition: border 0.3s;
+            transition: border-color 0.3s;
+            background-color: white;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .input-group input:focus::placeholder {
+            color: transparent;
         }
 
         .checkbox-container {
@@ -114,12 +156,9 @@
             font-size: 0.9rem;
         }
 
-        .links {
-            margin-top: 1.5rem;
-            text-align: center;
-            font-size: 0.9rem;
-        }
-
+        /* ========== */
+        /* BUTTONS */
+        /* ========== */
         .btn {
             display: block;
             width: 100%;
@@ -131,6 +170,7 @@
             cursor: pointer;
             transition: all 0.3s ease;
             margin-bottom: 15px;
+            text-align: center;
         }
 
         .btn.primary {
@@ -138,12 +178,82 @@
             color: white;
         }
 
-        /* Add other button styles as needed */
+        .btn.secondary {
+            background-color: var(--secondary);
+            color: white;
+        }
+
+        .btn.accent {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .btn.danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        /* ========== */
+        /* LINKS */
+        /* ========== */
+        .links {
+            margin-top: 1.5rem;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .links a {
+            color: var(--primary);
+            text-decoration: none;
+            margin: 0 10px;
+            transition: opacity 0.3s;
+        }
+
+        .links a:hover {
+            opacity: 0.8;
+            text-decoration: underline;
+        }
+
+        /* =============== */
+        /* MEMBER/GROUP LISTS */
+        /* =============== */
+        .member-list, .group-list {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+
+        .member-item, .group-item {
+            background: white;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 10px;
+            box-shadow: var(--shadow);
+        }
+
+        /* =============== */
+        /* ACTION BUTTONS */
+        /* =============== */
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: auto;
+        }
+
+        .action-buttons .btn {
+            margin: 0;
+        }
     </style>
 </head>
 <body>
     <div id="app">
-        <!-- Content will be loaded by JavaScript -->
+        <!-- Screens will be dynamically inserted here by JavaScript -->
     </div>
 
     <audio id="buzzSound" preload="auto">
