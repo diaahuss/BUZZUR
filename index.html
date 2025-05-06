@@ -5,35 +5,147 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BUZZALL - Real-time Group Alerts</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Base Styles */
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --danger: #dc3545;
+            --success: #4cc9f0;
+            --border-radius: 8px;
+            --shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark);
+            line-height: 1.6;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        /* App Container - Max 600px */
+        #app {
+            width: 100%;
+            max-width: 600px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        /* Screen Styles */
+        .screen {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        /* Header with Back Button */
+        .screen-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .back-button {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            margin-right: 10px;
+            cursor: pointer;
+            color: var(--primary);
+        }
+
+        /* Rest of your CSS remains the same */
+        .banner {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            padding: 20px 0;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .form-container {
+            background: white;
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            width: 100%;
+        }
+
+        .input-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: border 0.3s;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+
+        .links {
+            margin-top: 1.5rem;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        .btn.primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        /* Add other button styles as needed */
+    </style>
 </head>
 <body>
     <div id="app">
-        <!-- Login Screen will load here by default -->
-        <div class="screen login-screen">
-            <div class="banner">BUZZALL</div>
-            <div class="form-container">
-                <div class="input-group">
-                    <label for="phone">Phone Number</label>
-                    <input type="tel" id="phone" placeholder="+1234567890" required>
-                </div>
-                <div class="input-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" placeholder="••••••••" required>
-                    <label class="checkbox-container">
-                        <input type="checkbox" id="showPassword"> Show password
-                    </label>
-                </div>
-                <button id="loginBtn" class="btn primary">Login</button>
-                <div class="links">
-                    <a href="#" id="createAccountLink">Create Account</a>
-                    <a href="#" id="forgotPasswordLink">Forgot Password?</a>
-                </div>
-            </div>
-        </div>
+        <!-- Content will be loaded by JavaScript -->
     </div>
 
-    <!-- Audio element for buzz sound -->
     <audio id="buzzSound" preload="auto">
         <source src="https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3" type="audio/mpeg">
     </audio>
