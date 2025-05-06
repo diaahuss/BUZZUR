@@ -170,7 +170,12 @@ function renderGroupDetailScreen() {
     
     elements.app.innerHTML = `
         <div class="group-detail-screen">
-            <div class="banner">${group.name}</div>
+            <div class="screen-header">
+                <button class="back-button" id="backToGroups">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h2 class="group-title">${group.name}</h2>
+            </div>
             <div class="member-list">
                 ${group.members.map(member => `
                     <div class="member-item" data-member-id="${member.id}">
@@ -187,10 +192,14 @@ function renderGroupDetailScreen() {
                 <button id="removeMemberBtn" class="btn danger">🗑️ Remove Selected</button>
                 <button id="buzzSelectedBtn" class="btn accent">🔔 Buzz Selected</button>
                 <button id="buzzAllBtn" class="btn accent">🔔 Buzz All</button>
-                <button id="backBtn" class="btn secondary">⬅️ Back</button>
             </div>
         </div>
     `;
+
+    // Add back button functionality
+    document.getElementById('backToGroups').addEventListener('click', () => {
+        renderGroupsScreen();
+    });
 }
 
 // Modals
