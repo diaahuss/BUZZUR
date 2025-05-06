@@ -4,60 +4,39 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BZZALL - Login / Signup</title>
+  <title>BZZALL</title>
   <link rel="stylesheet" href="style.css" />
-  <link rel="icon" href="data:," />
 </head>
 
 <body>
-  <div class="app-wrapper">
+  <div class="container">
 
-    <!-- ===== LOGIN SCREEN ===== -->
+    <!-- Login Page -->
     <div id="login-page" class="page active">
-      <div class="auth-card">
-        <div class="app-logo">
-          <h1>BZZALL</h1>
-        </div>
-        <form id="login-form" class="auth-form">
-          <div class="input-field">
-            <input type="tel" id="login-phone" placeholder="Phone number" required />
-          </div>
-          <div class="input-field">
-            <input type="password" id="login-password" placeholder="Password" required />
-          </div>
-          <button type="submit" class="btn primary-btn">Login</button>
-        </form>
-        <div class="auth-links">
-          <a href="#" id="to-signup">Create an account</a>
-          <a href="#" id="forgot-password">Forgot password?</a>
-        </div>
+      <div class="banner">BZZALL</div>
+      <form id="login-form" class="form-box">
+        <input type="tel" id="login-phone" placeholder="Phone number" required />
+        <input type="password" id="login-password" placeholder="Password" required />
+        <button type="submit" class="btn">Login</button>
+      </form>
+      <div class="link-box">
+        <a href="#" id="to-signup">Create an account</a>
+        <a href="#" id="forgot-password">Forgot password?</a>
       </div>
     </div>
 
-    <!-- ===== SIGNUP SCREEN ===== -->
+    <!-- Signup Page -->
     <div id="signup-page" class="page">
-      <div class="auth-card">
-        <div class="app-logo">
-          <h1>Sign Up</h1>
-        </div>
-        <form id="signup-form" class="auth-form">
-          <div class="input-field">
-            <input type="text" id="signup-name" placeholder="Full name" required />
-          </div>
-          <div class="input-field">
-            <input type="tel" id="signup-phone" placeholder="Phone number" required />
-          </div>
-          <div class="input-field">
-            <input type="password" id="signup-password" placeholder="Password" required />
-          </div>
-          <div class="input-field">
-            <input type="password" id="signup-confirm" placeholder="Confirm password" required />
-          </div>
-          <button type="submit" class="btn primary-btn">Sign Up</button>
-        </form>
-        <div class="auth-links">
-          <a href="#" id="to-login">Already have an account? Login</a>
-        </div>
+      <div class="banner">SIGN UP</div>
+      <form id="signup-form" class="form-box">
+        <input type="text" id="signup-name" placeholder="Full name" required />
+        <input type="tel" id="signup-phone" placeholder="Phone number" required />
+        <input type="password" id="signup-password" placeholder="Password" required />
+        <input type="password" id="signup-confirm" placeholder="Confirm password" required />
+        <button type="submit" class="btn">Sign Up</button>
+      </form>
+      <div class="link-box">
+        <a href="#" id="to-login">Already have an account? Login</a>
       </div>
     </div>
 
