@@ -4,21 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BUZZALL - Real-time Group Alerts</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <div id="app">
-        <!-- All content will be dynamically rendered here -->
+        <!-- Login Screen will load here by default -->
+        <div class="screen login-screen">
+            <div class="banner">BUZZALL</div>
+            <div class="form-container">
+                <div class="input-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" placeholder="+1234567890" required>
+                </div>
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="••••••••" required>
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="showPassword"> Show password
+                    </label>
+                </div>
+                <button id="loginBtn" class="btn primary">Login</button>
+                <div class="links">
+                    <a href="#" id="createAccountLink">Create Account</a>
+                    <a href="#" id="forgotPasswordLink">Forgot Password?</a>
+                </div>
+            </div>
+        </div>
     </div>
-    
+
     <!-- Audio element for buzz sound -->
-    <audio id="buzzSound" src="buzz.mp3" preload="auto"></audio>
-    
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <audio id="buzzSound" preload="auto">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3" type="audio/mpeg">
+    </audio>
+
     <script src="script.js"></script>
 </body>
 </html>
