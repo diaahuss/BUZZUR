@@ -2,45 +2,50 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>BUZZALL - Real-time Group Alerts</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+    <meta name="description" content="BUZZALL - Real-time group alert and notification system">
 </head>
 <body>
     <div id="app">
         <!-- Login Screen (default visible) -->
         <div class="screen login-screen active">
-            <div class="banner">BUZZALL</div>
-            <div class="form-container">
+            <div class="banner" aria-label="BUZZALL Logo">BUZZALL</div>
+            <div class="form-container" role="form">
                 <div class="input-group">
                     <label for="phone">Phone Number</label>
-                    <input type="tel" id="phone" placeholder="+1234567890" required value="+1234567890">
+                    <input type="tel" id="phone" placeholder="+1234567890" required value="+1234567890" 
+                           pattern="\+[0-9]{10,15}" title="Enter a valid phone number with country code">
                 </div>
                 <div class="input-group">
                     <label for="password">Password</label>
-                    <input type="password" id="password" placeholder="••••••••" required value="password123">
+                    <input type="password" id="password" placeholder="••••••••" required value="password123"
+                           minlength="6" aria-describedby="password-help">
                     <label class="checkbox-container">
-                        <input type="checkbox" id="showPassword"> Show password
+                        <input type="checkbox" id="showPassword" aria-label="Show password"> 
+                        <span>Show password</span>
                     </label>
                 </div>
-                <button id="loginBtn" class="btn primary">Login</button>
+                <button id="loginBtn" class="btn primary" aria-label="Login">Login</button>
                 <div class="links">
-                    <a href="#" id="createAccountLink">Create Account</a>
+                    <a href="#" id="createAccountLink" aria-label="Create new account">Create Account</a>
                 </div>
             </div>
         </div>
 
         <!-- Groups Screen (hidden by default) -->
-        <div class="screen groups-screen">
+        <div class="screen groups-screen" hidden>
             <!-- Content will be loaded by JavaScript -->
         </div>
     </div>
 
-    <audio id="buzzSound" preload="auto">
+    <audio id="buzzSound" preload="auto" aria-hidden="true">
         <source src="https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
     </audio>
 
-    <script src="script.js"></script>
+    <script src="script.js" defer></script>
 </body>
 </html>
