@@ -1,28 +1,32 @@
 // App State
-const state = {
-    user: null,
-    groups: [],
-    currentGroup: null
+const appState = {
+    currentUser: null,
+    currentGroup: null,
+    groups: []
 };
 
 // DOM Elements
-const el = {
+const elements = {
     app: document.getElementById('app'),
     buzzSound: document.getElementById('buzzSound')
 };
 
 // Mock Database
-const db = {
+const database = {
     users: [
-        { phone: "+1234567890", password: "password123", name: "Test User" }
+        {
+            phone: "+1234567890",
+            password: "password123",
+            name: "Demo User"
+        }
     ],
     groups: [
         {
-            id: '1',
-            name: 'Sample Group',
+            id: "group1",
+            name: "Family",
             members: [
-                { id: '1', name: 'John', phone: '+1111111111' },
-                { id: '2', name: 'Jane', phone: '+1222222222' }
+                { id: "m1", name: "Mom", phone: "+1234567891" },
+                { id: "m2", name: "Dad", phone: "+1234567892" }
             ]
         }
     ]
@@ -30,25 +34,27 @@ const db = {
 
 // Initialize App
 function init() {
-    loadSession();
+    loadFromStorage();
     setupEventListeners();
     renderScreen('login');
 }
 
-// Load session from localStorage
-function loadSession() {
-    const savedUser = localStorage.getItem('buzzall_user');
-    if (savedUser) {
-        state.user = JSON.parse(savedUser);
-        state.groups = JSON.parse(localStorage.getItem('buzzall_groups')) || db.groups;
+// Load data from localStorage
+function loadFromStorage() {
+    const user = localStorage.getItem('buzzall_user');
+    const groups = localStorage.getItem('buzzall_groups');
+    
+    if (user) {
+        appState.currentUser = JSON.parse(user);
+        appState.groups = groups ? JSON.parse(groups) : database.groups;
     }
 }
 
-// Save session to localStorage
-function saveSession() {
-    if (state.user) {
-        localStorage.setItem('buzzall_user', JSON.stringify(state.user));
-        localStorage.setItem('buzzall_groups', JSON.stringify(state.groups));
+// Save data to localStorage
+function saveToStorage() {
+    if (appState.currentUser) {
+        localStorage.setItem('buzzall_user', JSON.stringify(appState.currentUser));
+        localStorage.setItem('buzzall_groups', JSON.stringify(appState.groups));
     }
 }
 
@@ -56,40 +62,41 @@ function saveSession() {
 function renderScreen(screen) {
     switch (screen) {
         case 'login':
-            renderLogin();
+            renderLoginScreen();
             break;
         case 'signup':
-            renderSignup();
+            renderSignupScreen();
             break;
         case 'groups':
-            renderGroups();
+            renderGroupsScreen();
             break;
         case 'group-detail':
-            renderGroupDetail();
+            renderGroupDetailScreen();
             break;
     }
 }
 
 // Login Screen
-function renderLogin() {
-    el.app.innerHTML = `
+function renderLoginScreen() {
+    elements.app.innerHTML = `
         <div class="login-screen">
             <div class="banner">BUZZALL</div>
-            <div class="form">
+            <div class="form-container">
                 <div class="input-group">
-                    <label>Phone Number</label>
-                    <input type="tel" id="login-phone" placeholder="+1234567890" required>
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" value="+1234567890" placeholder="+1234567890" required>
                 </div>
                 <div class="input-group">
-                    <label>Password</label>
-                    <input type="password" id="login-password" placeholder="••••••••" required>
-                    <label class="checkbox">
-                        <input type="checkbox" id="login-show-pw"> Show password
+                    <label for="password">Password</label>
+                    <input type="password" id="password" value="password123" placeholder="••••••••" required>
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="showPassword"> Show password
                     </label>
                 </div>
-                <button id="login-btn" class="btn primary">Login</button>
+                <button id="loginBtn" class="btn primary">Login</button>
                 <div class="links">
-                    <a href="#" id="show-signup">Create Account</a>
+                    <a href="#" id="createAccountLink">Create Account</a>
+                    <a href="#" id="forgotPasswordLink">Forgot Password?</a>
                 </div>
             </div>
         </div>
@@ -97,33 +104,33 @@ function renderLogin() {
 }
 
 // Signup Screen
-function renderSignup() {
-    el.app.innerHTML = `
+function renderSignupScreen() {
+    elements.app.innerHTML = `
         <div class="signup-screen">
             <div class="banner">SIGN UP</div>
-            <div class="form">
+            <div class="form-container">
                 <div class="input-group">
-                    <label>Full Name</label>
-                    <input type="text" id="signup-name" placeholder="John Doe" required>
+                    <label for="fullName">Full Name</label>
+                    <input type="text" id="fullName" placeholder="John Doe" required>
                 </div>
                 <div class="input-group">
-                    <label>Phone Number</label>
-                    <input type="tel" id="signup-phone" placeholder="+1234567890" required>
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" placeholder="+1234567890" required>
                 </div>
                 <div class="input-group">
-                    <label>Password</label>
-                    <input type="password" id="signup-password" placeholder="••••••••" required>
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="••••••••" required>
                 </div>
                 <div class="input-group">
-                    <label>Confirm Password</label>
-                    <input type="password" id="signup-confirm" placeholder="••••••••" required>
-                    <label class="checkbox">
-                        <input type="checkbox" id="signup-show-pw"> Show passwords
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" placeholder="••••••••" required>
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="showPasswords"> Show passwords
                     </label>
                 </div>
-                <button id="signup-btn" class="btn primary">Sign Up</button>
+                <button id="signupBtn" class="btn primary">Sign Up</button>
                 <div class="links">
-                    <a href="#" id="show-login">Already have an account?</a>
+                    <a href="#" id="loginLink">Already have an account? Login</a>
                 </div>
             </div>
         </div>
@@ -131,170 +138,286 @@ function renderSignup() {
 }
 
 // Groups Screen
-function renderGroups() {
-    el.app.innerHTML = `
+function renderGroupsScreen() {
+    elements.app.innerHTML = `
         <div class="groups-screen">
             <div class="banner">MY GROUPS</div>
             <div class="group-list">
-                ${state.groups.map(group => `
-                    <div class="group" data-id="${group.id}">
-                        <h3>${group.name}</h3>
-                        <span>${group.members.length} members</span>
+                ${appState.groups.map(group => `
+                    <div class="group-item" data-group-id="${group.id}">
+                        <div class="group-info">
+                            <h3>${group.name}</h3>
+                            <span class="member-count">${group.members.length} members</span>
+                        </div>
                         <i class="fas fa-chevron-right"></i>
                     </div>
                 `).join('')}
             </div>
-            <div class="actions">
-                <button id="create-group" class="btn primary">➕ Create Group</button>
-                <button id="logout" class="btn">Logout</button>
+            <div class="action-buttons">
+                <button id="createGroupBtn" class="btn primary">➕ Create Group</button>
+                <button id="logoutBtn" class="btn secondary">🚪 Logout</button>
             </div>
         </div>
     `;
 }
 
 // Group Detail Screen
-function renderGroupDetail() {
-    if (!state.currentGroup) return;
+function renderGroupDetailScreen() {
+    if (!appState.currentGroup) return;
     
-    const group = state.groups.find(g => g.id === state.currentGroup);
+    const group = appState.groups.find(g => g.id === appState.currentGroup);
+    if (!group) return;
     
-    el.app.innerHTML = `
-        <div class="group-screen">
-            <div class="header">
-                <button id="back-to-groups" class="btn icon"><i class="fas fa-arrow-left"></i></button>
-                <h2>${group.name}</h2>
-            </div>
+    elements.app.innerHTML = `
+        <div class="group-detail-screen">
+            <div class="banner">${group.name}</div>
             <div class="member-list">
                 ${group.members.map(member => `
-                    <div class="member">
-                        <input type="checkbox" id="member-${member.id}">
-                        <div class="info">
-                            <strong>${member.name}</strong>
-                            <span>${member.phone}</span>
+                    <div class="member-item" data-member-id="${member.id}">
+                        <input type="checkbox" id="member-${member.id}" class="member-checkbox">
+                        <div class="member-info">
+                            <div class="member-name">${member.name}</div>
+                            <div class="member-phone">${member.phone}</div>
                         </div>
                     </div>
                 `).join('')}
             </div>
-            <div class="actions">
-                <button id="add-member" class="btn primary">➕ Add Member</button>
-                <button id="buzz-selected" class="btn accent">🔔 Buzz Selected</button>
-                <button id="buzz-all" class="btn accent">🔔 Buzz All</button>
+            <div class="action-buttons">
+                <button id="addMemberBtn" class="btn primary">➕ Add Member</button>
+                <button id="removeMemberBtn" class="btn danger">🗑️ Remove Selected</button>
+                <button id="buzzSelectedBtn" class="btn accent">🔔 Buzz Selected</button>
+                <button id="buzzAllBtn" class="btn accent">🔔 Buzz All</button>
+                <button id="backBtn" class="btn secondary">⬅️ Back</button>
             </div>
         </div>
     `;
 }
 
+// Modals
+function showCreateGroupModal() {
+    const modalHTML = `
+        <div class="modal active">
+            <div class="modal-content">
+                <h3>Create New Group</h3>
+                <div class="input-group">
+                    <input type="text" id="newGroupName" placeholder="Enter group name" required>
+                </div>
+                <div class="modal-actions">
+                    <button id="cancelCreateGroup" class="btn secondary">Cancel</button>
+                    <button id="confirmCreateGroup" class="btn primary">Create</button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+}
+
+function showAddMemberModal() {
+    const modalHTML = `
+        <div class="modal active">
+            <div class="modal-content">
+                <h3>Add New Member</h3>
+                <div class="input-group">
+                    <input type="text" id="newMemberName" placeholder="Member name" required>
+                </div>
+                <div class="input-group">
+                    <input type="tel" id="newMemberPhone" placeholder="Phone number" required>
+                </div>
+                <div class="modal-actions">
+                    <button id="cancelAddMember" class="btn secondary">Cancel</button>
+                    <button id="confirmAddMember" class="btn primary">Add</button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+}
+
+function closeModal() {
+    const modal = document.querySelector('.modal');
+    if (modal) modal.remove();
+}
+
+// Alert System
+function showAlert(message, isSuccess = false) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert ${isSuccess ? 'success' : 'error'}`;
+    alertDiv.textContent = message;
+    document.body.appendChild(alertDiv);
+    
+    setTimeout(() => {
+        alertDiv.remove();
+    }, 3000);
+}
+
 // Event Listeners
 function setupEventListeners() {
     // Password visibility toggles
-    document.addEventListener('change', e => {
-        if (e.target.id === 'login-show-pw') {
-            const input = document.getElementById('login-password');
+    document.addEventListener('change', (e) => {
+        if (e.target.id === 'showPassword') {
+            const input = document.getElementById('password');
             input.type = e.target.checked ? 'text' : 'password';
         }
-        if (e.target.id === 'signup-show-pw') {
-            const pw = document.getElementById('signup-password');
-            const confirm = document.getElementById('signup-confirm');
-            pw.type = confirm.type = e.target.checked ? 'text' : 'password';
+        
+        if (e.target.id === 'showPasswords') {
+            const pw1 = document.getElementById('password');
+            const pw2 = document.getElementById('confirmPassword');
+            if (pw1 && pw2) {
+                pw1.type = pw2.type = e.target.checked ? 'text' : 'password';
+            }
         }
     });
     
     // Navigation
-    document.addEventListener('click', e => {
-        if (e.target.id === 'show-signup' || e.target.id === 'show-login') {
+    document.addEventListener('click', (e) => {
+        if (e.target.id === 'createAccountLink' || e.target.id === 'loginLink') {
             e.preventDefault();
-            renderScreen(e.target.id === 'show-signup' ? 'signup' : 'login');
+            renderScreen(e.target.id === 'createAccountLink' ? 'signup' : 'login');
         }
         
-        if (e.target.id === 'back-to-groups') {
+        if (e.target.id === 'backBtn') {
             renderScreen('groups');
-        }
-        
-        if (e.target.closest('.group')) {
-            state.currentGroup = e.target.closest('.group').dataset.id;
-            renderScreen('group-detail');
         }
     });
     
-    // Auth actions
-    document.addEventListener('click', e => {
-        if (e.target.id === 'login-btn') {
-            const phone = document.getElementById('login-phone').value;
-            const password = document.getElementById('login-password').value;
+    // Authentication
+    document.addEventListener('click', (e) => {
+        if (e.target.id === 'loginBtn') {
+            const phone = document.getElementById('phone').value;
+            const password = document.getElementById('password').value;
             
-            const user = db.users.find(u => u.phone === phone && u.password === password);
+            const user = database.users.find(u => u.phone === phone && u.password === password);
             if (user) {
-                state.user = user;
-                saveSession();
+                appState.currentUser = user;
+                saveToStorage();
                 renderScreen('groups');
             } else {
-                alert('Invalid credentials');
+                showAlert('Invalid phone number or password');
             }
         }
         
-        if (e.target.id === 'signup-btn') {
-            const name = document.getElementById('signup-name').value;
-            const phone = document.getElementById('signup-phone').value;
-            const password = document.getElementById('signup-password').value;
-            const confirm = document.getElementById('signup-confirm').value;
+        if (e.target.id === 'signupBtn') {
+            const fullName = document.getElementById('fullName').value;
+            const phone = document.getElementById('phone').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
             
-            if (password !== confirm) {
-                alert("Passwords don't match");
+            if (password !== confirmPassword) {
+                showAlert("Passwords don't match");
                 return;
             }
             
-            db.users.push({ phone, password, name });
-            alert('Account created! Please login');
+            database.users.push({
+                phone,
+                password,
+                name: fullName
+            });
+            
+            showAlert("Account created successfully! Please login.", true);
             renderScreen('login');
         }
         
-        if (e.target.id === 'logout') {
-            state.user = null;
+        if (e.target.id === 'logoutBtn') {
+            appState.currentUser = null;
             localStorage.removeItem('buzzall_user');
             renderScreen('login');
         }
     });
     
     // Group actions
-    document.addEventListener('click', e => {
-        if (e.target.id === 'create-group') {
-            const name = prompt('Enter group name:');
+    document.addEventListener('click', (e) => {
+        if (e.target.closest('.group-item')) {
+            const groupId = e.target.closest('.group-item').dataset.groupId;
+            appState.currentGroup = groupId;
+            renderScreen('group-detail');
+        }
+        
+        if (e.target.id === 'createGroupBtn') {
+            showCreateGroupModal();
+        }
+        
+        if (e.target.id === 'addMemberBtn') {
+            showAddMemberModal();
+        }
+        
+        if (e.target.id === 'confirmCreateGroup') {
+            const name = document.getElementById('newGroupName').value.trim();
             if (name) {
-                state.groups.push({
-                    id: Date.now().toString(),
+                appState.groups.push({
+                    id: 'group' + Date.now(),
                     name,
                     members: []
                 });
-                saveSession();
+                saveToStorage();
+                closeModal();
                 renderScreen('groups');
+                showAlert(`Group "${name}" created!`, true);
             }
         }
         
-        if (e.target.id === 'add-member') {
-            const name = prompt('Member name:');
-            const phone = prompt('Member phone:');
+        if (e.target.id === 'confirmAddMember') {
+            const name = document.getElementById('newMemberName').value.trim();
+            const phone = document.getElementById('newMemberPhone').value.trim();
+            
             if (name && phone) {
-                const group = state.groups.find(g => g.id === state.currentGroup);
+                const group = appState.groups.find(g => g.id === appState.currentGroup);
                 if (group) {
                     group.members.push({
-                        id: Date.now().toString(),
+                        id: 'member' + Date.now(),
                         name,
                         phone
                     });
-                    saveSession();
+                    saveToStorage();
+                    closeModal();
                     renderScreen('group-detail');
+                    showAlert(`Added ${name} to group!`, true);
                 }
             }
         }
         
-        if (e.target.id === 'buzz-selected') {
-            el.buzzSound.play();
-            alert('Buzz sent to selected members!');
+        if (e.target.id === 'cancelCreateGroup' || e.target.id === 'cancelAddMember') {
+            closeModal();
         }
         
-        if (e.target.id === 'buzz-all') {
-            el.buzzSound.play();
-            alert('Buzz sent to all members!');
+        // Buzz functionality
+        if (e.target.id === 'buzzSelectedBtn') {
+            const selected = Array.from(document.querySelectorAll('.member-checkbox:checked'))
+                .map(cb => cb.id.replace('member-', ''));
+            
+            if (selected.length > 0) {
+                elements.buzzSound.play();
+                showAlert(`Buzzed ${selected.length} members!`, true);
+            } else {
+                showAlert('Please select at least one member');
+            }
+        }
+        
+        if (e.target.id === 'buzzAllBtn') {
+            const group = appState.groups.find(g => g.id === appState.currentGroup);
+            if (group) {
+                elements.buzzSound.play();
+                showAlert(`Buzzed all ${group.members.length} members!`, true);
+            }
+        }
+        
+        // Remove members
+        if (e.target.id === 'removeMemberBtn') {
+            const selected = Array.from(document.querySelectorAll('.member-checkbox:checked'))
+                .map(cb => cb.id.replace('member-', ''));
+            
+            if (selected.length > 0) {
+                const group = appState.groups.find(g => g.id === appState.currentGroup);
+                if (group) {
+                    group.members = group.members.filter(m => !selected.includes(m.id));
+                    saveToStorage();
+                    renderScreen('group-detail');
+                    showAlert(`Removed ${selected.length} members`, true);
+                }
+            } else {
+                showAlert('Please select members to remove');
+            }
         }
     });
 }
