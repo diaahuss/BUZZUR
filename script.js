@@ -1,63 +1,55 @@
-// \ Utility Functions
-function showPage(pageId) {
-  document.querySelectorAll(".page").forEach(p => p.classList.add("hidden"));
-  document.getElementById(pageId).classList.remove("hidden");
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
 }
 
-// \ Navigation
-document.getElementById("to-signup").onclick = () => showPage("signup-page");
-document.getElementById("to-login").onclick = () => showPage("login-page");
+// Navigation
+document.getElementById('go-to-signup').addEventListener('click', () => showPage('signup-page'));
+document.getElementById('go-to-login').addEventListener('click', () => showPage('login-page'));
+document.getElementById('go-to-login2').addEventListener('click', () => showPage('login-page'));
+document.getElementById('go-to-forgot').addEventListener('click', () => showPage('forgot-page'));
 
-// \ Show/Hide Passwords
-document.getElementById("login-show-pw").onchange = function () {
-  document.getElementById("login-password").type = this.checked ? "text" : "password";
-};
-document.getElementById("signup-show-pw").onchange = function () {
-  document.getElementById("signup-password").type =
-  document.getElementById("signup-confirm").type = this.checked ? "text" : "password";
-};
+// Show password toggles
+document.getElementById('login-show-password').addEventListener('change', function () {
+  document.getElementById('login-password').type = this.checked ? 'text' : 'password';
+});
+document.getElementById('signup-show-password').addEventListener('change', function () {
+  document.getElementById('signup-password').type = this.checked ? 'text' : 'password';
+  document.getElementById('signup-confirm-password').type = this.checked ? 'text' : 'password';
+});
 
-// \ Signup
-document.getElementById("signup-button").onclick = () => {
-  const name = document.getElementById("signup-name").value.trim();
-  const phone = document.getElementById("signup-phone").value.trim();
-  const password = document.getElementById("signup-password").value;
-  const confirm = document.getElementById("signup-confirm").value;
+// Mock login/signup functionality
+document.getElementById('login-button').addEventListener('click', () => {
+  const phone = document.getElementById('login-phone').value;
+  const password = document.getElementById('login-password').value;
 
-  if (!name || !phone || !password || password !== confirm) {
-    alert("Check inputs and passwords match");
-    return;
+  // Fake validation for now
+  if (phone === '123' && password === '123') {
+    alert('Login successful!');
+    // Redirect or load next screen here
+  } else {
+    alert('Wrong phone or password.');
   }
+});
 
-  const users = JSON.parse(localStorage.getItem("users") || "{}");
-  if (users[phone]) return alert("User already exists");
+document.getElementById('signup-button').addEventListener('click', () => {
+  const name = document.getElementById('signup-name').value;
+  const phone = document.getElementById('signup-phone').value;
+  const pw1 = document.getElementById('signup-password').value;
+  const pw2 = document.getElementById('signup-confirm-password').value;
 
-  users[phone] = { name, password };
-  localStorage.setItem("users", JSON.stringify(users));
-  alert("Account created! Please login.");
-  showPage("login-page");
-};
+  if (!name || !phone || !pw1 || !pw2) return alert('Fill all fields');
+  if (pw1 !== pw2) return alert('Passwords do not match');
 
-// \ Login
-document.getElementById("login-button").onclick = () => {
-  const phone = document.getElementById("login-phone").value.trim();
-  const password = document.getElementById("login-password").value;
+  alert('Signup successful!');
+  showPage('login-page');
+});
 
-  const users = JSON.parse(localStorage.getItem("users") || "{}");
-  if (!users[phone] || users[phone].password !== password) {
-    alert("Wrong phone or password");
-    return;
-  }
+document.getElementById('reset-button').addEventListener('click', () => {
+  const phone = document.getElementById('reset-phone').value;
+  alert(`Reset link sent to ${phone}`);
+  showPage('login-page');
+});
 
-  localStorage.setItem("currentUser", phone);
-  showPage("groups-page");
-};
-
-// \ Logout
-document.getElementById("logout-button").onclick = () => {
-  localStorage.removeItem("currentUser");
-  showPage("login-page");
-};
-
-// \ Initial load
-showPage("login-page");
+// Show login page on load
+showPage('login-page');
