@@ -1,11 +1,13 @@
-<<<<<<< HEAD
+/* Base Styles */
 body {
   margin: 0;
+  padding: 0;
   font-family: Arial, sans-serif;
   background-color: #f0f8ff;
   display: flex;
   flex-direction: column;
   align-items: center;
+  color: #333;
 }
 
 .banner {
@@ -18,241 +20,192 @@ body {
   font-weight: bold;
 }
 
+/* App Container */
 #app {
-  width: 600px;
+  width: 100%;
+  max-width: 700px;
   padding: 20px;
   box-sizing: border-box;
 }
 
-input, button, select {
+/* Input & Form Elements */
+input, select, button {
   width: 100%;
-  padding: 10px;
-  margin-bottom: 10px;
+  padding: 12px;
   font-size: 16px;
+  margin-bottom: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
 }
 
+input:focus, select:focus {
+  outline: none;
+  border-color: #5ab9ea;
+}
+
+/* Button Styles */
 button {
-  background-color: #a0d2f3;
+  background-color: #b2e5b2;
+  color: #333;
   border: none;
   cursor: pointer;
-  border-radius: 6px;
-  transition: background 0.2s;
+  transition: background-color 0.3s;
 }
 
 button:hover {
-  background-color: #7cc0eb;
+  background-color: #99db99;
 }
 
-.eye-icon {
-  position: absolute;
-  right: 10px;
-  top: 38px;
-  cursor: pointer;
+/* Special Button Types */
+button.danger {
+  background-color: #ff4a4a;
+  color: white;
+}
+
+button.danger:hover {
+  background-color: #e84343;
+}
+
+button.accent {
+  background-color: #ffb347;
+  color: white;
+}
+
+button.accent:hover {
+  background-color: #ffa033;
+}
+
+button.inline {
+  width: auto;
+  display: inline-block;
+  margin-right: 8px;
+}
+
+/* Layout Wrappers */
+.screen {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
 }
 
 .input-wrapper {
   position: relative;
 }
-=======
-/* Base Styles */
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f5f5f5;
-    color: #333;
+
+.eye-icon {
+  position: absolute;
+  right: 10px;
+  top: 36px;
+  cursor: pointer;
 }
 
-#app {
-    max-width: 500px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-.screen {
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-}
-
-.banner {
-    background-color: #4a6bff;
-    color: white;
-    padding: 15px;
-    text-align: center;
-    font-weight: bold;
-    font-size: 1.5rem;
-}
-
-/* Form Styles */
-.form-container {
-    padding: 20px;
-}
-
-.input-group {
-    margin-bottom: 20px;
-}
-
-.input-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: 500;
-}
-
-.input-group input {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 1rem;
-    box-sizing: border-box;
-}
-
-.input-group input:focus {
-    outline: none;
-    border-color: #4a6bff;
-}
-
+/* Links */
 .links {
-    text-align: center;
-    margin-top: 20px;
+  text-align: center;
+  margin-top: 15px;
 }
 
 .links a {
-    color: #4a6bff;
-    text-decoration: none;
-    margin: 0 5px;
+  color: #5ab9ea;
+  text-decoration: none;
+  margin: 0 8px;
+  font-size: 14px;
 }
 
 .links span {
-    color: #ccc;
+  color: #aaa;
 }
 
-/* Button Styles */
-.btn {
-    display: block;
-    width: 100%;
-    padding: 12px;
-    border: none;
-    border-radius: 5px;
-    font-size: 1rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    margin-bottom: 10px;
-    text-align: center;
+/* Group Management */
+.group {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  padding: 15px;
+  background: #fff;
 }
 
-.btn.primary {
-    background-color: #4a6bff;
-    color: white;
+.group h3 {
+  margin-top: 0;
+  font-size: 20px;
 }
 
-.btn.secondary {
-    background-color: #f0f0f0;
-    color: #333;
+.member {
+  border-top: 1px solid #eee;
+  padding-top: 10px;
+  margin-top: 10px;
 }
 
-.btn.accent {
-    background-color: #ff6b4a;
-    color: white;
+.member input {
+  width: 100%;
+  margin-bottom: 6px;
 }
 
-.btn.danger {
-    background-color: #ff4a4a;
-    color: white;
+.member-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.btn.action {
-    display: inline-block;
-    width: auto;
-    margin: 5px;
-    padding: 8px 15px;
+/* Group Actions */
+.group-actions {
+  margin-top: 15px;
+  text-align: center;
 }
 
-/* List Styles */
-.group-list, .member-list {
-    margin: 0;
-    padding: 0;
-    list-style: none;
+.group-actions button {
+  margin: 5px;
 }
 
-.group-item, .member-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px;
-    border-bottom: 1px solid #eee;
-    cursor: pointer;
-}
-
-.group-item:hover, .member-item:hover {
-    background-color: #f9f9f9;
-}
-
-.group-info h3 {
-    margin: 0;
-    font-size: 1.1rem;
-}
-
-.group-info span {
-    color: #666;
-    font-size: 0.9rem;
-}
-
-.member-info {
-    flex-grow: 1;
-}
-
-.member-name {
-    font-weight: 500;
-}
-
-.member-phone {
-    color: #666;
-    font-size: 0.9rem;
-}
-
-.remove-member {
-    color: #ff4a4a;
-    cursor: pointer;
-    padding: 5px;
-}
-
-/* Header Styles */
+/* Back and Logout */
 .screen-header {
-    display: flex;
-    align-items: center;
-    padding: 15px;
-    border-bottom: 1px solid #eee;
-    position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
 }
 
 .screen-header h2 {
-    margin: 0 auto;
-    text-align: center;
+  margin: 0 auto;
+  font-size: 22px;
+  text-align: center;
 }
 
 .back-button {
-    background: none;
-    border: none;
-    font-size: 1.2rem;
-    cursor: pointer;
-    color: #4a6bff;
-    position: absolute;
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #5ab9ea;
+  cursor: pointer;
 }
 
-/* Action Buttons Container */
-.action-buttons {
-    padding: 15px;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+.logout-button {
+  display: block;
+  width: 100%;
+  margin-top: 30px;
+  background-color: #ccc;
 }
 
-.group-actions {
+.logout-button:hover {
+  background-color: #bbb;
+}
+
+/* Responsive Tuning */
+@media (max-width: 600px) {
+  #app {
     padding: 10px;
-    text-align: center;
+  }
+
+  .group-actions button {
+    display: block;
+    width: 100%;
+    margin: 6px 0;
+  }
+
+  .back-button {
+    font-size: 16px;
+  }
 }
->>>>>>> c07a09301e073e5ec273423c094fe5c79222bfbb
