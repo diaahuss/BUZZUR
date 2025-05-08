@@ -1,0 +1,121 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f0f8ff;
+  display: flex;
+  justify-content: center;
+  align-items: start;
+  padding-top: 40px;
+  min-height: 100vh;
+}
+
+#app {
+  width: 600px;
+  text-align: center;
+}
+
+.banner {
+  background-color: #5aa8e6;
+  color: white;
+  padding: 20px;
+  font-size: 24px;
+  font-weight: bold;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="tel"],
+input[type="number"] {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  background-color: #a7d3f2;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  margin: 10px 0;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background-color: #84bfe5;
+}
+
+.password-toggle {
+  margin: 10px 0;
+}
+
+.link-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.link-row a {
+  color: #0066cc;
+  text-decoration: none;
+}
+
+.link-row a:hover {
+  text-decoration: underline;
+}
+
+.group-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #d6ebfc;
+  border-radius: 8px;
+  padding: 12px;
+  margin: 10px 0;
+  cursor: pointer;
+}
+
+.arrow-left,
+.arrow-right {
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.members-list {
+  text-align: left;
+  margin-top: 20px;
+}
+
+.member-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #eef6fb;
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+
+.member-item span {
+  flex-grow: 1;
+}
+
+.member-remove {
+  color: black;
+  background: none;
+  border: none;
+  font-weight: normal; /* Not bold */
+  font-size: 18px;
+  cursor: pointer;
+  padding-left: 16px;  /* Push it further to the right */
+  margin-left: auto;   /* Ensures it's pushed to the far right */
+}
