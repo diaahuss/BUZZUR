@@ -1,0 +1,69 @@
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Firebase service account key
+firebase-service-account.json
+*-service-account.json
+*.key.json
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+*.pid
+*.seed
+*.pid.lock
+
+# Directory for IDE settings
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Build output
+dist/
+build/
+out/
+
+# Debug files
+*.dll
+*.pdb
+
+# Local development files
+.DS_Store
+Thumbs.db
+
+# Audio assets (optional - remove if you want to track them)
+/public/assets/buzz.mp3
+*.mp3
+*.wav
+
+# System Files
+*.DS_Store
+*.AppleDouble
+*.LSOverride
+
+# Testing
+coverage/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz

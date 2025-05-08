@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "name": "buzu",
   "version": "1.0.0",
   "description": "BUZU Web App - Buzz your groups in real-time",
@@ -9,5 +10,27 @@
   "dependencies": {
     "express": "^4.18.2",
     "socket.io": "^4.7.5"
+=======
+  "name": "buzzall",
+  "version": "1.0.0",
+  "description": "Real-time alert and group management app",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "nodemon server/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "firebase": "^8.10.0",
+    "firebase-admin": "^11.5.0",
+    "socket.io": "^4.5.4",
+    "twilio": "^3.83.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+>>>>>>> c07a09301e073e5ec273423c094fe5c79222bfbb
   }
 }
